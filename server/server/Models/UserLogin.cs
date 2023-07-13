@@ -4,7 +4,6 @@ namespace server.Models
 {
      public class UserLogin
      {
-          public int ID { get; set; }
           [StringLength(32, MinimumLength = 6, ErrorMessage = "Username too short.")]
           [Required(ErrorMessage = "Username required.")]
           public string Username { get; set; } = null!;
