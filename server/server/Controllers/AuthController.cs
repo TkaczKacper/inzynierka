@@ -41,11 +41,12 @@ namespace server.Controllers
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(
-            [FromBody] User request, CancellationToken cancellationToken
+            [FromBody] UserRegister request, CancellationToken cancellationToken
         )
         {
             User? newUser = await this.context.Users.Where(u => u.Username == request.Username || u.Email == request.Email).FirstOrDefaultAsync();
             LoginResponse response = new() {};
+            Console.WriteLine(request.Email + request.Password + request.Username);
 
             if (newUser is null)
             {
@@ -55,7 +56,7 @@ namespace server.Controllers
                 {
                     Username = request.Username,
                     Password = password,
-                    Email = request.Password,
+                    Email = request.Email,
                     RegisterDate = DateTime.UtcNow                    
                 };
 
