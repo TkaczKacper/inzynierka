@@ -1,10 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using server.ApiResponses;
 using server.Data;
 using server.Models;
 using server.Utilities;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace server.Controllers
 {
@@ -15,10 +19,22 @@ namespace server.Controllers
         private readonly DataContext context;
         private IConfiguration _configuration;
 
-        public AuthController(IConfiguration configuration, DataContext _context)
+        public AuthController(
+            IConfiguration configuration, 
+            DataContext _context)
         {
             _configuration = configuration;
             context = _context;
+        }
+
+        [Authorize]
+        [HttpGet("/secret")]
+        public IActionResult Secret()
+        {
+            LoginResponse response = new() { };
+
+            response.type = "XD";
+            return Ok(response);
         }
 
         [HttpPost("login")]
@@ -31,6 +47,10 @@ namespace server.Controllers
             if (user is not null)
             {
                 response.type = "success";
+                string token = GenerateToken(user);
+                response.error = token;
+                Console.WriteLine(token);
+
                 return Ok(response);
             }
 
@@ -83,6 +103,33 @@ namespace server.Controllers
             }
 
             return null;
+        }
+
+        private string GenerateToken(User user)
+        {
+            var claims = new Claim[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.ID.ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.UniqueName, user.Username)
+            };
+
+            var signingCredentials = new SigningCredentials(
+                new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(_configuration["JWT:Key"])),
+                SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+               "Issuer",
+               "Audience",
+               claims,
+               null,
+               DateTime.UtcNow.AddDays(31),
+               signingCredentials);
+
+            string tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return tokenValue;
         }
     }
 }

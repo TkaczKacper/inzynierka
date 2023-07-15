@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.OptionsSetup;
+using server.Utilities.JWTAuth;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +24,7 @@ builder.Services.AddDbContext<DataContext>(
 builder.Services.ConfigureOptions<JwtOptionsSetup>();
 builder.Services.ConfigureOptions<JwtBearerOptionsSetup>();
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -40,7 +42,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapGet("/", () => "test");
-app.MapGet("/secret", (ClaimsPrincipal user) => $"Hi {user.Identity?.Name}. xd").RequireAuthorization();
 
 app.MapControllerRoute(
     name: "default", 
