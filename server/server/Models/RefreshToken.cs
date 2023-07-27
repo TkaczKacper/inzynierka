@@ -20,6 +20,6 @@ namespace server.Models
         public string RevokedReason { get; set; }
         public bool IsExpired => DateTime.UtcNow >= Expires;
         public bool IsRevoked => Revoked != null;
-        public bool isActive => !IsRevoked && !IsExpired;
+        public bool IsActive => !IsRevoked && !IsExpired;
     }
 }

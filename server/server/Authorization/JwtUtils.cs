@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using server.Data;
 using server.Helpers;
 using server.Models;
 using System.IdentityModel.Tokens.Jwt;

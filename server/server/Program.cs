@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using server.Data;
 using server.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
