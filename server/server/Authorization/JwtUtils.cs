@@ -36,17 +36,20 @@ namespace server.Authorization
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] { new Claim("id", user.ID.ToString()) }),
-                Expires = DateTime.UtcNow.AddMinutes(30),
+                // Expires = DateTime.UtcNow.AddMinutes(30),
+                Expires = DateTime.UtcNow.AddDays(1),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
+
             return tokenHandler.WriteToken(token);
         }
 
         public int? ValidateJwtToken(string token)
         {
+            Console.WriteLine(token);
             if (token == null) return null;
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -59,6 +62,7 @@ namespace server.Authorization
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
+                    ValidateAudience = false,
                     ValidateActor = false,
                     // make sure that tokens expire exactly at token expiration time
                     ClockSkew = TimeSpan.Zero
@@ -67,6 +71,8 @@ namespace server.Authorization
                 var jwtToken = (JwtSecurityToken)validatedToken;
                 var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
 
+                Console.WriteLine(jwtToken);
+                Console.WriteLine($"xd");
                 return userId;
             }
             catch

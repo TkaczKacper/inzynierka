@@ -1,15 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using server.Helpers;
+﻿using Microsoft.AspNetCore.Mvc;
+using server.Authorization;
 using server.Models;
 using server.Models.Authenticate;
 using server.Services;
-using server.Utilities;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace server.Controllers
 {
@@ -25,15 +18,10 @@ namespace server.Controllers
             _userService = userService;
         }
 
-        [HttpGet("/secret")]
-        public IActionResult Secret()
-        {
-            return new JsonResult(new { message = "Hello there." }) { StatusCode = StatusCodes.Status200OK };
-        }
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<IActionResult> Login(
+        public IActionResult Login(
             [FromBody] AuthRequest userLogin, CancellationToken cancellationToken)
         {
             var response = _userService.Authenticate(userLogin, ipAddress());
@@ -42,7 +30,25 @@ namespace server.Controllers
             return Ok(response);
         }
 
+        [HttpPost("logout")]
+        public IActionResult Logout(RevokeTokenRequest model) 
+        {
+            var token = model.Token ?? Request.Cookies["refreshToken"];
 
+            if (string.IsNullOrEmpty(token))
+                return BadRequest(new { message = "Token is required." });
+
+            _userService.RevokeToken(token, ipAddress());
+            return Ok(new { message = "Logged out."});
+        }
+
+        [HttpGet("{id}/refresh-tokens")]
+        public IActionResult GetRefreshTokens(int id)
+        {
+            var user = _userService.GetById(id);
+
+            return Ok(user.RefreshTokens);
+        }
 
         // helper methods
         private void setTokenCookie(string token)

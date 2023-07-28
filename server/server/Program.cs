@@ -1,26 +1,35 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
+using server.Authorization;
 using server.Helpers;
+using server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+{
+    var services = builder.Services;
+    var env = builder.Environment;
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddAuthorization();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer();
-
-builder.Services.AddDbContext<DataContext>(
-    o => o.UseNpgsql(builder.Configuration.GetConnectionString("Database"))
-);
-
-builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+    // Add services to the container.
+    services.AddControllers();
+    services.AddEndpointsApiExplorer();
+    services.AddSwaggerGen();
 
 
+    services.AddDbContext<DataContext>(
+        o => o.UseNpgsql(builder.Configuration.GetConnectionString("Database"))
+    );
+
+    services.AddCors();
+    services.AddControllers()
+        .AddJsonOptions(x => x.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull);
+
+    services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+
+    // configure dependency injection for app services
+    services.AddScoped<IJwtUtils, JwtUtils>();
+    services.AddScoped<IUserService, UserService>();
+}
 
 var app = builder.Build();
 
@@ -31,18 +40,25 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+{
+    app.UseCors(x => x
+        .SetIsOriginAllowed(origin => true)
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials());
+
+    app.UseMiddleware<ErrorHandlerMiddleware>();
+
+    app.UseMiddleware<JwtMiddleware>();
+}
+
+
 app.UseHttpsRedirection();
 
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapControllers();
 
 app.MapGet("/", () => "test");
 
-app.MapControllerRoute(
-    name: "default", 
-    pattern: "{controller=Home}/{action=Index}/{id?}"
-);
 
 app.Run();
