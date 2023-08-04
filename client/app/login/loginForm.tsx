@@ -24,7 +24,20 @@ const LoginSchema = Yup.object().shape({
 
 export const LoginForm: React.FC<{}> = () => {
    const initialValues: FormValues = { username: "", password: "" };
-
+   const submitHandler = async (values: FormValues) => {
+      await fetch("http://localhost:5264/api/auth/login", {
+         method: "POST",
+         credentials: "include",
+         headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+         },
+         body: JSON.stringify(values),
+      })
+         .then((res) => res.json())
+         .then((data) => console.log(data));
+      console.log(JSON.stringify(values));
+   };
    return (
       <Formik
          initialValues={initialValues}
@@ -32,6 +45,7 @@ export const LoginForm: React.FC<{}> = () => {
          onSubmit={(values, actions) => {
             console.log(values);
             actions.setSubmitting(false);
+            submitHandler(values);
          }}
       >
          {({ errors, touched }: any) => (
@@ -40,7 +54,7 @@ export const LoginForm: React.FC<{}> = () => {
                {errors.username && touched.username ? (
                   <div>{errors.username}</div>
                ) : null}
-               <Field name="password" />
+               <Field name="password" type="password" />
                {errors.password && touched.password ? (
                   <div>{errors.password}</div>
                ) : null}
