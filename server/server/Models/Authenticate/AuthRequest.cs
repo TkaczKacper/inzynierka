@@ -8,7 +8,7 @@ namespace server.Models.Authenticate
         [Required(ErrorMessage = "Username required.")]
         public string Username { get; set; } = null!;
 
-        [RegularExpression(@"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_=+';:.>|<,]).{8,32}$", ErrorMessage = "Password too weak.")]
+        [RegularExpression(@"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!-\/:-@[-\`]).{8,32}$", ErrorMessage = "Password too weak.")]
         [Required(ErrorMessage = "Password required.")]
         public string Password { get; set; } = null!;
 

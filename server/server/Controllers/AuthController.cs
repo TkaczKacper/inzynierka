@@ -57,7 +57,9 @@ namespace server.Controllers
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Expires = DateTime.UtcNow.AddDays(31)
+                SameSite = SameSiteMode.None,
+                Secure = true,
+                Expires = DateTime.UtcNow.AddMinutes(30)
             };
             Response.Cookies.Append("refreshToken", token, cookieOptions);
         }
