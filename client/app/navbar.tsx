@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import styles from "./navbar.module.css";
 import Cookies from "universal-cookie";
 
@@ -9,6 +10,8 @@ const cookies = new Cookies();
 const jwt = cookies.get("jwtToken");
 
 const navbar = () => {
+   const router = useRouter();
+
    const logoutHandler = async () => {
       await fetch("http://localhost:5264/api/auth/logout", {
          method: "POST",
@@ -27,8 +30,10 @@ const navbar = () => {
          })
          .then((data) => {
             console.log(data);
+            router.push("/login");
          });
    };
+
    return (
       <div className={styles.navbar}>
          <div>profile</div>

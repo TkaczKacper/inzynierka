@@ -5,6 +5,8 @@ import * as Yup from "yup";
 
 import jwt_decode from "jwt-decode";
 import Cookies from "universal-cookie";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 interface FormValues {
    username: string;
@@ -19,6 +21,7 @@ interface jwtdecoded {
 }
 
 const cookies = new Cookies();
+const jwt = cookies.get("jwtToken");
 
 const passwordRule =
    /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!-\/:-@[-\`]).{8,32}$/;
@@ -48,13 +51,21 @@ export const LoginForm: React.FC<{}> = () => {
       })
          .then((res) => res.json())
          .then((data) => {
+            console.log(data);
             var decoded: jwtdecoded = jwt_decode(data.jwtToken);
             var ttl = new Date(decoded.exp * 1000);
             cookies.set("jwtToken", data.jwtToken, { path: "/", expires: ttl });
-            console.log(data);
+            router.push(`/profile/${decoded.id}`);
          });
       console.log(JSON.stringify(values));
    };
+
+   const router = useRouter();
+
+   useEffect(() => {
+      if (jwt) router.push("/profile");
+   }, []);
+
    return (
       <Formik
          initialValues={initialValues}
