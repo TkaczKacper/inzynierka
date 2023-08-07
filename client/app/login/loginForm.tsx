@@ -3,10 +3,22 @@
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 
+import jwt_decode from "jwt-decode";
+import Cookies from "universal-cookie";
+
 interface FormValues {
    username: string;
    password: string;
 }
+
+interface jwtdecoded {
+   id: string;
+   exp: number;
+   iat: number;
+   nbf: number;
+}
+
+const cookies = new Cookies();
 
 const passwordRule =
    /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!-\/:-@[-\`]).{8,32}$/;
@@ -35,7 +47,12 @@ export const LoginForm: React.FC<{}> = () => {
          body: JSON.stringify(values),
       })
          .then((res) => res.json())
-         .then((data) => console.log(data));
+         .then((data) => {
+            var decoded: jwtdecoded = jwt_decode(data.jwtToken);
+            var ttl = new Date(decoded.exp * 1000);
+            cookies.set("jwtToken", data.jwtToken, { path: "/", expires: ttl });
+            console.log(data);
+         });
       console.log(JSON.stringify(values));
    };
    return (

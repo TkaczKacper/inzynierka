@@ -31,14 +31,16 @@ namespace server.Controllers
         }
 
         [HttpPost("logout")]
-        public IActionResult Logout(RevokeTokenRequest model) 
+        public IActionResult Logout() 
         {
-            var token = model.Token ?? Request.Cookies["refreshToken"];
+            var token = Request.Cookies["refreshToken"];
 
             if (string.IsNullOrEmpty(token))
                 return BadRequest(new { message = "Token is required." });
 
             _userService.RevokeToken(token, ipAddress());
+            Response.Cookies.Delete("refreshToken");
+
             return Ok(new { message = "Logged out."});
         }
 

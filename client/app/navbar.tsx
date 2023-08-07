@@ -2,8 +2,11 @@
 
 import React from "react";
 import styles from "./navbar.module.css";
-const jwt =
-   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJuYmYiOjE2OTExNTcxNDcsImV4cCI6MTY5MTI0MzU0NywiaWF0IjoxNjkxMTU3MTQ3fQ.j3yiAQx2rzuUt5aM-zDBTvmjsMOmohCNJTbpB-NX-oQ";
+import Cookies from "universal-cookie";
+
+const cookies = new Cookies();
+
+const jwt = cookies.get("jwtToken");
 
 const navbar = () => {
    const logoutHandler = async () => {
@@ -16,8 +19,15 @@ const navbar = () => {
             "Content-Type": "application/json",
          },
       })
-         .then((res) => res.json())
-         .then((data) => console.log(data));
+         .then((res) => {
+            if (res.status === 200) {
+               cookies.remove("jwtToken");
+            }
+            res.json();
+         })
+         .then((data) => {
+            console.log(data);
+         });
    };
    return (
       <div className={styles.navbar}>
