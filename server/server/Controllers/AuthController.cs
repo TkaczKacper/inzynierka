@@ -61,7 +61,7 @@ namespace server.Controllers
                 HttpOnly = true,
                 SameSite = SameSiteMode.None,
                 Secure = true,
-                Expires = DateTime.UtcNow.AddMinutes(30)
+                Expires = DateTime.UtcNow.AddDays(31)
             };
             Response.Cookies.Append("refreshToken", token, cookieOptions);
         }
