@@ -43,6 +43,21 @@ namespace server.Controllers
 
             return Ok(new { message = "Logged out."});
         }
+        [AllowAnonymous]
+        [HttpGet("renew-token")]
+        public IActionResult RenewAccessToken(){
+            string? token = Request.Cookies["refreshToken"];
+            Console.WriteLine('1');
+            if (string.IsNullOrEmpty(token)) {
+            Console.WriteLine('2');
+                return BadRequest(new { message = "Token is required." });
+            }
+            Console.WriteLine('3');
+            var response = _userService.RenewAccessToken(token);
+            setTokenCookie(response.RefreshToken);
+            return Ok(response);
+            
+        }
 
         [HttpGet("{id}/refresh-tokens")]
         public IActionResult GetRefreshTokens(int id)

@@ -14,6 +14,7 @@ namespace server.Services
         void RevokeToken(string token, string ipAddress);
         IEnumerable<User> GetAll();
         User GetById(int id);
+        AuthResponse RenewAccessToken(string token);
     }
     public class UserService : IUserService
     {
@@ -109,6 +110,18 @@ namespace server.Services
         {
             var user = _context.Users.Find(id);
             return user == null ? throw new KeyNotFoundException("User not found.") : user;
+        }
+
+        public AuthResponse RenewAccessToken(string token) 
+        {
+            var user = getUserByRefreshToken(token);
+            var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
+            if (refreshToken.IsExpired) {
+                throw new AppException("TODO logout response");
+            }
+            var jwtToken = _jwtUtils.GetJwtToken(user);
+            
+            return new AuthResponse(user, jwtToken, token);
         }
 
         // helper methods
