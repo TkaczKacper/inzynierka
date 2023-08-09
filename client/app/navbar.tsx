@@ -22,15 +22,10 @@ const navbar = () => {
             "Content-Type": "application/json",
          },
       })
-         .then((res) => {
-            if (res.status === 200) {
-               cookies.remove("jwtToken");
-            }
-            res.json();
-         })
+         .then((res) => res.json())
          .then((data) => {
             console.log(data);
-            router.push("/login");
+            return router.push("/login");
          });
    };
 
