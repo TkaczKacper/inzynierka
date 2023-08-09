@@ -40,6 +40,7 @@ namespace server.Controllers
 
             _userService.RevokeToken(token, ipAddress());
             Response.Cookies.Delete("refreshToken");
+            Response.Cookies.Delete("jwtToken");
 
             return Ok(new { message = "Logged out."});
         }
