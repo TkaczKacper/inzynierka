@@ -30,10 +30,12 @@ namespace server.Controllers
             return Ok(response);
         }
 
+        [AllowAnonymous]
         [HttpPost("logout")]
         public IActionResult Logout() 
         {
             var token = Request.Cookies["refreshToken"];
+            Console.WriteLine("Logged out");
 
             if (string.IsNullOrEmpty(token))
                 return BadRequest(new { message = "Token is required." });

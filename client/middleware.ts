@@ -19,6 +19,7 @@ export async function middleware(request: NextRequest) {
    if (!isValid) {
       try {
          let cookie = request.cookies.get("refreshToken");
+         const requestHeaders = new Headers(request.headers);
          return await fetch("http://localhost:5264/api/auth/renew-token", {
             method: "GET",
             credentials: "include",
@@ -26,14 +27,15 @@ export async function middleware(request: NextRequest) {
                Accept: "application/json",
                "Content-Type": "application/json",
                Cookie: `${cookie?.name}=${cookie?.value}`,
+               Authorization: `${requestHeaders.get("Authorization")}`,
             },
          })
             .then((res) => res.json())
             .then((data) => {
                var decoded: jwtdecoded = jwt_decode(data.jwtToken);
                var ttl = new Date(decoded.exp * 1000);
-               console.log(data, ttl);
                const response = NextResponse.next();
+
                response.cookies.set("jwtToken", data.jwtToken, {
                   path: "/",
                   expires: ttl,
@@ -47,7 +49,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-   matcher: ["/profile/:path*", "/api/auth/logout"],
+   matcher: "/profile/:path*",
 };
 
 const TokenValidation = (token: RequestCookie | undefined) => {

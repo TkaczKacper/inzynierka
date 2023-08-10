@@ -7,26 +7,30 @@ import Cookies from "universal-cookie";
 
 const cookies = new Cookies();
 
-const jwt = cookies.get("jwtToken");
-
 const navbar = () => {
    const router = useRouter();
 
    const logoutHandler = async () => {
-      await fetch("http://localhost:5264/api/auth/logout", {
+      router.push("/login");
+      const response = await fetch("http://localhost:5264/api/auth/logout", {
          method: "POST",
          credentials: "include",
          headers: {
-            Authorization: jwt,
+            Authorization: cookies.get("jwtToken"),
             Accept: "application/json",
             "Content-Type": "application/json",
          },
       })
-         .then((res) => res.json())
+         .then((res) => {
+            if (res.status === 200) {
+               router.push("/login");
+            }
+            return res.json();
+         })
          .then((data) => {
             console.log(data);
-            return router.push("/login");
          });
+      return response;
    };
 
    return (
