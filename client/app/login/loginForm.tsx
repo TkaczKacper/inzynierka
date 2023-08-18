@@ -13,7 +13,7 @@ interface FormValues {
    password: string;
 }
 
-interface jwtdecoded {
+export interface jwtdecoded {
    id: string;
    exp: number;
    iat: number;
