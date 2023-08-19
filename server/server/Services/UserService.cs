@@ -9,7 +9,8 @@ namespace server.Services
 {
     public interface IUserService
     {
-        AuthResponse Authenticate(AuthRequest model, string ipAddress);
+        AuthResponse Authenticate(LoginRequest model, string ipAddress);
+        AuthResponse Register(RegisterRequest model, string ipAddress);
         AuthResponse RefreshToken(string token, string ipAddress);
         void RevokeToken(string token, string ipAddress);
         IEnumerable<User> GetAll();
@@ -32,7 +33,7 @@ namespace server.Services
             _appSettings = appSettings.Value;
         }
 
-        public AuthResponse Authenticate(AuthRequest model, string ipAddress)
+        public AuthResponse Authenticate(LoginRequest model, string ipAddress)
         {
             var user = _context.Users.SingleOrDefault(x => x.Username == model.Username);
 
@@ -54,6 +55,38 @@ namespace server.Services
             return new AuthResponse(user, jwtToken, refreshToken.Token);
         }
 
+        public AuthResponse Register(RegisterRequest model, string ipAddress)
+        {
+            var possibleUser = _context.Users.SingleOrDefault(x => x.Username == model.Username || x.Email == model.Email);
+            if (possibleUser != null) throw new AppException("Username or/and Email taken.");
+
+            // if username/email are available register user
+            User userRegister = new User
+            {
+                Email = model.Email,
+                Username = model.Username,
+                Password = PasswordHasher.Hash(model.Password).Result,
+                RegisterDate = DateTime.UtcNow
+            };
+            _context.Add(userRegister);
+            _context.SaveChanges();
+
+            // generate jwt and refresh token
+            var user = _context.Users.SingleOrDefault(x => x.Username == model.Username);
+
+            var jwtToken = _jwtUtils.GetJwtToken(user);
+            var refreshToken = _jwtUtils.GetRefreshToken(ipAddress);
+            Console.WriteLine(jwtToken, refreshToken.Token);
+            user.RefreshTokens.Add(refreshToken);
+
+            // remove old refresh tokens from user
+            removeOldRefreshTokens(user);
+
+            _context.Update(user);
+            _context.SaveChanges();
+
+            return new AuthResponse(user, jwtToken, refreshToken.Token);
+        }
         public AuthResponse RefreshToken(string token, string ipAddress)
         {
             var user = getUserByRefreshToken(token);

@@ -11,7 +11,7 @@ interface FormValues {
    username: string;
    email: string;
    password: string;
-   password2: string;
+   RepeatPassword: string;
 }
 
 const cookies = new Cookies();
@@ -29,7 +29,7 @@ const RegisterSchema = Yup.object().shape({
       .max(32, "Password too long.")
       .matches(passwordRule, "Weak Password.")
       .required("Field required."),
-   password2: Yup.string()
+   RepeatPassword: Yup.string()
       .oneOf([Yup.ref("password")], "Passwords not match.")
       .required("Field required."),
 });
@@ -39,7 +39,7 @@ export const RegisterForm: React.FC<{}> = () => {
       username: "",
       email: "",
       password: "",
-      password2: "",
+      RepeatPassword: "",
    };
    const submitHandler = async (values: FormValues) => {
       await fetch("http://localhost:5264/api/auth/register", {
@@ -88,9 +88,9 @@ export const RegisterForm: React.FC<{}> = () => {
                   {errors.password && touched.password ? (
                      <div>{errors.password}</div>
                   ) : null}
-                  <Field name="password2" type="password" />
-                  {errors.password2 && touched.password2 ? (
-                     <div>{errors.password2}</div>
+                  <Field name="RepeatPassword" type="password" />
+                  {errors.RepeatPassword && touched.RepeatPassword ? (
+                     <div>{errors.RepeatPassword}</div>
                   ) : null}
                   <button type="submit">Register</button>
                </Form>

@@ -22,9 +22,19 @@ namespace server.Controllers
         [AllowAnonymous]
         [HttpPost("login")]
         public IActionResult Login(
-            [FromBody] AuthRequest userLogin, CancellationToken cancellationToken)
+            [FromBody] LoginRequest userLogin, CancellationToken cancellationToken)
         {
             var response = _userService.Authenticate(userLogin, ipAddress());
+            setTokenCookie(response.RefreshToken);
+
+            return Ok(response);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("register")]
+        public IActionResult Register([FromBody] RegisterRequest userRegister, CancellationToken cancellation) 
+        {
+            var response = _userService.Register(userRegister, ipAddress());
             setTokenCookie(response.RefreshToken);
 
             return Ok(response);

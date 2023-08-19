@@ -18,6 +18,7 @@ export async function middleware(request: NextRequest) {
    const isValid = TokenValidation(request.cookies.get("jwtToken"));
    if (!isValid) {
       try {
+         console.log("middleware");
          let cookie = request.cookies.get("refreshToken");
          const requestHeaders = new Headers(request.headers);
          return await fetch("http://localhost:5264/api/auth/renew-token", {
