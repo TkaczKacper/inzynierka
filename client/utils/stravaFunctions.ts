@@ -4,6 +4,7 @@ const client_secret = process.env.NEXT_PUBLIC_STRAVA_CLIENT_SECRET;
 import Cookies from "universal-cookie";
 
 const cookies = new Cookies();
+const stravaApiUrl = "https://www.strava.com/api/v3";
 
 export const cleanUpAuthToken = (url: string) => {
    try {
@@ -32,14 +33,11 @@ export const getToken = async (authToken: string) => {
 
 export const getUserActivites = async () => {
    try {
-      const response = await axios.get(
-         `https://www.strava.com/api/v3/athlete/activities`,
-         {
-            headers: {
-               Authorization: `Bearer ${cookies.get("strava_access_token")}`,
-            },
-         }
-      );
+      const response = await axios.get(`${stravaApiUrl}/athlete/activities`, {
+         headers: {
+            Authorization: `Bearer ${cookies.get("strava_access_token")}`,
+         },
+      });
       return response;
    } catch (error) {
       console.log(error);

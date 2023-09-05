@@ -15,5 +15,7 @@ namespace server.Models
         [JsonIgnore]
         public List<RefreshToken> RefreshTokens { get; set; }
 
+        public StravaProfile? StravaProfile { get; set; }
+
      }
 }
