@@ -35,7 +35,7 @@ const navbar = () => {
 
    return (
       <div className={styles.navbar}>
-         <div>profile</div>
+         <div onClick={() => router.push("/profile")}>profile</div>
          <button onClick={logoutHandler}>Logout</button>
       </div>
    );

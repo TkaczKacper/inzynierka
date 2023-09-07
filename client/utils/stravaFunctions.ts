@@ -6,6 +6,58 @@ import Cookies from "universal-cookie";
 const cookies = new Cookies();
 const stravaApiUrl = "https://www.strava.com/api/v3";
 
+interface stravaProfile {
+   StravaRefreshToken: string;
+   ProfileID: number;
+   Username: string;
+   FirstName: string;
+   LastName: string;
+   Sex: string;
+   Bio: string;
+   ProfileAvatar: string;
+   Country: string;
+   State: string;
+   City: string;
+   Weight: number;
+   ProfileCreatedAt: Date;
+}
+
+const updateProfileInfo = async (profile: any, refresh_token: string) => {
+   const profileDetails: stravaProfile = {
+      StravaRefreshToken: refresh_token,
+      ProfileID: profile.id,
+      Username: profile.username,
+      FirstName: profile.firstname,
+      LastName: profile.lastname,
+      Sex: profile.sex,
+      Bio: profile.bio,
+      ProfileAvatar: profile.profile,
+      Country: profile.country,
+      State: profile.state,
+      City: profile.city,
+      Weight: profile.weight,
+      ProfileCreatedAt: new Date(profile.created_at),
+   };
+   try {
+      const response = await fetch(
+         `http://localhost:5264/strava/profile/update`,
+         {
+            method: "POST",
+            credentials: "include",
+            headers: {
+               Accept: "application/json",
+               Authorization: cookies.get("jwtToken"),
+               "Content-Type": "application/json",
+            },
+            body: JSON.stringify(profileDetails),
+         }
+      );
+      return response;
+   } catch (error) {
+      console.log(error);
+   }
+};
+
 export const cleanUpAuthToken = (url: string) => {
    try {
       return url.split("&")[1].slice(5);
@@ -17,7 +69,6 @@ export const getToken = async (authToken: string) => {
       const response = await axios.post(
          `https://www.strava.com/api/v3/oauth/token?client_id=${client_id}&client_secret=${client_secret}&code=${authToken}&grant_type=authorization_code`
       );
-      console.log(response.data);
       cookies.set("strava_refresh_token", response.data.refresh_token, {
          path: "/",
       });
@@ -25,6 +76,8 @@ export const getToken = async (authToken: string) => {
          path: "/",
          expires: new Date(response.data.expires_at * 1000),
       });
+      updateProfileInfo(response.data.athlete, response.data.refresh_token);
+
       return response.data;
    } catch (err) {
       console.log(err);

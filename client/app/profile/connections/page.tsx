@@ -36,6 +36,7 @@ const page = () => {
       };
       authenticate();
    }, []);
+
    const userActivities = async () => {
       const data = await getUserActivites();
       console.log(data);
