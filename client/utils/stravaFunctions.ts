@@ -6,50 +6,29 @@ import Cookies from "universal-cookie";
 const cookies = new Cookies();
 const stravaApiUrl = "https://www.strava.com/api/v3";
 
-interface stravaProfile {
-   StravaRefreshToken: string;
-   ProfileID: number;
-   Username: string;
-   FirstName: string;
-   LastName: string;
-   Sex: string;
-   Bio: string;
-   ProfileAvatar: string;
-   Country: string;
-   State: string;
-   City: string;
-   Weight: number;
-   ProfileCreatedAt: Date;
-}
-
 const updateProfileInfo = async (profile: any, refresh_token: string) => {
-   const profileDetails: stravaProfile = {
-      StravaRefreshToken: refresh_token,
-      ProfileID: profile.id,
-      Username: profile.username,
-      FirstName: profile.firstname,
-      LastName: profile.lastname,
-      Sex: profile.sex,
-      Bio: profile.bio,
-      ProfileAvatar: profile.profile,
-      Country: profile.country,
-      State: profile.state,
-      City: profile.city,
-      Weight: profile.weight,
-      ProfileCreatedAt: new Date(profile.created_at),
-   };
    try {
-      const response = await fetch(
+      const response = await axios.post(
          `http://localhost:5264/strava/profile/update`,
          {
-            method: "POST",
-            credentials: "include",
+            StravaRefreshToken: refresh_token,
+            ProfileID: profile.id,
+            Username: profile.username,
+            FirstName: profile.firstname,
+            LastName: profile.lastname,
+            Sex: profile.sex,
+            Bio: profile.bio,
+            ProfileAvatar: profile.profile,
+            Country: profile.country,
+            State: profile.state,
+            City: profile.city,
+            Weight: profile.weight,
+            ProfileCreatedAt: new Date(profile.created_at),
+         },
+         {
             headers: {
-               Accept: "application/json",
                Authorization: cookies.get("jwtToken"),
-               "Content-Type": "application/json",
             },
-            body: JSON.stringify(profileDetails),
          }
       );
       return response;
