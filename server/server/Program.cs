@@ -29,6 +29,7 @@ var builder = WebApplication.CreateBuilder(args);
     // configure dependency injection for app services
     services.AddScoped<IJwtUtils, JwtUtils>();
     services.AddScoped<IUserService, UserService>();
+    services.AddScoped<IStravaService, StravaService>();
 }
 
 var app = builder.Build();
