@@ -4,6 +4,7 @@ import { NextRequest } from "next/server";
 import jwt_decode from "jwt-decode";
 import Cookies from "universal-cookie";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
+import { refreshToken } from "./utils/stravaFunctions";
 
 const cookies = new Cookies();
 
@@ -15,8 +16,19 @@ type jwtdecoded = {
 };
 
 export async function middleware(request: NextRequest) {
+   console.log("reload");
    const isValid = TokenValidation(request.cookies.get("jwtToken"));
-   if (!isValid) {
+   if (!request.cookies.get("strava_access_token")) {
+      var xd = await refreshToken(
+         request.cookies.get("strava_refresh_token")?.value
+      );
+      const response = NextResponse.next();
+      response.cookies.set("strava_access_token", xd.access_token, {
+         path: "/",
+         expires: new Date(xd.expires_at * 1000),
+      });
+      return response;
+   } else if (!isValid) {
       try {
          console.log("middleware");
          let cookie = request.cookies.get("refreshToken");
