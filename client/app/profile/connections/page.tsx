@@ -4,15 +4,24 @@ import {
    getToken,
    getUserActivites,
 } from "@/utils/stravaFunctions";
-import { useRouter, usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const client_id = process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID;
 const redirect_uri = "http://localhost:3000/profile/connections";
 const scope = "read,activity:read_all";
 
+type Activity = {
+   id: number;
+   title: string;
+   date: Date;
+   duration: string;
+   distance: number;
+};
+
 const page = () => {
    const router = useRouter();
+   const [activities, setActivities] = useState<Activity[]>([]);
 
    const stravaAuth = () => {
       router.push(
@@ -37,10 +46,35 @@ const page = () => {
       authenticate();
    }, []);
 
-   const userActivities = async () => {
-      const data = await getUserActivites();
+   const userActivities = async (page: number) => {
+      const data = await getUserActivites(page);
       console.log(data);
+      return data;
    };
+
+   const getAllActivities = async () => {
+      let page_number = 1;
+      while (true) {
+         const activities_temp: any = await userActivities(page_number);
+         if (!activities_temp.data[0]) break;
+         console.log(activities_temp.data);
+         activities_temp.data.map((element: any) => {
+            console.log(element);
+            setActivities((prev) => [
+               ...prev,
+               {
+                  id: element.id,
+                  title: element.name,
+                  date: new Date(element.start_date),
+                  duration: element.elapsed_time,
+                  distance: element.distance,
+               },
+            ]);
+         });
+         page_number++;
+      }
+   };
+
    return (
       <div>
          <h1>Connections</h1>
@@ -52,7 +86,19 @@ const page = () => {
             <button onClick={stravaAuth}>connect</button>
          </div>
          <div>
-            <button onClick={userActivities}>Import</button>rides from Strava
+            <button onClick={() => getAllActivities()}>Import</button>rides from
+            Strava
+         </div>
+         <div>
+            {activities.map((activity, index) => {
+               return (
+                  <div key={index}>
+                     <h2>
+                        {index + 1}. id: {activity.id}, title: {activity.title}
+                     </h2>
+                  </div>
+               );
+            })}
          </div>
       </div>
    );

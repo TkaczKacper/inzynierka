@@ -6,6 +6,7 @@ import Cookies from "universal-cookie";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { refreshToken } from "./utils/stravaFunctions";
 
+const backend_url = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 const cookies = new Cookies();
 
 type jwtdecoded = {
@@ -33,7 +34,7 @@ export async function middleware(request: NextRequest) {
          console.log("middleware");
          let cookie = request.cookies.get("refreshToken");
          const requestHeaders = new Headers(request.headers);
-         return await fetch("http://localhost:5264/api/auth/renew-token", {
+         return await fetch(`${backend_url}/api/auth/renew-token`, {
             method: "GET",
             credentials: "include",
             headers: {

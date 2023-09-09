@@ -4,13 +4,14 @@ import Cookies from "universal-cookie";
 const client_id = process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID;
 const client_secret = process.env.NEXT_PUBLIC_STRAVA_CLIENT_SECRET;
 const strava_url = process.env.NEXT_PUBLIC_STRAVA_API_URL;
+const backend_url = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 const cookies = new Cookies();
 
 const updateProfileInfo = async (profile: any, refresh_token: string) => {
    try {
       const response = await axios.post(
-         `http://localhost:5264/strava/profile/update`,
+         `${backend_url}/strava/profile/update`,
          {
             StravaRefreshToken: refresh_token,
             ProfileID: profile.id,
@@ -80,13 +81,16 @@ export const refreshToken = async (token: string | undefined) => {
    }
 };
 
-export const getUserActivites = async () => {
+export const getUserActivites = async (page: number) => {
    try {
-      const response = await axios.get(`${strava_url}/athlete/activities`, {
-         headers: {
-            Authorization: `Bearer ${cookies.get("strava_access_token")}`,
-         },
-      });
+      const response = await axios.get(
+         `${strava_url}/athlete/activities?page=${page}&per_page=100`,
+         {
+            headers: {
+               Authorization: `Bearer ${cookies.get("strava_access_token")}`,
+            },
+         }
+      );
       return response;
    } catch (error) {
       console.log(error);
