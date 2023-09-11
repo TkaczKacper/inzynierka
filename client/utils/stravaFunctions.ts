@@ -96,3 +96,32 @@ export const getUserActivites = async (page: number) => {
       console.log(error);
    }
 };
+
+export const getActivityById = async (id: number) => {
+   try {
+      const response = await axios.get(`${strava_url}/activities/${id}`, {
+         headers: {
+            Authorization: `Bearer ${cookies.get("strava_access_token")}`,
+         },
+      });
+      return response;
+   } catch (err) {
+      console.log(err);
+   }
+};
+
+export const getStreams = async (id: number) => {
+   try {
+      const response = await axios.get(
+         `${strava_url}/activities/${id}/streams?keys=time,distance,latlng,altitude,velocity_smooth,heartrate,cadence,watts,temp,moving,grade_smooth&series_type=time`,
+         {
+            headers: {
+               Authorization: `Bearer ${cookies.get("strava_access_token")}`,
+            },
+         }
+      );
+      return response;
+   } catch (err) {
+      console.log(err);
+   }
+};

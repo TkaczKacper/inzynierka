@@ -1,6 +1,8 @@
 "use client";
 import {
    cleanUpAuthToken,
+   getActivityById,
+   getStreams,
    getToken,
    getUserActivites,
 } from "@/utils/stravaFunctions";
@@ -46,6 +48,16 @@ const page = () => {
       authenticate();
    }, []);
 
+   const get = async () => {
+      const data = await getActivityById(7521736676);
+      console.log(data);
+   };
+
+   const getSterams = async () => {
+      const data = await getStreams(9795708116);
+      console.log(data);
+   };
+
    const userActivities = async (page: number) => {
       const data = await getUserActivites(page);
       console.log(data);
@@ -53,7 +65,7 @@ const page = () => {
    };
 
    const getAllActivities = async () => {
-      let page_number = 1;
+      let page_number = 10;
       while (true) {
          const activities_temp: any = await userActivities(page_number);
          if (!activities_temp.data[0]) break;
@@ -79,16 +91,14 @@ const page = () => {
       <div>
          <h1>Connections</h1>
          <div>
-            Strava{" "}
-            {/* <a href="http://www.strava.com/oauth/authorize?client_id=111791&response_type=code&redirect_uri=http://localhost:3000/profile/connections&approval_prompt=force&scope=read,activity:read_all">
-               connect
-            </a> */}
-            <button onClick={stravaAuth}>connect</button>
+            Strava <button onClick={stravaAuth}>connect</button>
          </div>
          <div>
             <button onClick={() => getAllActivities()}>Import</button>rides from
             Strava
          </div>
+         <button onClick={get}>get1</button>
+         <button onClick={getSterams}>getSterams</button>
          <div>
             {activities.map((activity, index) => {
                return (

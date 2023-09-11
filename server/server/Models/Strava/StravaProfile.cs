@@ -1,3 +1,6 @@
+using server.Models.Strava;
+using System.Text.Json.Serialization;
+
 namespace server.Models;
 
 public class StravaProfile
@@ -16,4 +19,8 @@ public class StravaProfile
     public string City { get; set; }
     public float Weight { get; set; }
     public DateTime ProfileCreatedAt { get; set; }
+    public List<StravaAvtivity>? Avtivities { get; set; }
+
+    [JsonIgnore]
+    public StravaActivitiesToFetch? ActivitiesToFetch { get; set; }
 }
