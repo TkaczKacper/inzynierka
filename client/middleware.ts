@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 import jwt_decode from "jwt-decode";
 import Cookies from "universal-cookie";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
-import { refreshToken } from "./utils/stravaFunctions";
+import { refreshToken } from "./utils/stravaUtils";
 
 const backend_url = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 const cookies = new Cookies();

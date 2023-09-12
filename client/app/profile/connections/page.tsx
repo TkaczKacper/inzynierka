@@ -1,11 +1,12 @@
 "use client";
+import { getActivitiesDetails } from "@/utils/serverUtils";
 import {
    cleanUpAuthToken,
    getActivityById,
    getStreams,
    getToken,
    getUserActivites,
-} from "@/utils/stravaFunctions";
+} from "@/utils/stravaUtils";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -13,7 +14,7 @@ const client_id = process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID;
 const redirect_uri = "http://localhost:3000/profile/connections";
 const scope = "read,activity:read_all";
 
-type Activity = {
+export type Activity = {
    id: number;
    title: string;
    date: Date;
@@ -24,6 +25,7 @@ type Activity = {
 const page = () => {
    const router = useRouter();
    const [activities, setActivities] = useState<Activity[]>([]);
+   const [sendVisibility, setSendVisibility] = useState<boolean>(false);
 
    const stravaAuth = () => {
       router.push(
@@ -84,7 +86,13 @@ const page = () => {
             ]);
          });
          page_number++;
+         setSendVisibility(true);
       }
+   };
+
+   const importActivities = async () => {
+      const response = await getActivitiesDetails(activities);
+      console.log(response);
    };
 
    return (
@@ -100,15 +108,21 @@ const page = () => {
          <button onClick={get}>get1</button>
          <button onClick={getSterams}>getSterams</button>
          <div>
-            {activities.map((activity, index) => {
-               return (
-                  <div key={index}>
-                     <h2>
-                        {index + 1}. id: {activity.id}, title: {activity.title}
-                     </h2>
-                  </div>
-               );
-            })}
+            {sendVisibility ? (
+               <button onClick={importActivities}>import</button>
+            ) : null}
+            <div>
+               {activities.map((activity, index) => {
+                  return (
+                     <div key={index}>
+                        <h2>
+                           {index + 1}. id: {activity.id}, title:{" "}
+                           {activity.title}
+                        </h2>
+                     </div>
+                  );
+               })}
+            </div>
          </div>
       </div>
    );
