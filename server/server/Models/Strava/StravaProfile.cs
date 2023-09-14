@@ -19,7 +19,7 @@ public class StravaProfile
     public string City { get; set; }
     public float Weight { get; set; }
     public DateTime ProfileCreatedAt { get; set; }
-    public List<StravaAvtivity>? Avtivities { get; set; }
+    public List<StravaActivity>? Avtivities { get; set; }
 
     [JsonIgnore]
     public StravaActivitiesToFetch? ActivitiesToFetch { get; set; }

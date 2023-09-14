@@ -25,6 +25,7 @@ var builder = WebApplication.CreateBuilder(args);
         .AddJsonOptions(x => x.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull);
 
     services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+    services.Configure<StravaSettings>(builder.Configuration.GetSection("Strava"));
 
     // configure dependency injection for app services
     services.AddScoped<IJwtUtils, JwtUtils>();
@@ -54,7 +55,7 @@ if (app.Environment.IsDevelopment())
 }
 
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 
 app.MapControllers();

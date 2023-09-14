@@ -50,6 +50,7 @@ export const getActivitiesDetails = async (activities: Activity[]) => {
          `${backend_url}/strava/get-activity-details`,
          activitiesId,
          {
+            withCredentials: true,
             headers: {
                Authorization: cookies.get("jwtToken"),
             },
