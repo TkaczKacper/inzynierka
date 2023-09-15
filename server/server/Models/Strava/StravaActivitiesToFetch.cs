@@ -2,7 +2,7 @@
 {
     public class StravaActivitiesToFetch
     {
-        public int ID { get; set; }
-        public List<int> activityIds { get; set; }
+        public long ID { get; set; }
+        public List<long> activityIds { get; set; }
     }
 }

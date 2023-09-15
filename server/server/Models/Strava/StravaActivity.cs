@@ -4,7 +4,7 @@ namespace server.Models.Strava
 {
     public class StravaActivity
     {
-        public int ID { get; set; }
+        public long ID { get; set; }
         public long StravaActivityID { get; set; }
         public string Title { get; set; }
         public float TotalDistance { get; set; }
@@ -27,7 +27,7 @@ namespace server.Models.Strava
         public int MaxWatts { get; set; }
         public int WeightedAvgWatts { get; set; }
         public float AvgCadence { get; set; }
-        public int AvgTemp { get; set; }
+        public float AvgTemp { get; set; }
         public float ElevationHigh { get; set; }
         public float ElevationLow { get; set; }
         public List<StravaActivityLap> Laps { get; set; }

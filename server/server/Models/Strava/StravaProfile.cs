@@ -5,9 +5,9 @@ namespace server.Models;
 
 public class StravaProfile
 {
-    public int ID { get; set; }
+    public long ID { get; set; }
     public string StravaRefreshToken { get; set; }
-    public int ProfileID { get; set; }
+    public long ProfileID { get; set; }
     public string Username { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
