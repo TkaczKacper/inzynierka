@@ -5,7 +5,7 @@ namespace server.Models.Authenticate
 {
     public class AuthResponse
     {
-        public int ID { get; set; }
+        public Guid ID { get; set; }
         public string? Username { get; set; }
         public string? Email { get; set; }
         public DateTime RegisterDate { get; set; }

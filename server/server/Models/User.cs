@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
 namespace server.Models
@@ -18,4 +19,5 @@ namespace server.Models
         public StravaProfile? StravaProfile { get; set; }
 
      }
+    
 }

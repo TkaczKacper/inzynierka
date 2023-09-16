@@ -72,7 +72,7 @@ namespace server.Controllers
         }
 
         [HttpGet("{id}/refresh-tokens")]
-        public IActionResult GetRefreshTokens(int id)
+        public IActionResult GetRefreshTokens(Guid id)
         {
             var user = _userService.GetById(id);
 

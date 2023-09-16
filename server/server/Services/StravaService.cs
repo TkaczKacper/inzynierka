@@ -10,7 +10,7 @@ namespace server.Services
 {
     public interface IStravaService
     {
-        StravaProfile ProfileUpdate(StravaProfile profileInfo, int? id);
+        StravaProfile ProfileUpdate(StravaProfile profileInfo, Guid? id);
         Task<string> GetActivityDetails(string token);
     }
 
@@ -29,7 +29,7 @@ namespace server.Services
             _stravaSettings = stravaSettings.Value;
         }
 
-        public StravaProfile ProfileUpdate(StravaProfile profile, int? id)
+        public StravaProfile ProfileUpdate(StravaProfile profile, Guid? id)
         {
             Console.WriteLine("profile update");
             User? user = GetById(id);
@@ -70,7 +70,7 @@ namespace server.Services
             return xd2.ToString();
         }
         //helper methods
-        public User GetById(int? id)
+        public User GetById(Guid? id)
         {
             var user = _context.Users.Find(id);
             return user == null ? throw new KeyNotFoundException("User not found.") : user;

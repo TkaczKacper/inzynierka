@@ -20,7 +20,7 @@ namespace server.Authorization
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
             Console.WriteLine(token);
             var userId = jwtUtils.ValidateJwtToken(token);
-
+            Console.WriteLine($"user: {userId}");
             if (userId != null)
             {
                 context.Items["User"] = userService.GetById(userId.Value);

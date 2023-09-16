@@ -14,7 +14,7 @@ namespace server.Services
         AuthResponse RefreshToken(string token, string ipAddress);
         void RevokeToken(string token, string ipAddress);
         IEnumerable<User> GetAll();
-        User GetById(int id);
+        User GetById(Guid id);
         AuthResponse RenewAccessToken(string token);
     }
     public class UserService : IUserService
@@ -139,7 +139,7 @@ namespace server.Services
             return _context.Users;
         }
 
-        public User GetById(int id)
+        public User GetById(Guid id)
         {
             var user = _context.Users.Find(id);
             return user == null ? throw new KeyNotFoundException("User not found.") : user;

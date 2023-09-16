@@ -12,7 +12,7 @@ namespace server.Authorization
     public interface IJwtUtils
     {
         public string GetJwtToken(User user);
-        public int? ValidateJwtToken(string token);
+        public Guid? ValidateJwtToken(string token);
         public RefreshToken GetRefreshToken(string ipAddress);
     }
     public class JwtUtils : IJwtUtils
@@ -46,7 +46,7 @@ namespace server.Authorization
             return tokenHandler.WriteToken(token);
         }
 
-        public int? ValidateJwtToken(string token)
+        public Guid? ValidateJwtToken(string token)
         {
             Console.WriteLine(token);
             if (token == null) return null;
@@ -68,7 +68,7 @@ namespace server.Authorization
                 }, out SecurityToken validatedToken);
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
-                var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
+                var userId = Guid.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
 
                 Console.WriteLine(jwtToken);
                 Console.WriteLine($"xd");
