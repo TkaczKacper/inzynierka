@@ -22,5 +22,5 @@ public class StravaProfile
     public List<StravaActivity>? Avtivities { get; set; }
 
     [JsonIgnore]
-    public StravaActivitiesToFetch? ActivitiesToFetch { get; set; }
+    public List<long>? ActivitiesToFetch { get; set; }
 }

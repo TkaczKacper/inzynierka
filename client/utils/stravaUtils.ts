@@ -26,8 +26,11 @@ export const getToken = async (authToken: string) => {
          path: "/",
          expires: new Date(response.data.expires_at * 1000),
       });
-      updateProfileInfo(response.data.athlete, response.data.refresh_token);
-
+      const profileData = await updateProfileInfo(
+         response.data.athlete,
+         response.data.refresh_token
+      );
+      console.log(profileData);
       return response.data;
    } catch (err) {
       console.log(err);

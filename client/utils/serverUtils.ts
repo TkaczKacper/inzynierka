@@ -56,6 +56,7 @@ export const getActivitiesDetails = async (activities: Activity[]) => {
             },
          }
       );
+      console.log(response);
       return response;
    } catch (err) {
       console.log(err);

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using server.Helpers;
 using server.Models;
 using server.Models.Responses.Strava;
@@ -12,6 +13,7 @@ namespace server.Services
     {
         StravaProfile ProfileUpdate(StravaProfile profileInfo, Guid? id);
         Task<string> GetActivityDetails(string token);
+        string SaveActivitiesToFetch(List<long> activityIds, Guid? userID);
     }
 
     public class StravaService : IStravaService
@@ -61,9 +63,21 @@ namespace server.Services
             return profile;
         }
 
+        public string SaveActivitiesToFetch(List<long> activities, Guid? userId)
+        {
+            Console.WriteLine("Saving...");
+            
+            User user = GetById(userId);
+            user.StravaProfile.ActivitiesToFetch = activities;
+            _context.Update(user);
+            _context.SaveChanges();
+            Console.WriteLine($"profile: {user.StravaProfile.LastName}");
+
+            return $"Remaining activities to be fetch: {activities.Count}";
+        }
+
         public async Task<string> GetActivityDetails(string accesstoken)
         {
-            Console.WriteLine(_stravaSettings.ClientId);
             var xd = await GetActivityDetailsById(7521736676, accesstoken, stravaClient);
             var xd2 = await GetActivityStreamsById(7521736676, accesstoken, stravaClient);
 
@@ -72,7 +86,8 @@ namespace server.Services
         //helper methods
         public User GetById(Guid? id)
         {
-            var user = _context.Users.Find(id);
+            User? user = _context.Users.Include(u => u.StravaProfile).FirstOrDefault(u => u.ID == id);
+            //User? user = _context.Users.Find(id);
             return user == null ? throw new KeyNotFoundException("User not found.") : user;
         }
         public async Task<object> GetActivityDetailsById(long id, string token, HttpClient httpClient)
@@ -102,10 +117,6 @@ namespace server.Services
                 using HttpResponseMessage response = await httpClient.GetAsync($"activities/{id}/streams?keys=time,distance,latlng,altitude,velocity_smooth,heartrate,cadence,watts,temp,moving,grade_smooth&series_type=time");
                 var jsonRes = await response.Content.ReadFromJsonAsync<List<Streams>>();
                 Console.WriteLine(jsonRes[0].data);
-                foreach(object i in jsonRes[0].data)
-                {
-                    Console.WriteLine(i);
-                }
                 Console.WriteLine(jsonRes[2].type);
                 Console.WriteLine(jsonRes[4].type);
                 Console.WriteLine(response.RequestMessage);
