@@ -4,6 +4,6 @@ namespace server.Models.Responses.Strava
 {
     public class ActivityStreamsResponse
     {
-      public List<Streams> streams { get; set; }
+      public List<Streams>? Streams { get; set; }
     }
 }

@@ -13,15 +13,6 @@ namespace server.Helpers
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.HasPostgresExtension("uuid-ossp");
-
-            // migrationBuilder.AlterColumn<Guid>(
-            //     name: "ID",
-            //     table: "Users",
-            //     type: "uuid using \"ID\"::uuid",
-            //     nullable: false,
-            //     oldClrType: typeof(long),
-            //     oldType: "integer"
-            //     );
         }
         
         public DbSet<User> Users { get; set; }

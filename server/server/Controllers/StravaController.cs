@@ -32,16 +32,19 @@ namespace server.Controllers
         [HttpPost("get-activity-details")]
         public IActionResult GetActivityDetails([FromBody] List<int> activityIds)
         {
-            var userID = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
-            var stravaAccessToken = Request.Cookies["strava_access_token"];
-
-            var xd = _stravaService.GetActivityDetails(stravaAccessToken);
-            Console.WriteLine(stravaAccessToken);
-            foreach (int i in activityIds)
+            Guid? userID = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
+            string? stravaAccessToken = Request.Cookies["strava_access_token"];
+            if (stravaAccessToken != null)
             {
-                Console.WriteLine(i);
+                var xd = _stravaService.GetActivityDetails(stravaAccessToken);
+                Console.WriteLine(stravaAccessToken);
+                foreach (int i in activityIds)
+                {
+                    Console.WriteLine(i);
+                }
+                return Ok("XD");
             }
-            return Ok("XD");
+            return Unauthorized("Strava access token missing.");
         }
     }
 }

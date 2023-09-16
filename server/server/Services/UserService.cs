@@ -44,7 +44,7 @@ namespace server.Services
             // auth success, generate jwt and refresh tokens
             var jwtToken = _jwtUtils.GetJwtToken(user);
             var refreshToken = _jwtUtils.GetRefreshToken(ipAddress);
-            user.RefreshTokens.Add(refreshToken);
+            user.RefreshTokens?.Add(refreshToken);
 
             // remove old refresh tokens from user
             removeOldRefreshTokens(user);
@@ -79,13 +79,10 @@ namespace server.Services
             Console.WriteLine(jwtToken, refreshToken.Token);
             user.RefreshTokens.Add(refreshToken);
 
-            // remove old refresh tokens from user
-            removeOldRefreshTokens(user);
-
             _context.Update(user);
             _context.SaveChanges();
 
-            return new AuthResponse(user, jwtToken, refreshToken.Token);
+            return new AuthResponse(userRegister, jwtToken, refreshToken.Token);
         }
         public AuthResponse RefreshToken(string token, string ipAddress)
         {
@@ -194,7 +191,7 @@ namespace server.Services
             }
         }
 
-        private void revokeRefreshToken(RefreshToken token, string ipAddress, string reason = null, string replaceByToken = null)
+        private void revokeRefreshToken(RefreshToken token, string ipAddress, string? reason = null, string? replaceByToken = null)
         {
             token.Revoked = DateTime.UtcNow;
             token.RevokedByIp = ipAddress;

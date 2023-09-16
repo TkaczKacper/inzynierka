@@ -5,34 +5,34 @@ namespace server.Models.Responses.Strava
 {
     public class ActivityDetailsResponse
     {
-        public long id { get; set; }
-        public string Name { get; set; }
-        public float distance { get; set; }
-        public int moving_time { get; set; }
-        public int elapsed_time { get; set; }
-        public float total_eleavtion_gain { get; set; }
-        public float calories { get; set; }
-        public DateTime start_date { get; set; }
-        public double[] start_latlng { get; set; }
-        public double[] end_latlng { get; set; }
-        public float average_speed { get; set; }
-        public float max_speed { get; set; }
-        public float average_heartrate { get; set; }
-        public float max_heartrate { get; set; }
-        public bool trainer { get; set; }
-        public bool device_watts { get; set; }
-        public float average_watts { get; set; }
-        public int max_watts { get; set; }
-        public int weighted_average_watts { get; set; }
-        public float kilojules { get; set; }
-        public float average_cadence { get; set; }
-        public float average_temp { get; set; }
-        public float elev_high { get; set; }
-        public float elev_low { get; set; }
+        public long Id { get; set; }
+        public string? Name { get; set; }
+        public float Distance { get; set; }
+        public int Moving_time { get; set; }
+        public int Elapsed_time { get; set; }
+        public float Total_eleavtion_gain { get; set; }
+        public float Calories { get; set; }
+        public DateTime Start_date { get; set; }
+        public double[]? Start_latlng { get; set; }
+        public double[]? End_latlng { get; set; }
+        public float Aaverage_speed { get; set; }
+        public float Max_speed { get; set; }
+        public float Average_heartrate { get; set; }
+        public float Max_heartrate { get; set; }
+        public bool Trainer { get; set; }
+        public bool Device_watts { get; set; }
+        public float Average_watts { get; set; }
+        public int Max_watts { get; set; }
+        public int Weighted_average_watts { get; set; }
+        public float Kilojules { get; set; }
+        public float Average_cadence { get; set; }
+        public float Average_temp { get; set; }
+        public float Elev_high { get; set; }
+        public float Elev_low { get; set; }
 
 
-        public ActivityMap map { get; set; }
-        public ActivityGear gear { get; set; }
-        public int achievement_count { get; set; }
+        public ActivityMap? Map { get; set; }
+        public ActivityGear? Gear { get; set; }
+        public int Achievement_count { get; set; }
     }
 }

@@ -84,10 +84,10 @@ namespace server.Services
                 var jsonRes = await response.Content.ReadFromJsonAsync<ActivityDetailsResponse>();
 
                 Console.WriteLine("test");
-                Console.WriteLine(jsonRes.Name);
-                Console.WriteLine(jsonRes.max_heartrate);
-                Console.WriteLine(jsonRes.start_date);
-                Console.WriteLine(jsonRes.start_latlng[1]);
+                Console.WriteLine(jsonRes?.Name);
+                Console.WriteLine(jsonRes?.Max_heartrate);
+                Console.WriteLine(jsonRes?.Start_date);
+                Console.WriteLine(jsonRes?.Start_latlng?[1]);
                 Console.WriteLine(response.RequestMessage);
                 Console.WriteLine(response.StatusCode);
                 return jsonRes;

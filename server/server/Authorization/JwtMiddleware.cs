@@ -17,9 +17,8 @@ namespace server.Authorization
 
         public async Task Invoke(HttpContext context, IUserService userService, IJwtUtils jwtUtils)
         {
-            var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-            Console.WriteLine(token);
-            var userId = jwtUtils.ValidateJwtToken(token);
+            string? token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            Guid? userId = jwtUtils.ValidateJwtToken(token);
             Console.WriteLine($"user: {userId}");
             if (userId != null)
             {
