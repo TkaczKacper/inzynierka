@@ -15,7 +15,7 @@ namespace server.Models.Responses.Strava
         public DateTime Start_date { get; set; }
         public double[]? Start_latlng { get; set; }
         public double[]? End_latlng { get; set; }
-        public float Aaverage_speed { get; set; }
+        public float Average_speed { get; set; }
         public float Max_speed { get; set; }
         public float Average_heartrate { get; set; }
         public float Max_heartrate { get; set; }
@@ -29,8 +29,9 @@ namespace server.Models.Responses.Strava
         public float Average_temp { get; set; }
         public float Elev_high { get; set; }
         public float Elev_low { get; set; }
+        public string? Device_name { get; set; }
 
-
+        public StravaActivityLap[]? Laps { get; set; }
         public ActivityMap? Map { get; set; }
         public ActivityGear? Gear { get; set; }
         public int Achievement_count { get; set; }

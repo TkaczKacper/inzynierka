@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace server.Models.Strava
 {
@@ -12,7 +13,7 @@ namespace server.Models.Strava
         public int ElapsedTime { get; set; }
         public float TotalElevationGain { get; set; }
         public float Calories { get; set; }
-        public DateTime StratDate { get; set; }
+        public DateTime StartDate { get; set; }
         public double[]? StartLatLng { get; set; }
         public double[]? EndLatLng { get; set; }
 
@@ -37,16 +38,18 @@ namespace server.Models.Strava
         public string? DetailedPolyline { get; set; }
         public int Achievements { get; set; }
 
-        public int[]? TimeStream { get; set; }
-        public float[]? Distance { get; set; }
-        public float[]? Velocity { get; set; }
-        public int[]? Watts { get; set; }
-        public int[]? Cadence { get; set; }
-        public int[]? HeartRate { get; set; }
-        public int[]? Temperature { get; set; }
-        public float[]? Altitude { get; set; }
-        public float[]? GradeSmooth { get; set; }
-        public bool[]? Moving { get; set; }
-        public double[]? LatLng { get; set; }
+        public List<int>? TimeStream { get; set; }
+        public List<float>? Distance { get; set; }
+        public List<float>? Velocity { get; set; }
+        public List<int>? Watts { get; set; }
+        public List<int>? Cadence { get; set; }
+        public List<int>? HeartRate { get; set; }
+        public List<int>? Temperature { get; set; }
+        public List<float>? Altitude { get; set; }
+        public List<float>? GradeSmooth { get; set; }
+        public List<bool>? Moving { get; set; }
+        public List<double>? Lat { get; set; } 
+        public List<double>? Lng { get; set; }
+
     }
 }

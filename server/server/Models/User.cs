@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace server.Models
@@ -16,8 +17,7 @@ namespace server.Models
         [JsonIgnore]
         public List<RefreshToken> RefreshTokens { get; set; }
 
-        public StravaProfile StravaProfile { get; set; }
-
-     }
+        public StravaProfile? StravaProfile { get; set; }
+    }
     
 }
