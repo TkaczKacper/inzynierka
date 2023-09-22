@@ -10,7 +10,7 @@ namespace server.Models.Responses.Strava
         public float Distance { get; set; }
         public int Moving_time { get; set; }
         public int Elapsed_time { get; set; }
-        public float Total_eleavtion_gain { get; set; }
+        public float Total_elevation_gain { get; set; }
         public float Calories { get; set; }
         public DateTime Start_date { get; set; }
         public double[]? Start_latlng { get; set; }
@@ -31,7 +31,7 @@ namespace server.Models.Responses.Strava
         public float Elev_low { get; set; }
         public string? Device_name { get; set; }
 
-        public StravaActivityLap[]? Laps { get; set; }
+        public ActivityLap[]? Laps { get; set; }
         public ActivityMap? Map { get; set; }
         public ActivityGear? Gear { get; set; }
         public int Achievement_count { get; set; }

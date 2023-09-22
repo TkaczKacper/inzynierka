@@ -37,7 +37,8 @@ namespace server.Controllers
             if (stravaAccessToken != null)
             {
                 var response = _stravaService.SaveActivitiesToFetch(activityIds, userID);
-                var xd = await _stravaService.GetActivityDetails(stravaAccessToken, userID);
+                await _stravaService.GetActivityDetails(stravaAccessToken, userID);
+
 
                 return Ok(response);
             }

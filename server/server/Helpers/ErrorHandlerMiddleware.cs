@@ -42,6 +42,6 @@ namespace server.Helpers
                 var result = JsonSerializer.Serialize(new { message = error?.Message });
                 await response.WriteAsync(result);
             }
-        }
+         }
     }
 }

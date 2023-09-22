@@ -12,7 +12,7 @@ namespace server.Services
     public interface IStravaService
     {
         StravaProfile ProfileUpdate(StravaProfile profileInfo, Guid? userId);
-        Task<string> GetActivityDetails(string token, Guid? userId);
+        Task<StravaActivity> GetActivityDetails(string token, Guid? userId);
         string SaveActivitiesToFetch(List<long> activityIds, Guid? userId);
     }
 
@@ -78,7 +78,7 @@ namespace server.Services
             return $"Remaining activities to be fetch: {activities.Count}";
         }
 
-        public async Task<string> GetActivityDetails(string accesstoken, Guid? userId)
+        public async Task<StravaActivity> GetActivityDetails(string accesstoken, Guid? userId)
         {
             User user = await GetUserByIdAsync(userId);
             StravaProfile stravaProfile = await GetStravaProfileAsync(user.StravaProfile.ID);
@@ -95,7 +95,6 @@ namespace server.Services
             List<double> latStream = new List<double>();
             List<double> lngStream = new List<double>();
             List<StravaActivityLap> activityLaps = new List<StravaActivityLap>();
-
             foreach (var stream in streams)
             {
                 string type = stream.type;
@@ -140,10 +139,27 @@ namespace server.Services
 
             foreach (var lap in details.Laps)
             {
-                activityLaps.Add(lap);
+                StravaActivityLap activityLap = new StravaActivityLap()
+                {
+                    ElapsedTime = lap.elapsed_time,
+                    MovingTime = lap.moving_time,
+                    StartDate = lap.start_date,
+                    Distance = lap.distance,
+                    StartIdx = lap.start_index,
+                    EndIdx = lap.end_index,
+                    LapIndex = lap.lap_index,
+                    TotalElevationGain = lap.total_elevation_gain,
+                    AvgSpeed = lap.average_speed,
+                    MaxSpeed = lap.max_speed,
+                    AvgWatts = lap.average_watts,
+                    AvgCadence = lap.average_cadence,
+                    AvgHeartRate = lap.average_heartrate,
+                    MaxHeartRate = lap.max_heartrate
+                };
+                activityLaps.Add(activityLap);
             }
 
-            Console.WriteLine($"test2: {details.Laps[0].AvgSpeed}, {details.Average_speed}");
+            Console.WriteLine($"test2: {details.Laps[0].average_speed}, {details.Average_speed}");
             try
             {
                 StravaActivity activity = new StravaActivity
@@ -153,7 +169,7 @@ namespace server.Services
                     TotalDistance = details.Distance,
                     MovingTime = details.Moving_time,
                     ElapsedTime = details.Elapsed_time,
-                    TotalElevationGain = details.Total_eleavtion_gain,
+                    TotalElevationGain = details.Total_elevation_gain,
                     Calories = details.Calories,
                     StartDate = details.Start_date,
                     StartLatLng = details.Start_latlng,
@@ -176,7 +192,6 @@ namespace server.Services
                     SummaryPolyline = details.Map?.summary_polyline,
                     DetailedPolyline = details.Map?.polyline,
                     Achievements = details.Achievement_count,
-                    Laps = activityLaps,
                     TimeStream = intStreams.ContainsKey("time") ? intStreams["time"] : null,
                     Distance = floatStreams.ContainsKey("distance") ? floatStreams["distance"] : null,
                     Velocity = floatStreams.ContainsKey("velocity_smooth") ? floatStreams["velocity_smooth"] : null,
@@ -188,17 +203,20 @@ namespace server.Services
                     GradeSmooth = floatStreams.ContainsKey("grade_smooth") ? floatStreams["grade_smooth"] : null,
                     Moving = movingStream,
                     Lat = latStream,
-                    Lng = lngStream
+                    Lng = lngStream,
+                    Laps = activityLaps
                 };
-                stravaProfile.Activities.Add(activity);
-                _context.Update(stravaProfile);
-                stravaProfile.Version = Guid.NewGuid();
+
+                user.StravaProfile.Activities.Add(activity);
                 _context.SaveChanges();
+
+
+                return activity;
             }
-            catch (Exception ex) { Console.WriteLine("ERROR" + ex.Message); }
+             catch (Exception ex) { Console.WriteLine("ERROR" + ex.Message); }
 
             
-            return "";
+            return null;
         }
 
         public async Task<ActivityDetailsResponse> GetActivityDetailsById(long id, string token, HttpClient httpClient)
@@ -215,7 +233,7 @@ namespace server.Services
                 Console.WriteLine(jsonRes?.Max_heartrate);
                 Console.WriteLine(jsonRes?.Start_date);
                 Console.WriteLine(jsonRes?.Start_latlng?[1]);
-                Console.WriteLine($"Lap: {jsonRes?.Laps[0].AvgSpeed}");
+                Console.WriteLine($"Lap: {jsonRes?.Laps[0].average_speed}");
 
                 return jsonRes;
             }
@@ -238,6 +256,16 @@ namespace server.Services
             return null;
         }
 
+        public string AddLaps(long activityId, List<StravaActivityLap> laps)
+        {
+            StravaActivity activityUpdate = _context.StravaActivity.FirstOrDefault(a => a.StravaActivityID == activityId);
+
+            activityUpdate.Laps = laps;
+            _context.Update(activityUpdate);
+            _context.SaveChanges();
+
+            return "OK";
+        }
 
 
         // helpers 
@@ -248,7 +276,11 @@ namespace server.Services
         }
         public async Task<User> GetUserByIdAsync(Guid? id)
         {
-            User? user = await _context.Users.Include(u => u.StravaProfile).Include(u=> u.StravaProfile.Activities).FirstOrDefaultAsync(u => u.ID == id);
+            User? user = await _context.Users.
+                Include(u => u.StravaProfile).
+                ThenInclude(s => s.Activities).
+                ThenInclude(a => a.Laps).
+                FirstOrDefaultAsync(u => u.ID == id);
             return user == null ? throw new KeyNotFoundException("User not found.") : user;
         }
         public async Task<StravaProfile> GetStravaProfileAsync(long id)
@@ -264,7 +296,6 @@ namespace server.Services
             try
             {
                 user.StravaProfile.Activities.Add(activity);
-                _context.Update(user);
                 _context.SaveChanges();
                 return $"Activity {activity.StravaActivityID} saved";
             } 

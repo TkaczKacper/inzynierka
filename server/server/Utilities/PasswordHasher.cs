@@ -75,14 +75,16 @@ public static class PasswordHasher
 
         /* For some reason,this causes an absurd memory leak that fixes itself from time to time.
          * I have absolutely no idea what causes it and there's likely no way for me to fix that. */
-        var hash = await argon2.GetBytesAsync(options.HashLength);
-
+         try{
+            var hash = await argon2.GetBytesAsync(options.HashLength);
+            var saltBase64 = Convert.ToBase64String(salt);
+            var hashBase64 = Convert.ToBase64String(hash);
+            return FormatHash(argon2, saltBase64, hashBase64);
+         } catch (Exception ex ) {Console.WriteLine(ex.Message);} 
         // Convert salt and hash into Base64 format
-        var saltBase64 = Convert.ToBase64String(salt);
-        var hashBase64 = Convert.ToBase64String(hash);
 
         // Return fully encoded argon2 hash
-        return FormatHash(argon2, saltBase64, hashBase64);
+        return "null";
     }
 
     /// <summary>

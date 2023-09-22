@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using server.Models;
+using server.Models.Strava;
 
 namespace server.Helpers
 {
@@ -17,5 +18,6 @@ namespace server.Helpers
         
         public DbSet<User> Users { get; set; }
         public DbSet<StravaProfile> StravaProfile { get; set; }
+        public DbSet<StravaActivity> StravaActivity { get; set; }
     }
 }
