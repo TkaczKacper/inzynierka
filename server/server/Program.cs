@@ -31,6 +31,9 @@ var builder = WebApplication.CreateBuilder(args);
     services.AddScoped<IJwtUtils, JwtUtils>();
     services.AddScoped<IUserService, UserService>();
     services.AddScoped<IStravaService, StravaService>();
+    services.AddScoped<IActivityService, ActivityService>();
+    services.AddScoped<IStravaApiService, StravaApiService>();
+
 }
 
 var app = builder.Build();
