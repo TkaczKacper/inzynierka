@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using MathNet.Numerics.Statistics;
 using server.Helpers;
 using server.Models;
 using server.Models.Strava;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace server.Services
 {
@@ -32,7 +33,8 @@ namespace server.Services
         public async Task<string> GetActivityDetails(string accesstoken, Guid? userId)
         {
             User user = await GetUserByIdAsync(userId);
-            List<long> ids = user.StravaProfile.ActivitiesToFetch;
+            //List<long> ids = user.StravaProfile.ActivitiesToFetch;
+            List<long> ids = new List<long>() { 9903132501, 9795708116, 9873341988 };
             List<StravaActivity> activities = new List<StravaActivity>();
             Console.WriteLine(stravaClient.DefaultRequestHeaders);
             if (!stravaClient.DefaultRequestHeaders.Contains("Authorization"))
@@ -118,6 +120,27 @@ namespace server.Services
 
                 try
                 {
+                    if (details.Average_heartrate > 0 && user.HrMax is not null && user.HrRest is not null)
+                    {
+                        double multiplier = user.StravaProfile.Sex == "M" ? 1.92 : 1.67;
+                        double trimp = 
+                            details.Moving_time / 60 
+                            * (details.Average_heartrate - (int)user.HrRest) / ((int)user.HrMax - (int)user.HrRest) 
+                            * 64 
+                            * Math.Exp(multiplier * (details.Average_heartrate - (int)user.HrRest) / ((int)user.HrMax - (int)user.HrRest));
+                    }
+                    if (details.Device_watts && intStreams.ContainsKey("watts"))
+                    {
+                        int FTP = user.FTP is not null ? (int)user.FTP : 250;
+                        List<double> avg = Enumerable.Range(0, intStreams["watts"]
+                            .Count - 29).
+                            Select(i => Math.Pow(intStreams["watts"].Skip(i).Take(30).Average(), 4)).ToList();
+
+                        double NormalizedPower = Math.Pow(avg.Average(), 0.25);
+                        double IntensityFactor = NormalizedPower / FTP;
+                        double Tss = (details.Moving_time * NormalizedPower * IntensityFactor) / (329 * 36);
+                        double VariabilityIndex = NormalizedPower / details.Average_watts;
+                    }
                     StravaActivity activity = new StravaActivity
                     {
                         StravaActivityID = details.Id,
@@ -170,7 +193,7 @@ namespace server.Services
             user.StravaProfile.Activities.AddRange(activities);
             _context.SaveChanges();
 
-            return "done";
+            return $"{activities.Count} synced.";
         }
 
         private async Task<User> GetUserByIdAsync(Guid? id)

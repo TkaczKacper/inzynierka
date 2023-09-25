@@ -18,6 +18,9 @@ namespace server.Models
         public List<RefreshToken> RefreshTokens { get; set; }
 
         public StravaProfile? StravaProfile { get; set; }
+        public int? HrMax { get; set; } 
+        public int? HrRest { get; set; }
+        public int? FTP { get; set; }
     }
     
 }
