@@ -65,13 +65,17 @@ namespace server.Services
             Console.WriteLine("Saving...");
             
             User user = GetUserById(userId);
-            user.StravaProfile.ActivitiesToFetch = activities;
+            List<long> syncedActivities = GetSyncedActivitiesId(userId);
+
+            List<long> activitiesToSync = activities.Where(id => !syncedActivities.Contains(id)).ToList();
+
+            user.StravaProfile.ActivitiesToFetch = activitiesToSync;
             _context.Update(user);
             _context.SaveChanges();
             Console.WriteLine($"profile: {user.StravaProfile.LastName}");
            
 
-            return $"Remaining activities to be fetch: {activities.Count}";
+            return $"Remaining activities to be fetch: {activitiesToSync.Count}";
         }
 
 
@@ -80,6 +84,18 @@ namespace server.Services
         {
             User? user = _context.Users.Include(u => u.StravaProfile).Include(u => u.StravaProfile.Activities).FirstOrDefault(u => u.ID == id);
             return user == null ? throw new KeyNotFoundException("User not found.") : user;
+        }
+
+        public List<long> GetSyncedActivitiesId(Guid? id)
+        {
+            List<long>? userActivitiesId = _context.Users
+                .Where(u => u.ID == id)
+                .Select(u => u.StravaProfile)
+                .SelectMany(s => s.Activities)
+                .Select(a => a.StravaActivityID)
+                .ToList();
+
+            return userActivitiesId;
         }
     }
 }
