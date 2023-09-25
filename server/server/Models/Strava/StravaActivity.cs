@@ -37,6 +37,13 @@ namespace server.Models.Strava
         public string? SummaryPolyline { get; set; }
         public string? DetailedPolyline { get; set; }
         public int Achievements { get; set; }
+        
+        
+        public double? Trimp { get; set; }
+        public double? NormalizedPower { get; set; }
+        public double? IntensityFactor { get; set; }
+        public double? VariabilityIndex { get; set; }
+        public double? Tss { get; set; }
 
         public List<int>? TimeStream { get; set; }
         public List<float>? Distance { get; set; }
