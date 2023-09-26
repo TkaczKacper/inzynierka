@@ -22,7 +22,11 @@ namespace server.Services
 
                 return detailsResponse;
             }
-            catch (Exception ex) { Console.WriteLine("Strava API limit reached. Try again later."); }
+            catch (Exception ex) 
+            { 
+                Console.WriteLine($"error: {ex.Message}");
+                Console.WriteLine("Strava API limit reached. Try again later."); 
+            }
             return null;
         }
 
@@ -35,7 +39,11 @@ namespace server.Services
 
                 return streamsResponse;
             }
-            catch (Exception ex) { Console.WriteLine("Strava API limit reached. Try again later."); }
+            catch (Exception ex) 
+            {
+                Console.WriteLine($"error: {ex.Message}");
+                Console.WriteLine("Strava API limit reached. Try again later."); 
+            }
             return null;
         }
     }

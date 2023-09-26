@@ -51,12 +51,12 @@ const page = () => {
    }, []);
 
    const get = async () => {
-      const data = await getActivityById(9835579973);
+      const data = await getActivityById(3607405747);
       console.log(data);
    };
 
    const getSterams = async () => {
-      const data = await getStreams(9795708116);
+      const data = await getStreams(3607405747);
       console.log(data);
    };
 
@@ -67,7 +67,7 @@ const page = () => {
    };
 
    const getAllActivities = async () => {
-      let page_number = 10;
+      let page_number = 1;
       while (true) {
          const activities_temp: any = await userActivities(page_number);
          if (!activities_temp.data[0]) break;

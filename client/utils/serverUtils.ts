@@ -57,12 +57,13 @@ export const getActivitiesDetails = async (activities: Activity[]) => {
          }
       );
       console.log(response);
-      const xd = axios.get(`${backend_url}/strava/process-data`, {
+      const xd = await axios.get(`${backend_url}/strava/process-data`, {
          withCredentials: true,
          headers: {
             Authorization: cookies.get("jwtToken"),
          },
       });
+      console.log(xd);
       return response;
    } catch (err) {
       console.log(err);

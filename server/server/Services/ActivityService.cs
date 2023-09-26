@@ -4,6 +4,7 @@ using server.Helpers;
 using server.Models;
 using server.Models.Strava;
 using static System.Net.Mime.MediaTypeNames;
+using server.Models.Responses.Strava.ActivityStreams;
 
 namespace server.Services
 {
@@ -35,7 +36,7 @@ namespace server.Services
             User user = await GetUserByIdAsync(userId);
             List<long> ids = user.StravaProfile.ActivitiesToFetch;
             List<long> activitiesAdded = new List<long>();
-            //List<long> ids = new List<long>() { 9903132501, 9795708116, 9873341988 };
+
             List<StravaActivity> activities = new List<StravaActivity>();
             Console.WriteLine(stravaClient.DefaultRequestHeaders);
             if (!stravaClient.DefaultRequestHeaders.Contains("Authorization"))
@@ -44,9 +45,11 @@ namespace server.Services
             }
             Console.WriteLine(stravaClient.DefaultRequestHeaders);
             
+
             foreach (long id in ids)
             {
                 var details = await _stravaApi.GetDetailsById(id, stravaClient);
+                if (details.Manual) continue;
                 var streams = await _stravaApi.GetStreamsById(id, stravaClient);
                 if (details is null || streams is null) break;
 
@@ -58,7 +61,6 @@ namespace server.Services
                 List<double> latStream = new List<double>();
                 List<double> lngStream = new List<double>();
                 List<StravaActivityLap> activityLaps = new List<StravaActivityLap>();
-
                 foreach (var stream in streams)
                 {
                     string type = stream.type;
@@ -164,7 +166,9 @@ namespace server.Services
                         Moving = movingStream,
                         Lat = latStream,
                         Lng = lngStream,
-                        Laps = activityLaps
+                        Laps = activityLaps,
+                        UserProfile = user.StravaProfile
+                        
                     };
                     if (details.Average_heartrate > 0 && user.HrMax is not null && user.HrRest is not null)
                     {
@@ -199,7 +203,7 @@ namespace server.Services
                 catch (Exception ex) { Console.WriteLine("ERROR" + ex.Message); }
             }
             
-            user.StravaProfile.Activities.AddRange(activities);
+            _context.StravaActivity.AddRange(activities);
             _context.SaveChanges();
 
             List<long> remainingActivities = ids.Where(id => !activitiesAdded.Contains(id)).ToList();
@@ -214,8 +218,6 @@ namespace server.Services
         {
             User? user = await _context.Users.
                 Include(u => u.StravaProfile).
-                ThenInclude(s => s.Activities).
-                ThenInclude(a => a.Laps).
                 FirstOrDefaultAsync(u => u.ID == id);
             return user == null ? throw new KeyNotFoundException("User not found.") : user;
         }

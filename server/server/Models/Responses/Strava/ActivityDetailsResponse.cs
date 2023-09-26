@@ -35,5 +35,6 @@ namespace server.Models.Responses.Strava
         public ActivityMap? Map { get; set; }
         public ActivityGear? Gear { get; set; }
         public int Achievement_count { get; set; }
+        public bool Manual { get; set; }
     }
 }

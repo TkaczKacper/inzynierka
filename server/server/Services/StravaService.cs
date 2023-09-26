@@ -65,7 +65,7 @@ namespace server.Services
             Console.WriteLine("Saving...");
             
             User user = GetUserById(userId);
-            List<long> syncedActivities = GetSyncedActivitiesId(userId);
+            List<long> syncedActivities = GetSyncedActivitiesId(user.StravaProfile.ID);
 
             List<long> activitiesToSync = activities.Where(id => !syncedActivities.Contains(id)).ToList();
 
@@ -82,17 +82,18 @@ namespace server.Services
         // helpers 
         public User GetUserById(Guid? id)
         {
-            User? user = _context.Users.Include(u => u.StravaProfile).Include(u => u.StravaProfile.Activities).FirstOrDefault(u => u.ID == id);
+            User? user = _context.Users
+                .Include(u => u.StravaProfile)
+                .FirstOrDefault(u => u.ID == id);
             return user == null ? throw new KeyNotFoundException("User not found.") : user;
         }
 
-        public List<long> GetSyncedActivitiesId(Guid? id)
+        public List<long> GetSyncedActivitiesId(long? id)
         {
-            List<long>? userActivitiesId = _context.Users
-                .Where(u => u.ID == id)
-                .Select(u => u.StravaProfile)
-                .SelectMany(s => s.Activities)
-                .Select(a => a.StravaActivityID)
+
+            List<long>? userActivitiesId = _context.StravaActivity
+                .Where(sa => sa.StravaProfileID == id)
+                .Select(sa => sa.StravaActivityID)
                 .ToList();
 
             return userActivitiesId;

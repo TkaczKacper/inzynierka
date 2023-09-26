@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace server.Models.Strava
@@ -45,6 +46,7 @@ namespace server.Models.Strava
         public double? VariabilityIndex { get; set; }
         public double? Tss { get; set; }
 
+        //streams
         public List<int>? TimeStream { get; set; }
         public List<float>? Distance { get; set; }
         public List<float>? Velocity { get; set; }
@@ -58,5 +60,9 @@ namespace server.Models.Strava
         public List<double>? Lat { get; set; } 
         public List<double>? Lng { get; set; }
 
+        //foreign key property
+        [ForeignKey("StravaProfile")]
+        public virtual long StravaProfileID { get; set; }
+        public virtual required StravaProfile UserProfile { get; set; }
     }
 }

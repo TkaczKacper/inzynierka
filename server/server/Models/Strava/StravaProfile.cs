@@ -1,5 +1,6 @@
 using server.Models.Strava;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace server.Models;
@@ -20,10 +21,8 @@ public class StravaProfile
     public string? City { get; set; }
     public float Weight { get; set; }
     public DateTime ProfileCreatedAt { get; set; }
-    public List<StravaActivity>? Activities { get; set; }
+    public virtual List<StravaActivity>? Activities { get; set; }
 
     [JsonIgnore]
     public List<long>? ActivitiesToFetch { get; set; }
-    [ConcurrencyCheck]
-    public Guid Version { get; set; }
 }

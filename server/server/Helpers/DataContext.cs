@@ -19,5 +19,6 @@ namespace server.Helpers
         public DbSet<User> Users { get; set; }
         public DbSet<StravaProfile> StravaProfile { get; set; }
         public DbSet<StravaActivity> StravaActivity { get; set; }
+        public DbSet<StravaActivityLap> StravaActivityLap { get; set; }
     }
 }

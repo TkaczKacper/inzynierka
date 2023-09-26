@@ -55,7 +55,7 @@ namespace server.Controllers
             string? stravaAccessToken = Request.Cookies["strava_access_token"];
 
             var process = await _activityService.GetActivityDetails(stravaAccessToken, userID);
-            return Ok("Done.");
+            return Ok($"Done. {process}");
         }
     }
 }
