@@ -13,6 +13,6 @@ namespace server.Models.Profile
 
         //foreign key property
         [ForeignKey("Users")]
-        public virtual Guid UserId { get; set; }
+        public virtual Guid UserID { get; set; }
     }
 }

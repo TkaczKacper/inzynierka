@@ -69,3 +69,23 @@ export const getActivitiesDetails = async (activities: Activity[]) => {
       console.log(err);
    }
 };
+
+export const updateFtp = async (ftp: number) => {
+   try {
+      const response = await axios.post(
+         `${backend_url}/strava/profile/power-update`,
+         {
+            FTP: ftp,
+         },
+         {
+            headers: {
+               Authorization: cookies.get("jwtToken"),
+            },
+         }
+      );
+      console.log(response);
+      return response;
+   } catch (error) {
+      console.log(error);
+   }
+};

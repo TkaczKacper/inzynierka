@@ -99,7 +99,7 @@ namespace server.Services
                 HrRest = profileHeartRate.HrRest,
                 HrMax = hrMax,
                 HrZones = userHrZones,
-                UserId = userId
+                UserID = userId
             };
             _context.ProfileHeartRate.Add(userHr);
             _context.SaveChanges();
@@ -114,7 +114,7 @@ namespace server.Services
             {
                 DateAdded = DateOnly.FromDateTime(DateTime.UtcNow),
                 FTP = ftp,
-                UserId = userId,
+                UserID = userId,
                 Zone1 = 0,
                 Zone2 = (int)Math.Floor(0.55 * ftp),
                 Zone3 = (int)Math.Floor(0.75 * ftp),
@@ -129,6 +129,7 @@ namespace server.Services
 
             return power;
         }
+
 
         // helpers 
         public User GetUserById(Guid? id)

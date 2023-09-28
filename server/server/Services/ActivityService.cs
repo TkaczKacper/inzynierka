@@ -182,7 +182,7 @@ namespace server.Services
                     if (details.Device_watts && intStreams.ContainsKey("watts"))
                     {
                         int? userFtp = user.UserPower?.LastOrDefault()?.FTP;
-                        int FTP = userFtp is not null ? 250 : (int)userFtp;
+                        int FTP = userFtp is null ? 250 : (int)userFtp;
                         List<double> avg = Enumerable.Range(0, intStreams["watts"]
                             .Count - 29).
                             Select(i => Math.Pow(intStreams["watts"].Skip(i).Take(30).Average(), 4)).ToList();
