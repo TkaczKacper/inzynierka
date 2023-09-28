@@ -1,10 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MathNet.Numerics.Statistics;
 using server.Helpers;
 using server.Models;
 using server.Models.Strava;
-using static System.Net.Mime.MediaTypeNames;
-using server.Models.Responses.Strava.ActivityStreams;
 
 namespace server.Services
 {
@@ -170,10 +167,10 @@ namespace server.Services
                         UserProfile = user.StravaProfile
                         
                     };
-                    if (details.Average_heartrate > 0 && user.UserHeartRate?.HrMax is not null && user.UserHeartRate.HrRest is not null)
+                    int? HrRest = user.UserHeartRate?.LastOrDefault()?.HrRest;
+                    int? HrMax = user.UserHeartRate?.LastOrDefault()?.HrMax;
+                    if (details.Average_heartrate > 0 && HrMax is not null && HrRest is not null)
                     {
-                        int? HrRest = user.UserHeartRate.HrRest;
-                        int? HrMax = user.UserHeartRate.HrMax;
                         double multiplier = user.StravaProfile.Sex == "M" ? 1.92 : 1.67;
                         double trimp = 
                             details.Moving_time / 60 
@@ -184,7 +181,8 @@ namespace server.Services
                     }
                     if (details.Device_watts && intStreams.ContainsKey("watts"))
                     {
-                        int FTP = user.UserPower?.FTP is not null ? (int)user.UserPower.FTP : 250;
+                        int? userFtp = user.UserPower?.LastOrDefault()?.FTP;
+                        int FTP = userFtp is not null ? 250 : (int)userFtp;
                         List<double> avg = Enumerable.Range(0, intStreams["watts"]
                             .Count - 29).
                             Select(i => Math.Pow(intStreams["watts"].Skip(i).Take(30).Average(), 4)).ToList();
@@ -220,23 +218,10 @@ namespace server.Services
         {
             User? user = await _context.Users.
                 Include(u => u.StravaProfile).
+                Include(u => u.UserHeartRate).
+                Include(u => u.UserPower).
                 FirstOrDefaultAsync(u => u.ID == id);
             return user == null ? throw new KeyNotFoundException("User not found.") : user;
-        }
-
-        public string SaveDb(StravaActivity activity, User user)
-        {
-            try
-            {
-                user.StravaProfile.Activities.Add(activity);
-                _context.SaveChanges();
-                return $"Activity {activity.StravaActivityID} saved";
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error" + ex.Message);
-                return "Something went wrong";
-            }
         }
     }
 }

@@ -7,8 +7,9 @@
         public int Zone2 { get; set; }
         public int Zone3 { get; set; }
         public int Zone4 { get; set; }
-        public int Zone5a { get; set; }
-        public int Zone5b { get; set; }
-        public int Zone5c { get; set; }
+        public int? Zone5 { get; set; }
+        public int? Zone5a { get; set; }
+        public int? Zone5b { get; set; }
+        public int? Zone5c { get; set; }
     }
 }

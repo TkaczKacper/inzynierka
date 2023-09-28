@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using server.Helpers;
 using server.Models;
+using server.Models.Profile;
 using server.Models.Strava;
 
 namespace server.Services
@@ -10,6 +11,7 @@ namespace server.Services
     {
         StravaProfile ProfileUpdate(StravaProfile profileInfo, Guid? userId);
         Task<string> SaveActivitiesToFetch(List<long> activityIds, Guid? userId);
+        ProfileHeartRate ProfileHeartRateUpdate(int hrRest, int hrMax, Guid? userId);
     }
 
     public class StravaService : IStravaService
@@ -78,7 +80,31 @@ namespace server.Services
             return $"Remaining activities to be fetch: {activitiesToSync.Count}";
         }
 
+        public ProfileHeartRate ProfileHeartRateUpdate(int hrRest, int hrMax, Guid? id)
+        {
+            User? user = GetUserHr(id);
 
+            HrZones userHrZones = new HrZones
+            {
+                Zone1 = (int)Math.Round(0.5 * hrMax),
+                Zone2 = (int)Math.Round(0.6 * hrMax),
+                Zone3 = (int)Math.Round(0.7 * hrMax),
+                Zone4 = (int)Math.Round(0.8 * hrMax),
+                Zone5 = (int)Math.Round(0.9 * hrMax)
+            };
+
+            ProfileHeartRate userHr = new ProfileHeartRate
+            {
+                DateAdded = DateOnly.FromDateTime(DateTime.UtcNow),
+                HrRest = hrRest,
+                HrMax = hrMax,
+                HrZones = userHrZones
+            };
+
+            user.UserHeartRate.Add(userHr);
+
+            return userHr;
+        }
         // helpers 
         public User GetUserById(Guid? id)
         {
@@ -97,6 +123,20 @@ namespace server.Services
                 .ToList();
 
             return userActivitiesId;
+        }
+        public User GetUserHr(Guid? id)
+        {
+            User? user = _context.Users
+                .Include(u => u.UserHeartRate)
+                .FirstOrDefault(u => u.ID == id);
+            return user == null ? throw new KeyNotFoundException("User not found.") : user;
+        }
+        public User GetUserPower(Guid? id)
+        {
+            User? user = _context.Users
+                .Include(u => u.UserPower)
+                .FirstOrDefault(u => u.ID == id);
+            return user == null ? throw new KeyNotFoundException("User not found.") : user;
         }
     }
 }

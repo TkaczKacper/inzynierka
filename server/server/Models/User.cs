@@ -20,8 +20,8 @@ namespace server.Models
 
         public StravaProfile? StravaProfile { get; set; }
 
-        public ProfileHeartRate? UserHeartRate { get; set; }
-        public ProfilePower? UserPower { get; set; }
+        public List<ProfileHeartRate>? UserHeartRate { get; set; }
+        public List<ProfilePower>? UserPower { get; set; }
     }
     
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using server.Authorization;
 using server.Models;
+using server.Models.Profile;
 using server.Services;
 
 namespace server.Controllers
@@ -56,6 +57,15 @@ namespace server.Controllers
 
             var process = await _activityService.GetActivityDetails(stravaAccessToken, userID);
             return Ok($"Done. {process}");
+        }
+
+        [HttpPost("profile/hr-update")]
+        public IActionResult HrUpdate([FromBody] ProfileHeartRate heartRate)
+        {
+            var userID = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
+            var response = _stravaService.ProfileHeartRateUpdate((int)heartRate.HrRest, (int)heartRate.HrMax, userID);
+
+            return Ok(response);
         }
     }
 }
