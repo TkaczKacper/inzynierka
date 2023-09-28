@@ -11,7 +11,8 @@ namespace server.Services
     {
         StravaProfile ProfileUpdate(StravaProfile profileInfo, Guid? userId);
         Task<string> SaveActivitiesToFetch(List<long> activityIds, Guid? userId);
-        ProfileHeartRate ProfileHeartRateUpdate(int hrRest, int hrMax, Guid? userId);
+        ProfileHeartRate ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId);
+        ProfilePower ProfilePowerUpdate(ProfilePower profilePower, Guid userId);
     }
 
     public class StravaService : IStravaService
@@ -80,10 +81,9 @@ namespace server.Services
             return $"Remaining activities to be fetch: {activitiesToSync.Count}";
         }
 
-        public ProfileHeartRate ProfileHeartRateUpdate(int hrRest, int hrMax, Guid? id)
+        public ProfileHeartRate ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId)
         {
-            User? user = GetUserHr(id);
-
+            int hrMax = (int)profileHeartRate.HrMax;
             HrZones userHrZones = new HrZones
             {
                 Zone1 = (int)Math.Round(0.5 * hrMax),
@@ -96,15 +96,40 @@ namespace server.Services
             ProfileHeartRate userHr = new ProfileHeartRate
             {
                 DateAdded = DateOnly.FromDateTime(DateTime.UtcNow),
-                HrRest = hrRest,
+                HrRest = profileHeartRate.HrRest,
                 HrMax = hrMax,
-                HrZones = userHrZones
+                HrZones = userHrZones,
+                UserId = userId
             };
-
-            user.UserHeartRate.Add(userHr);
+            _context.ProfileHeartRate.Add(userHr);
+            _context.SaveChanges();
 
             return userHr;
         }
+        
+        public ProfilePower ProfilePowerUpdate(ProfilePower profilePower, Guid userId)
+        {
+            int ftp = (int)profilePower.FTP;
+            ProfilePower power = new ProfilePower
+            {
+                DateAdded = DateOnly.FromDateTime(DateTime.UtcNow),
+                FTP = ftp,
+                UserId = userId,
+                Zone1 = 0,
+                Zone2 = (int)Math.Floor(0.55 * ftp),
+                Zone3 = (int)Math.Floor(0.75 * ftp),
+                Zone4 = (int)Math.Floor(0.90 * ftp),
+                Zone5 = (int)Math.Floor(1.05 * ftp),
+                Zone6 = (int)Math.Floor(1.20 * ftp),
+                Zone7 = (int)Math.Floor(1.50 * ftp)
+            };
+
+            _context.ProfilePower.Add(power);
+            _context.SaveChanges();
+
+            return power;
+        }
+
         // helpers 
         public User GetUserById(Guid? id)
         {
@@ -123,20 +148,6 @@ namespace server.Services
                 .ToList();
 
             return userActivitiesId;
-        }
-        public User GetUserHr(Guid? id)
-        {
-            User? user = _context.Users
-                .Include(u => u.UserHeartRate)
-                .FirstOrDefault(u => u.ID == id);
-            return user == null ? throw new KeyNotFoundException("User not found.") : user;
-        }
-        public User GetUserPower(Guid? id)
-        {
-            User? user = _context.Users
-                .Include(u => u.UserPower)
-                .FirstOrDefault(u => u.ID == id);
-            return user == null ? throw new KeyNotFoundException("User not found.") : user;
         }
     }
 }

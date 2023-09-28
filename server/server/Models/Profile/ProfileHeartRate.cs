@@ -1,4 +1,6 @@
-﻿namespace server.Models.Profile
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace server.Models.Profile
 {
     public class ProfileHeartRate
     {
@@ -8,5 +10,9 @@
         public int? HrMax { get; set; }
         public int? LTHr { get; set; }
         public HrZones? HrZones { get; set; }
+
+        //foreign key property
+        [ForeignKey("Users")]
+        public virtual Guid UserId { get; set; }
     }
 }

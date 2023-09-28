@@ -1,4 +1,6 @@
-﻿namespace server.Models.Profile
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace server.Models.Profile
 {
     public class ProfilePower
     {
@@ -12,5 +14,9 @@
         public int? Zone5 { get; set; }
         public int? Zone6 { get; set; }
         public int? Zone7 { get; set; }
+
+        //foreign key property
+        [ForeignKey("Users")]
+        public virtual Guid UserId { get; set; }
     }
 }

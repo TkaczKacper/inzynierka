@@ -55,7 +55,13 @@ namespace server.Controllers
             Guid? userID = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
             string? stravaAccessToken = Request.Cookies["strava_access_token"];
 
+            if (stravaAccessToken is null)
+            {
+                return BadRequest("Strava access token does not provided. Reload page or connect strava account and try again.");
+            }
+
             var process = await _activityService.GetActivityDetails(stravaAccessToken, userID);
+            
             return Ok($"Done. {process}");
         }
 
@@ -63,7 +69,16 @@ namespace server.Controllers
         public IActionResult HrUpdate([FromBody] ProfileHeartRate heartRate)
         {
             var userID = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
-            var response = _stravaService.ProfileHeartRateUpdate((int)heartRate.HrRest, (int)heartRate.HrMax, userID);
+            var response = _stravaService.ProfileHeartRateUpdate(heartRate, (Guid)userID);
+
+            return Ok(response);
+        }
+        [HttpPost("profile/power-update")]
+        public IActionResult PowerUpdate([FromBody] ProfilePower power)
+        {
+            var userID = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
+
+            var response = _stravaService.ProfilePowerUpdate(power, (Guid)userID);
 
             return Ok(response);
         }
