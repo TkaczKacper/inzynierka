@@ -41,7 +41,9 @@ namespace server.Services
                 stravaClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accesstoken}");
             }
             Console.WriteLine(stravaClient.DefaultRequestHeaders);
-            
+            int? HrRest = user.UserHeartRate?.LastOrDefault()?.HrRest;
+            int? HrMax = user.UserHeartRate?.LastOrDefault()?.HrMax;
+            int? userFtp = user.UserPower?.LastOrDefault()?.FTP;
 
             foreach (long id in ids)
             {
@@ -167,21 +169,18 @@ namespace server.Services
                         UserProfile = user.StravaProfile
                         
                     };
-                    int? HrRest = user.UserHeartRate?.LastOrDefault()?.HrRest;
-                    int? HrMax = user.UserHeartRate?.LastOrDefault()?.HrMax;
                     if (details.Average_heartrate > 0 && HrMax is not null && HrRest is not null)
                     {
                         double multiplier = user.StravaProfile.Sex == "M" ? 1.92 : 1.67;
                         double trimp = 
                             details.Moving_time / 60 
                             * (details.Average_heartrate - (int)HrRest) / ((int)HrMax - (int)HrRest) 
-                            * 64 
+                            * 0.64 
                             * Math.Exp(multiplier * (details.Average_heartrate - (int)HrRest) / ((int)HrMax - (int)HrRest));
                         activity.Trimp = trimp;
                     }
                     if (details.Device_watts && intStreams.ContainsKey("watts"))
                     {
-                        int? userFtp = user.UserPower?.LastOrDefault()?.FTP;
                         int FTP = userFtp is null ? 250 : (int)userFtp;
                         List<double> avg = Enumerable.Range(0, intStreams["watts"]
                             .Count - 29).
