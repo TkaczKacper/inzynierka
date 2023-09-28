@@ -1,11 +1,6 @@
 "use client";
 import { Formik, Form, Field } from "formik";
 
-import Cookies from "universal-cookie";
-import { useRouter } from "next/navigation";
-import { jwtdecoded } from "@/app/login/loginForm";
-import jwtDecode from "jwt-decode";
-import axios from "axios";
 import { updateFtp } from "@/utils/serverUtils";
 
 interface FormValues {

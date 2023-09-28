@@ -3,12 +3,17 @@ import { getActivitiesDetails } from "@/utils/serverUtils";
 import {
    cleanUpAuthToken,
    getActivityById,
+   getAuthenticatedAthlete,
    getStreams,
    getToken,
    getUserActivites,
+   deauthorize,
 } from "@/utils/stravaUtils";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+import Cookies from "universal-cookie";
+const cookies = new Cookies();
 
 const client_id = process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID;
 const redirect_uri = "http://localhost:3000/profile/connections";
@@ -22,11 +27,19 @@ export type Activity = {
    distance: number;
 };
 
+type Athlete = {
+   id: number;
+   firstname: string;
+   lastname: string;
+};
+
 const page = () => {
    const router = useRouter();
    const [activities, setActivities] = useState<Activity[]>([]);
+   const [connectedAthlete, setConnectedAthlete] = useState<Athlete>();
    const [sendVisibility, setSendVisibility] = useState<boolean>(false);
 
+   console.log(connectedAthlete);
    const stravaAuth = () => {
       router.push(
          `https://www.strava.com/oauth/authorize?client_id=${client_id}&response_type=code&redirect_uri=${redirect_uri}&approval_prompt=force&scope=${scope}`
@@ -40,6 +53,11 @@ const page = () => {
             if (stravaAuthToken) {
                const tokens = await getToken(stravaAuthToken);
                console.log(tokens);
+               setConnectedAthlete({
+                  id: tokens.athlete.id,
+                  firstname: tokens.athlete.firstname,
+                  lastname: tokens.athlete.lastname,
+               });
             }
 
             router.push(redirect_uri);
@@ -48,6 +66,18 @@ const page = () => {
          }
       };
       authenticate();
+   }, []);
+
+   useEffect(() => {
+      const getConnectedProfile = async () => {
+         const response = await getAuthenticatedAthlete();
+         setConnectedAthlete({
+            id: response?.data.id,
+            firstname: response?.data.firstname,
+            lastname: response?.data.lastname,
+         });
+      };
+      getConnectedProfile();
    }, []);
 
    const get = async () => {
@@ -95,35 +125,58 @@ const page = () => {
       console.log(response);
    };
 
+   const disconnect = async () => {
+      const response = await deauthorize(
+         cookies.get("strava_access_token")?.value
+      );
+      setConnectedAthlete(undefined);
+   };
+
    return (
       <div>
          <h1>Connections</h1>
-         <div>
-            Strava <button onClick={stravaAuth}>connect</button>
-         </div>
-         <div>
-            <button onClick={() => getAllActivities()}>Import</button>rides from
-            Strava
-         </div>
-         <button onClick={get}>get1</button>
-         <button onClick={getSterams}>getSterams</button>
-         <div>
-            {sendVisibility ? (
-               <button onClick={importActivities}>import</button>
-            ) : null}
+         {connectedAthlete?.id != undefined ? (
             <div>
-               {activities.map((activity, index) => {
-                  return (
-                     <div key={index}>
-                        <h2>
-                           {index + 1}. id: {activity.id}, title:{" "}
-                           {activity.title}
-                        </h2>
-                     </div>
-                  );
-               })}
+               <h3>
+                  Connected as{" "}
+                  <a
+                     href={`https://www.strava.com/athletes/${connectedAthlete.id}`}
+                  >
+                     {connectedAthlete.firstname +
+                        " " +
+                        connectedAthlete.lastname}
+                  </a>
+               </h3>
+               <button onClick={disconnect}>Disconnect</button>
+               <div>
+                  <button onClick={() => getAllActivities()}>Import</button>
+                  rides from Strava
+               </div>
+               <button onClick={get}>get1</button>
+               <button onClick={getSterams}>getSterams</button>
+               <div>
+                  {sendVisibility ? (
+                     <button onClick={importActivities}>import</button>
+                  ) : null}
+                  <div>
+                     {activities.map((activity, index) => {
+                        return (
+                           <div key={index}>
+                              <h2>
+                                 {index + 1}. id: {activity.id}, title:{" "}
+                                 {activity.title}
+                              </h2>
+                           </div>
+                        );
+                     })}
+                  </div>
+               </div>
             </div>
-         </div>
+         ) : (
+            <div>
+               Strava <button onClick={stravaAuth}>connect</button>
+            </div>
+         )}
       </div>
    );
 };

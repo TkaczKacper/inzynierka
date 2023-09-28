@@ -53,6 +53,39 @@ export const refreshToken = async (token: string | undefined) => {
    }
 };
 
+export const deauthorize = async (token: string) => {
+   try {
+      const response = await axios.post(
+         `${strava_url}/oauth/deauthorize`,
+         {
+            token,
+         },
+         {
+            headers: {
+               Authorization: `Bearer ${cookies.get("strava_access_token")}`,
+            },
+         }
+      );
+      if (response.status === 200) {
+         cookies.remove("strava_access_token");
+         cookies.remove("strava_refresh_token");
+      }
+      console.log("Disconnected.");
+      return response;
+   } catch (error) {}
+};
+
+export const getAuthenticatedAthlete = async () => {
+   try {
+      const response = await axios.get(`${strava_url}/athlete`, {
+         headers: {
+            Authorization: `Bearer ${cookies.get("strava_access_token")}`,
+         },
+      });
+      return response;
+   } catch (error) {}
+};
+
 export const getUserActivites = async (page: number) => {
    try {
       const response = await axios.get(

@@ -4,11 +4,15 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./navbar.module.css";
 import Cookies from "universal-cookie";
+import jwtDecode from "jwt-decode";
+import { jwtdecoded } from "./login/loginForm";
 
 const cookies = new Cookies();
 
 const navbar = () => {
    const router = useRouter();
+   const userId: jwtdecoded = jwtDecode(cookies.get("jwtToken"));
+   console.log(userId);
 
    const logoutHandler = async () => {
       router.push("/login");
@@ -35,7 +39,7 @@ const navbar = () => {
 
    return (
       <div className={styles.navbar}>
-         <div onClick={() => router.push("/profile")}>profile</div>
+         <div onClick={() => router.push(`/profile/${userId.id}`)}>profile</div>
          <button onClick={logoutHandler}>Logout</button>
       </div>
    );
