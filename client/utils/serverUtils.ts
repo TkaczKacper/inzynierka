@@ -89,3 +89,24 @@ export const updateFtp = async (ftp: number) => {
       console.log(error);
    }
 };
+
+export const updateHr = async (hrRest: number, hrMax: number) => {
+   try {
+      const response = await axios.post(
+         `${backend_url}/strava/profile/hr-update`,
+         {
+            HrRest: hrRest,
+            HrMax: hrMax,
+         },
+         {
+            headers: {
+               Authorization: cookies.get("jwtToken"),
+            },
+         }
+      );
+      console.log(response);
+      return response;
+   } catch (error) {
+      console.log(error);
+   }
+};
