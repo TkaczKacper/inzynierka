@@ -170,19 +170,21 @@ namespace server.Services
                         UserProfile = user.StravaProfile
                         
                     };
-                    if (details.Average_heartrate > 0 && user.HrMax is not null && user.HrRest is not null)
+                    if (details.Average_heartrate > 0 && user.UserHeartRate?.HrMax is not null && user.UserHeartRate.HrRest is not null)
                     {
+                        int? HrRest = user.UserHeartRate.HrRest;
+                        int? HrMax = user.UserHeartRate.HrMax;
                         double multiplier = user.StravaProfile.Sex == "M" ? 1.92 : 1.67;
                         double trimp = 
                             details.Moving_time / 60 
-                            * (details.Average_heartrate - (int)user.HrRest) / ((int)user.HrMax - (int)user.HrRest) 
+                            * (details.Average_heartrate - (int)HrRest) / ((int)HrMax - (int)HrRest) 
                             * 64 
-                            * Math.Exp(multiplier * (details.Average_heartrate - (int)user.HrRest) / ((int)user.HrMax - (int)user.HrRest));
+                            * Math.Exp(multiplier * (details.Average_heartrate - (int)HrRest) / ((int)HrMax - (int)HrRest));
                         activity.Trimp = trimp;
                     }
                     if (details.Device_watts && intStreams.ContainsKey("watts"))
                     {
-                        int FTP = user.FTP is not null ? (int)user.FTP : 250;
+                        int FTP = user.UserPower?.FTP is not null ? (int)user.UserPower.FTP : 250;
                         List<double> avg = Enumerable.Range(0, intStreams["watts"]
                             .Count - 29).
                             Select(i => Math.Pow(intStreams["watts"].Skip(i).Take(30).Average(), 4)).ToList();
