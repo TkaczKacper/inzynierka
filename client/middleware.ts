@@ -19,7 +19,10 @@ type jwtdecoded = {
 export async function middleware(request: NextRequest) {
    console.log("reload");
    const isValid = TokenValidation(request.cookies.get("jwtToken"));
-   if (!request.cookies.get("strava_access_token")) {
+   if (
+      !request.cookies.get("strava_access_token") &&
+      request.cookies.get("strava_refresh_token")
+   ) {
       var xd = await refreshToken(
          request.cookies.get("strava_refresh_token")?.value
       );

@@ -11,7 +11,10 @@ const cookies = new Cookies();
 
 const navbar = () => {
    const router = useRouter();
-   const userId: jwtdecoded = jwtDecode(cookies.get("jwtToken"));
+   const userId: jwtdecoded = cookies.get("jwtToken")
+      ? jwtDecode(cookies.get("jwtToken"))
+      : { id: "", exp: 0, iat: 0, nbf: 0 };
+
    console.log(userId);
 
    const logoutHandler = async () => {
