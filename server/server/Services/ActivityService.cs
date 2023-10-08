@@ -49,7 +49,11 @@ namespace server.Services
             foreach (long id in ids)
             {
                 var details = await _stravaApi.GetDetailsById(id, stravaClient);
-                if (details.Manual) continue;
+                if (details.Manual)
+                {
+                    activitiesAdded.Add(id);
+                    continue;
+                };
                 var streams = await _stravaApi.GetStreamsById(id, stravaClient);
                 if (details is null || streams is null) break;
 
