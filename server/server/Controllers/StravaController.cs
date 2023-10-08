@@ -26,11 +26,11 @@ namespace server.Controllers
         }
 
         [HttpPost("profile/update")]
-        public IActionResult ProfileUpdate([FromBody] StravaProfile stravaProfile)
+        public async Task<IActionResult> ProfileUpdate([FromBody] StravaProfile stravaProfile)
         {
             var userID = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
-
-            var response = _stravaService.ProfileUpdate(stravaProfile, userID);
+            string? stravaAccessToken = Request.Cookies["strava_access_token"];
+            var response = await _stravaService.ProfileUpdate(stravaProfile, userID, stravaAccessToken);
             
             return Ok(response);
         }

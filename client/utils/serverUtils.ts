@@ -28,6 +28,7 @@ export const updateProfileInfo = async (
             ProfileCreatedAt: new Date(profile.created_at),
          },
          {
+             withCredentials: true,
             headers: {
                Authorization: cookies.get("jwtToken"),
             },

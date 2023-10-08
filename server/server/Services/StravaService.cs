@@ -3,13 +3,14 @@ using Microsoft.Extensions.Options;
 using server.Helpers;
 using server.Models;
 using server.Models.Profile;
+using server.Models.Responses.Strava.AthleteStats.cs;
 using server.Models.Strava;
 
 namespace server.Services
 {
     public interface IStravaService
     {
-        StravaProfile ProfileUpdate(StravaProfile profileInfo, Guid? userId);
+        Task<StravaProfile> ProfileUpdate(StravaProfile profileInfo, Guid? userId, string? accesstoken);
         Task<string> SaveActivitiesToFetch(List<long> activityIds, Guid? userId);
         ProfileHeartRate ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId);
         ProfilePower ProfilePowerUpdate(ProfilePower profilePower, Guid userId);
@@ -30,12 +31,22 @@ namespace server.Services
             _context = context;
             _stravaApi = stravaApi;
         }
+        private static HttpClient stravaClient = new()
+        {
+            BaseAddress = new Uri("https://www.strava.com/api/v3/"),
+        };
 
-        public StravaProfile ProfileUpdate(StravaProfile profile, Guid? id)
+        public async Task<StravaProfile> ProfileUpdate(StravaProfile profile, Guid? id, string? accesstoken)
         {
             Console.WriteLine("profile update");
             User? user = GetUserById(id);
+            if (!stravaClient.DefaultRequestHeaders.Contains("Authorization"))
+            {
+                stravaClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accesstoken}");
+            }
 
+            var athleteStats = await _stravaApi.GetAthleteStats(profile.ProfileID, stravaClient);           
+            
             StravaProfile profileDetails = new StravaProfile
             {
                 StravaRefreshToken = profile.StravaRefreshToken,
@@ -50,11 +61,14 @@ namespace server.Services
                 State = profile.State,
                 City = profile.City,
                 Weight = profile.Weight,
-                ProfileCreatedAt = profile.ProfileCreatedAt
+                ProfileCreatedAt = profile.ProfileCreatedAt,
+                NeedUpdate = false,
             };
-
+            
+            
+    
             Console.WriteLine(profileDetails);
-
+            user.StravaProfile.AthleteStats = athleteStats;
             user.StravaProfile = profileDetails;
 
             _context.Update(user);
@@ -136,6 +150,7 @@ namespace server.Services
         {
             User? user = _context.Users
                 .Include(u => u.StravaProfile)
+                .ThenInclude(s => s.AthleteStats)
                 .FirstOrDefault(u => u.ID == id);
             return user == null ? throw new KeyNotFoundException("User not found.") : user;
         }
