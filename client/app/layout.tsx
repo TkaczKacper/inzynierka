@@ -5,7 +5,7 @@ import { Inter } from "next/font/google";
 
 const inter = Inter({ subsets: ["latin"] });
 
-const Navbar = dynamic(() => import("./navbar"), { ssr: false });
+const Navbar = dynamic(() => import("@/app/(navbar)/navbar"), { ssr: false });
 
 export const metadata: Metadata = {
    title: "Cycling Analytics",
