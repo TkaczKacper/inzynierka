@@ -7,89 +7,91 @@ import jwt_decode from "jwt-decode";
 import Cookies from "universal-cookie";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import {logged} from "@/app/(navbar)/navbar";
+import { useUserContext } from "@/contexts/UserContextProvider";
 
 interface FormValues {
-   username: string;
-   password: string;
+  username: string;
+  password: string;
 }
 
 export interface jwtdecoded {
-   id: string;
-   exp: number;
-   iat: number;
-   nbf: number;
+  id: string;
+  exp: number;
+  iat: number;
+  nbf: number;
 }
 
 const cookies = new Cookies();
 const jwt = cookies.get("jwtToken");
 
 const passwordRule =
-   /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!-\/:-@[-\`]).{8,32}$/;
+  /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!-\/:-@[-\`]).{8,32}$/;
 const LoginSchema = Yup.object().shape({
-   username: Yup.string()
-      .min(6, "Username too short.")
-      .max(32, "Username too long.")
-      .required("Field required."),
-   password: Yup.string()
-      .min(8, "Password too short.")
-      .max(32, "Password too long.")
-      .matches(passwordRule, "Weak Password.")
-      .required("Field required."),
+  username: Yup.string()
+    .min(6, "Username too short.")
+    .max(32, "Username too long.")
+    .required("Field required."),
+  password: Yup.string()
+    .min(8, "Password too short.")
+    .max(32, "Password too long.")
+    .matches(passwordRule, "Weak Password.")
+    .required("Field required."),
 });
 
 export const LoginForm: React.FC<{}> = () => {
-   const initialValues: FormValues = { username: "", password: "" };
-   const submitHandler = async (values: FormValues) => {
-      await fetch("http://localhost:5264/api/auth/login", {
-         method: "POST",
-         credentials: "include",
-         headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-         },
-         body: JSON.stringify(values),
-      })
-         .then((res) => res.json())
-         .then((data) => {
-            console.log(data);
-            var decoded: jwtdecoded = jwt_decode(data.jwtToken);
-            var ttl = new Date(decoded.exp * 1000);
-            cookies.set("jwtToken", data.jwtToken, { path: "/", expires: ttl });
-            router.push(`/profile/${decoded.id}`);
-         });
-      console.log(JSON.stringify(values));
-   };
+  const { userId, setUserId } = useUserContext();
+  const initialValues: FormValues = { username: "", password: "" };
+  const submitHandler = async (values: FormValues) => {
+    await fetch("http://localhost:5264/api/auth/login", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(values),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        var decoded: jwtdecoded = jwt_decode(data.jwtToken);
+        var ttl = new Date(decoded.exp * 1000);
+        cookies.set("jwtToken", data.jwtToken, { path: "/", expires: ttl });
+        setUserId(decoded.id);
+        router.push(`/profile/${decoded.id}`);
+      });
+    console.log(JSON.stringify(values));
+  };
 
-   const router = useRouter();
+  const router = useRouter();
 
-   useEffect(() => {
-      if (jwt) router.push("/profile");
-   }, []);
+  useEffect(() => {
+    if (jwt) router.push("/profile");
+  }, []);
 
-   return (
-      <Formik
-         initialValues={initialValues}
-         validationSchema={LoginSchema}
-         onSubmit={(values, actions) => {
-            console.log(values);
-            actions.setSubmitting(false);
-            submitHandler(values);
-         }}
-      >
-         {({ errors, touched }: any) => (
-            <Form>
-               <Field name="username" />
-               {errors.username && touched.username ? (
-                  <div>{errors.username}</div>
-               ) : null}
-               <Field name="password" type="password" />
-               {errors.password && touched.password ? (
-                  <div>{errors.password}</div>
-               ) : null}
-               <button type="submit">Login</button>
-            </Form>
-         )}
-      </Formik>
-   );
+  return (
+    <Formik
+      initialValues={initialValues}
+      validationSchema={LoginSchema}
+      onSubmit={(values, actions) => {
+        console.log(values);
+        actions.setSubmitting(false);
+        submitHandler(values);
+      }}
+    >
+      {({ errors, touched }: any) => (
+        <Form>
+          <Field name="username" />
+          {errors.username && touched.username ? (
+            <div>{errors.username}</div>
+          ) : null}
+          <Field name="password" type="password" />
+          {errors.password && touched.password ? (
+            <div>{errors.password}</div>
+          ) : null}
+          <button type="submit">Login</button>
+        </Form>
+      )}
+    </Formik>
+  );
 };
