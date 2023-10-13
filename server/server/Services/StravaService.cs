@@ -14,6 +14,8 @@ namespace server.Services
         Task<string> SaveActivitiesToFetch(List<long> activityIds, Guid? userId);
         ProfileHeartRate ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId);
         ProfilePower ProfilePowerUpdate(ProfilePower profilePower, Guid userId);
+        List<StravaActivity> GetUserActivities(Guid? userId);
+        StravaProfile GetProfileData(Guid? userId);
     }
 
     public class StravaService : IStravaService
@@ -144,7 +146,17 @@ namespace server.Services
             return power;
         }
 
+        public StravaProfile GetProfileData(Guid? userId)
+        {
+            StravaProfile? profile = GetUserById(userId).StravaProfile;
 
+            return profile;
+        }
+        public List<StravaActivity> GetUserActivities(Guid? userId)
+        {
+            
+            return new List<StravaActivity>();
+        }
         // helpers 
         public User GetUserById(Guid? id)
         {

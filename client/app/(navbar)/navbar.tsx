@@ -42,8 +42,8 @@ const navbar = () => {
         </>
       ) : (
         <>
-          <Link href={"/profile/connections"}>Connections</Link>
           <Link href={`/profile/${userId}`}>Profile</Link>
+          <Link href={"/profile/connections"}>Connections</Link>
           <button onClick={logoutHandler}>Logout</button>
         </>
       )}

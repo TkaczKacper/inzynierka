@@ -82,5 +82,14 @@ namespace server.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet("get-athlete-stats")]
+        public IActionResult GetUserActivities()
+        {
+            var userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
+            var response =  _stravaService.GetProfileData(userId);
+            
+            return Ok(response);
+        }
     }
 }
