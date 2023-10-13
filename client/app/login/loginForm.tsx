@@ -6,8 +6,11 @@ import * as Yup from "yup";
 import jwt_decode from "jwt-decode";
 import Cookies from "universal-cookie";
 import { useRouter } from "next/navigation";
+import { setCookie } from "cookies-next";
 import { useEffect } from "react";
 import { useUserContext } from "@/contexts/UserContextProvider";
+import axios, { Axios } from "axios";
+import jwtDecode from "jwt-decode";
 
 interface FormValues {
   username: string;
@@ -23,6 +26,7 @@ export interface jwtdecoded {
 
 const cookies = new Cookies();
 const jwt = cookies.get("jwtToken");
+const backend_url = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 const passwordRule =
   /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!-\/:-@[-\`]).{8,32}$/;
@@ -38,32 +42,21 @@ const LoginSchema = Yup.object().shape({
     .required("Field required."),
 });
 
-export const LoginForm: React.FC<{}> = () => {
+export const LoginForm = () => {
+  const router = useRouter();
   const { userId, setUserId } = useUserContext();
   const initialValues: FormValues = { username: "", password: "" };
   const submitHandler = async (values: FormValues) => {
-    await fetch("http://localhost:5264/api/auth/login", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(values),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        var decoded: jwtdecoded = jwt_decode(data.jwtToken);
-        var ttl = new Date(decoded.exp * 1000);
-        cookies.set("jwtToken", data.jwtToken, { path: "/", expires: ttl });
-        setUserId(decoded.id);
-        router.push(`/profile/${decoded.id}`);
-      });
-    console.log(JSON.stringify(values));
+    const res = await axios.post(`${backend_url}/api/auth/login`, values, {
+      withCredentials: true,
+    });
+    console.log(res.data);
+    var decoded: jwtdecoded = jwtDecode(res.data.jwtToken);
+    var ttl = new Date(decoded.exp * 1000);
+    setCookie("jwtToken", res.data.jwtToken, { path: "/", expires: ttl });
+    setUserId(decoded.id);
+    router.push(`/profile/${decoded.id}`);
   };
-
-  const router = useRouter();
 
   useEffect(() => {
     if (jwt) router.push("/profile");
