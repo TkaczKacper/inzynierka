@@ -25,7 +25,10 @@ namespace server.Controllers
         {
             var response = _userService.Authenticate(userLogin, ipAddress());
             setTokenCookie(response.RefreshToken);
-
+            try
+            {
+                Response.Cookies.Append("strava_refresh_token", response.StravaRefreshToken);
+            } catch(Exception ex){}
             return Ok(response);
         }
 
@@ -52,7 +55,8 @@ namespace server.Controllers
             _userService.RevokeToken(token, ipAddress());
             Response.Cookies.Delete("refreshToken");
             Response.Cookies.Delete("jwtToken");
-
+            Response.Cookies.Delete("strava_access_token");
+            Response.Cookies.Delete("strava_refresh_token");
             return Ok(new { message = "Logged out."});
         }
         [AllowAnonymous]

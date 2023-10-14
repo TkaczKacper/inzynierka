@@ -11,7 +11,7 @@ namespace server.Services
 {
     public interface IStravaService
     {
-        Task<StravaProfile> ProfileUpdate(StravaProfile profileInfo, Guid? userId, string? accesstoken);
+        Task<StravaProfile> ProfileUpdate(StravaProfile profileInfo, Guid? userId, string? accesstoken, string? refreshtoken);
         Task<string> SaveActivitiesToFetch(List<long> activityIds, Guid? userId);
         ProfileHeartRate ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId);
         ProfilePower ProfilePowerUpdate(ProfilePower profilePower, Guid userId);
@@ -39,7 +39,7 @@ namespace server.Services
             BaseAddress = new Uri("https://www.strava.com/api/v3/"),
         };
 
-        public async Task<StravaProfile> ProfileUpdate(StravaProfile profile, Guid? id, string? accesstoken)
+        public async Task<StravaProfile> ProfileUpdate(StravaProfile profile, Guid? id, string? accesstoken, string? refreshtoken)
         {
             Console.WriteLine("profile update");
             User? user = GetUserById(id);
@@ -52,7 +52,7 @@ namespace server.Services
             
             StravaProfile profileDetails = new StravaProfile
             {
-                StravaRefreshToken = profile.StravaRefreshToken,
+                StravaRefreshToken = refreshtoken, 
                 ProfileID = profile.ProfileID,
                 Username = profile.Username,
                 FirstName = profile.FirstName,
@@ -150,8 +150,9 @@ namespace server.Services
         public AthleteData GetProfileData(Guid? userId)
         {
             StravaProfile? profile = GetUserById(userId).StravaProfile;
+            if (profile is null) return null;
             StravaProfileStats? stats = GetAthleteStats(profile.AthleteStatsId);
-
+            
             AthleteData response = new AthleteData
             {
                 AthleteStats = stats,

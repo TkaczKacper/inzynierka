@@ -30,7 +30,8 @@ namespace server.Controllers
         {
             var userID = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
             string? stravaAccessToken = Request.Cookies["strava_access_token"];
-            var response = await _stravaService.ProfileUpdate(stravaProfile, userID, stravaAccessToken);
+            string? stravaRefreshToken = Request.Cookies["strava_refresh_token"];
+            var response = await _stravaService.ProfileUpdate(stravaProfile, userID, stravaAccessToken, stravaRefreshToken);
             
             return Ok(response);
         }
@@ -87,7 +88,7 @@ namespace server.Controllers
         [HttpGet("get-athlete-stats")]
         public IActionResult GetUserActivities()
         {
-            var userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
+            Guid? userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
             var response =  _stravaService.GetProfileData(userId);
             
             return Ok(response);

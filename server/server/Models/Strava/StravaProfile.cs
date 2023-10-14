@@ -11,13 +11,11 @@ public class StravaProfile
 {
     [JsonIgnore]
     public long ID { get; set; }
-    
     [JsonIgnore]
     public string? StravaRefreshToken { get; set; }
-    
+   
     public long ProfileID { get; set; }
     
-    [JsonIgnore]
     public string? Username { get; set; }
     
     public string? FirstName { get; set; }

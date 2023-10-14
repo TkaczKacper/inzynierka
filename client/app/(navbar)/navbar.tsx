@@ -13,7 +13,6 @@ const navbar = () => {
   const { userId, setUserId } = useUserContext();
 
   const logoutHandler = async () => {
-    router.push("/login");
     const response = await axios.post(
       `${backend_url}/api/auth/logout`,
       {},

@@ -1,4 +1,5 @@
-﻿using System.Reflection.Metadata;
+﻿using System.ComponentModel;
+using System.Reflection.Metadata;
 using System.Text.Json.Serialization;
 
 namespace server.Models.Authenticate
@@ -13,8 +14,8 @@ namespace server.Models.Authenticate
 
         [JsonIgnore]
         public string RefreshToken { get; set; }
-
-        public AuthResponse(User user, string jwtToken, string refreshToken)
+        public string? StravaRefreshToken { get; set; }
+        public AuthResponse(User user, string jwtToken, string refreshToken, string? stravaRefreshToken) 
         {
             ID = user.ID;
             Username = user.Username;
@@ -22,6 +23,7 @@ namespace server.Models.Authenticate
             RegisterDate = user.RegisterDate;
             JwtToken = jwtToken;
             RefreshToken = refreshToken;
+            StravaRefreshToken = stravaRefreshToken;
         }
     }
 }

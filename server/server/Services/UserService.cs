@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using server.Authorization;
 using server.Helpers;
 using server.Models;
@@ -35,7 +36,7 @@ namespace server.Services
 
         public AuthResponse Authenticate(LoginRequest model, string ipAddress)
         {
-            var user = _context.Users.SingleOrDefault(x => x.Username == model.Username);
+            var user = _context.Users.Include(u => u.StravaProfile).SingleOrDefault(x => x.Username == model.Username);
 
             // validate
             if (user == null || !PasswordHasher.Verify(user.Password, model.Password).Result)
@@ -51,8 +52,8 @@ namespace server.Services
 
             _context.Update(user);
             _context.SaveChanges();
-
-            return new AuthResponse(user, jwtToken, refreshToken.Token);
+            var stravaRefreshToken = user.StravaProfile?.StravaRefreshToken;
+            return new AuthResponse(user, jwtToken, refreshToken.Token, stravaRefreshToken);
         }
 
         public AuthResponse Register(RegisterRequest model, string ipAddress)
@@ -82,7 +83,7 @@ namespace server.Services
             _context.Update(user);
             _context.SaveChanges();
 
-            return new AuthResponse(userRegister, jwtToken, refreshToken.Token);
+            return new AuthResponse(userRegister, jwtToken, refreshToken.Token, "");
         }
         public AuthResponse RefreshToken(string token, string ipAddress)
         {
@@ -114,7 +115,7 @@ namespace server.Services
             // generate new jwt
             var jwtToken = _jwtUtils.GetJwtToken(user);
 
-            return new AuthResponse(user, jwtToken, newRefreshToken.Token);
+            return new AuthResponse(user, jwtToken, newRefreshToken.Token, "");
         }
 
         public void RevokeToken(string token, string ipAddress)
@@ -151,7 +152,7 @@ namespace server.Services
             }
             var jwtToken = _jwtUtils.GetJwtToken(user);
             
-            return new AuthResponse(user, jwtToken, token);
+            return new AuthResponse(user, jwtToken, token, "");
         }
 
         // helper methods
