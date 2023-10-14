@@ -18,6 +18,9 @@ type RideTotals = {
   elapsedTime: number;
   elevationGain: number;
   movingTime: number;
+  seconds: number;
+  minutes: number;
+  hours: number;
 };
 
 export type AthleteStats = {
