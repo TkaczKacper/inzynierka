@@ -73,6 +73,7 @@ namespace server.Controllers
 
             return Ok(response);
         }
+        
         [HttpPost("profile/power-update")]
         public IActionResult PowerUpdate([FromBody] ProfilePower power)
         {

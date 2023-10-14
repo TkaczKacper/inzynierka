@@ -5,6 +5,7 @@ using server.Models;
 using server.Models.Profile;
 using server.Models.Responses.Strava.AthleteStats.cs;
 using server.Models.Strava;
+using server.Responses;
 
 namespace server.Services
 {
@@ -15,7 +16,7 @@ namespace server.Services
         ProfileHeartRate ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId);
         ProfilePower ProfilePowerUpdate(ProfilePower profilePower, Guid userId);
         List<StravaActivity> GetUserActivities(Guid? userId);
-        StravaProfileStats GetProfileData(Guid? userId);
+        AthleteData GetProfileData(Guid? userId);
     }
 
     public class StravaService : IStravaService
@@ -146,11 +147,18 @@ namespace server.Services
             return power;
         }
 
-        public StravaProfileStats GetProfileData(Guid? userId)
+        public AthleteData GetProfileData(Guid? userId)
         {
             StravaProfile? profile = GetUserById(userId).StravaProfile;
             StravaProfileStats? stats = GetAthleteStats(profile.AthleteStatsId);
-            return stats;
+
+            AthleteData response = new AthleteData
+            {
+                AthleteStats = stats,
+                StravaProfileInfo = profile
+            };
+            
+            return response;
         }
         public List<StravaActivity> GetUserActivities(Guid? userId)
         {

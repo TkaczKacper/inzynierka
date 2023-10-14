@@ -17,31 +17,10 @@ const page = () => {
           Authorization: typeof jwt_token === "string" ? jwt_token : "",
         },
       });
+      setData(res.data);
       console.log(res);
     };
     userStats();
-    const getData = async () => {
-      console.log(userId);
-      const response = await fetch(
-        `http://localhost:5264/api/auth/${userId}/refresh-tokens`,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            Authorization: typeof jwt_token === "string" ? jwt_token : "",
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        },
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          return setData(data);
-        });
-
-      return response;
-    };
-    getData();
   }, []);
 
   console.log(data);

@@ -71,14 +71,6 @@ namespace server.Controllers
             
         }
 
-        [HttpGet("{id}/refresh-tokens")]
-        public IActionResult GetRefreshTokens(Guid id)
-        {
-            var user = _userService.GetById(id);
-
-            return Ok(user.RefreshTokens);
-        }
-
         // helper methods
         private void setTokenCookie(string token)
         {
