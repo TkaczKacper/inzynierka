@@ -4,38 +4,10 @@ import React, { useEffect, useState } from "react";
 import { useUserContext } from "@/contexts/UserContextProvider";
 import axios from "axios";
 import { getCookie } from "cookies-next";
+import { AthleteInfo, AthleteStats } from "@/app/profile/[id]/types";
+
 const jwt_token = getCookie("jwtToken");
 const backend_url = process.env.NEXT_PUBLIC_BACKEND_API_URL;
-
-type AthleteInfo = {
-  bio: string;
-  city: string;
-  country: string;
-  firstName: string;
-  lastName: string;
-  profileAvatar: string;
-  profileCreatedAt: string;
-  profileID: number;
-  sex: string;
-  state: string;
-  weight: number;
-};
-type RideTotals = {
-  achievementCount: number;
-  count: number;
-  distance: number;
-  elapsedTime: number;
-  elevationGain: number;
-  movingTime: number;
-};
-
-type AthleteStats = {
-  allTimeRideTotals: RideTotals;
-  biggestClimb: number;
-  longestRide: number;
-  recentRideTotals: RideTotals;
-  ytdRideTotals: RideTotals;
-};
 
 const page = () => {
   const [athleteStats, setAthleteStats] = useState<AthleteStats>();
