@@ -6,8 +6,40 @@ import axios from "axios";
 import { getCookie } from "cookies-next";
 const jwt_token = getCookie("jwtToken");
 const backend_url = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+
+type AthleteInfo = {
+  bio: string;
+  city: string;
+  country: string;
+  firstName: string;
+  lastName: string;
+  profileAvatar: string;
+  profileCreatedAt: string;
+  profileID: number;
+  sex: string;
+  state: string;
+  weight: number;
+};
+type RideTotals = {
+  achievementCount: number;
+  count: number;
+  distance: number;
+  elapsedTime: number;
+  elevationGain: number;
+  movingTime: number;
+};
+
+type AthleteStats = {
+  allTimeRideTotals: RideTotals;
+  biggestClimb: number;
+  longestRide: number;
+  recentRideTotals: RideTotals;
+  ytdRideTotals: RideTotals;
+};
+
 const page = () => {
-  const [data, setData] = useState([]);
+  const [athleteStats, setAthleteStats] = useState<AthleteStats>();
+  const [athleteInfo, setAthleteInfo] = useState<AthleteInfo>();
   const { userId, setUserId } = useUserContext();
   useEffect(() => {
     const userStats = async () => {
@@ -17,17 +49,73 @@ const page = () => {
           Authorization: typeof jwt_token === "string" ? jwt_token : "",
         },
       });
-      setData(res.data);
+      setAthleteStats(res.data.athleteStats);
+      setAthleteInfo(res.data.stravaProfileInfo);
       console.log(res);
     };
     userStats();
   }, []);
 
-  console.log(data);
+  console.log(athleteInfo);
+  console.log(athleteStats);
   return (
     <div>
-      xd
-      <p></p>
+      {athleteInfo ? (
+        <div>
+          <img src={athleteInfo.profileAvatar} alt={"profile photo"} />
+          <div>
+            <h1>
+              {athleteInfo.firstName} {athleteInfo.lastName}
+            </h1>
+            <div>
+              {athleteInfo.city}, {athleteInfo.state}, {athleteInfo.country}
+            </div>
+            <div>{athleteInfo.bio}</div>
+          </div>
+        </div>
+      ) : (
+        <>
+          <h1>Strava profile is not connected.</h1>
+          Go to <a href={"/profile/connections"}>connections</a> page to
+          connect.
+        </>
+      )}
+      {athleteStats ? (
+        <div>
+          <div>
+            <h3>Last 4 weeks</h3>
+            <div>
+              Activities / Week: {athleteStats.recentRideTotals.count / 4}
+            </div>
+            <div>
+              Avg Distance / Week: {athleteStats.recentRideTotals.distance / 4}
+            </div>
+            <div>
+              Elev Gain / Week:{" "}
+              {athleteStats.recentRideTotals.elevationGain / 4}
+            </div>
+            <div>
+              Avg Time / Week: {athleteStats.recentRideTotals.elapsedTime / 4}
+            </div>
+          </div>
+          <div>
+            <h3>This year</h3>
+            <div>Activities: {athleteStats.ytdRideTotals.count}</div>
+            <div>Distance: {athleteStats.ytdRideTotals.distance}</div>
+            <div>Elev Gain: {athleteStats.ytdRideTotals.elevationGain}</div>
+            <div>Time: {athleteStats.ytdRideTotals.elapsedTime}</div>
+          </div>
+          <div>
+            <h3>All-Time</h3>
+            <div>Activities: {athleteStats.allTimeRideTotals.count}</div>
+            <div>Distance: {athleteStats.allTimeRideTotals.distance}</div>
+            <div>Elev Gain: {athleteStats.allTimeRideTotals.elevationGain}</div>
+            <div>Time: {athleteStats.allTimeRideTotals.elapsedTime}</div>
+            <div>Longest Ride: {athleteStats.longestRide}</div>
+            <div>Biggest Climb: {athleteStats.biggestClimb}</div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };
