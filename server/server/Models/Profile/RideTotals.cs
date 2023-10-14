@@ -1,7 +1,10 @@
-﻿namespace server.Models.Profile;
+﻿using System.Text.Json.Serialization;
+
+namespace server.Models.Profile;
 
 public class RideTotals
 {
+   [JsonIgnore]
    public long Id { get; set; }
    public int Count { get; set; }
    public float Distance { get; set; }

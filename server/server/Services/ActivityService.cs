@@ -227,5 +227,20 @@ namespace server.Services
                 FirstOrDefaultAsync(u => u.ID == id);
             return user == null ? throw new KeyNotFoundException("User not found.") : user;
         }
+
+        private string test()
+        {
+            var firstActivity = new DateOnly(2023, 6, 1);
+            List<DateOnly> date = new List<DateOnly>();
+            
+            while (firstActivity <= DateOnly.FromDateTime(DateTime.UtcNow.AddDays(42)))
+            {
+                date.Add(firstActivity);
+                firstActivity = firstActivity.AddDays(1);
+            }
+
+            Console.WriteLine(date);
+            return "";
+        }
     }
 }

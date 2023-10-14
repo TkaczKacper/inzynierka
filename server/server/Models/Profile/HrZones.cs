@@ -1,7 +1,10 @@
-﻿namespace server.Models.Profile
+﻿using System.Text.Json.Serialization;
+
+namespace server.Models.Profile
 {
     public class HrZones
     {
+        [JsonIgnore]
         public long Id { get; set; }
         public int Zone1 { get; set; }
         public int Zone2 { get; set; }

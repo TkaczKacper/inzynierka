@@ -15,7 +15,7 @@ namespace server.Services
         ProfileHeartRate ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId);
         ProfilePower ProfilePowerUpdate(ProfilePower profilePower, Guid userId);
         List<StravaActivity> GetUserActivities(Guid? userId);
-        StravaProfile GetProfileData(Guid? userId);
+        StravaProfileStats GetProfileData(Guid? userId);
     }
 
     public class StravaService : IStravaService
@@ -70,8 +70,8 @@ namespace server.Services
             
     
             Console.WriteLine(profileDetails);
-            user.StravaProfile.AthleteStats = athleteStats;
             user.StravaProfile = profileDetails;
+            user.StravaProfile.AthleteStats = athleteStats;
 
             _context.Update(user);
             _context.SaveChanges();
@@ -146,11 +146,11 @@ namespace server.Services
             return power;
         }
 
-        public StravaProfile GetProfileData(Guid? userId)
+        public StravaProfileStats GetProfileData(Guid? userId)
         {
             StravaProfile? profile = GetUserById(userId).StravaProfile;
-
-            return profile;
+            StravaProfileStats? stats = GetAthleteStats(profile.AthleteStatsId);
+            return stats;
         }
         public List<StravaActivity> GetUserActivities(Guid? userId)
         {
@@ -162,11 +162,21 @@ namespace server.Services
         {
             User? user = _context.Users
                 .Include(u => u.StravaProfile)
-                .ThenInclude(s => s.AthleteStats)
                 .FirstOrDefault(u => u.ID == id);
             return user == null ? throw new KeyNotFoundException("User not found.") : user;
         }
 
+        public StravaProfileStats? GetAthleteStats(long id)
+        {
+            StravaProfileStats? profile = _context.StravaProfileStats
+                .Include(stats => stats.RecentRideTotals)
+                .Include(stats => stats.YtdRideTotals)
+                .Include(stats => stats.AllTimeRideTotals)
+                .FirstOrDefault(s => s.Id == id);
+            
+            return profile == null ? throw new KeyNotFoundException("User not found.") : profile;
+        }
+        
         public List<long> GetSyncedActivitiesId(long? id)
         {
 

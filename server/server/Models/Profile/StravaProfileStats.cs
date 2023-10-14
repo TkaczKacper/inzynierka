@@ -1,7 +1,11 @@
-﻿namespace server.Models.Profile;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+
+namespace server.Models.Profile;
 
 public class StravaProfileStats
 {
+    [JsonIgnore]
     public long Id { get; set; }
     public double BiggestClimb { get; set; }
     public double LongestRide { get; set; }

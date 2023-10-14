@@ -9,7 +9,9 @@ namespace server.Models;
 
 public class StravaProfile
 {
+    [JsonIgnore]
     public long ID { get; set; }
+    [JsonIgnore]
     public string? StravaRefreshToken { get; set; }
     public long ProfileID { get; set; }
     public string? Username { get; set; }
@@ -29,4 +31,8 @@ public class StravaProfile
     public bool NeedUpdate { get; set; }
     [JsonIgnore]
     public List<long>? ActivitiesToFetch { get; set; }
+    
+    //foreign key
+    [ForeignKey("StravaProfileStats")]
+    public virtual long AthleteStatsId { get; set; }
 }
