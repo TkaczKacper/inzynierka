@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { Inter } from "next/font/google";
 import { UserContextProvider } from "@/contexts/UserContextProvider";
+import { Suspense } from "react";
+import Loading from "@/app/loading";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,7 +27,7 @@ export default function RootLayout({
           <div style={{ height: "50px" }}>
             <Navbar />
           </div>
-          {children}
+          <Suspense fallback={<Loading />}>{children}</Suspense>
         </UserContextProvider>
       </body>
     </html>
