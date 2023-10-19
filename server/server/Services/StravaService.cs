@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 using server.Helpers;
 using server.Models;
 using server.Models.Profile;
-using server.Models.Responses.Strava.AthleteStats.cs;
 using server.Models.Strava;
 using server.Responses;
 
@@ -67,13 +66,8 @@ namespace server.Services
                 ProfileCreatedAt = profile.ProfileCreatedAt,
                 NeedUpdate = false,
             };
-            
-            
-    
-            Console.WriteLine(profileDetails);
             user.StravaProfile = profileDetails;
             user.StravaProfile.AthleteStats = athleteStats;
-
             _context.Update(user);
             _context.SaveChanges();
 
@@ -85,11 +79,11 @@ namespace server.Services
             Console.WriteLine("Saving...");
             
             User user = GetUserById(userId);
-            List<long> syncedActivities = GetSyncedActivitiesId(user.StravaProfile.ID);
+            List<long> syncedActivities = GetSyncedActivitiesId(userId);
 
             List<long> activitiesToSync = activities.Where(id => !syncedActivities.Contains(id)).ToList();
 
-            user.StravaProfile.ActivitiesToFetch = activitiesToSync;
+            user.ActivitiesToFetch = activitiesToSync;
             _context.Update(user);
             _context.SaveChanges();
             Console.WriteLine($"profile: {user.StravaProfile.LastName}");
@@ -165,11 +159,11 @@ namespace server.Services
         {
             perPage ??= 10;
             lastActivityDate ??= DateTime.UtcNow;
-            var stravaProfileId = GetUserById(userId).StravaProfile.ID;
+            var stravaProfileId = GetUserById(userId).ID;
             var activities = _context.StravaActivity
-                .Where(activity => activity.StravaProfileID == stravaProfileId && activity.StartDate < lastActivityDate) 
-                .Include(activity => activity.Laps)
-                .OrderByDescending(activity => activity.StartDate)
+                .Where(a => a.UserId == stravaProfileId && a.StartDate < lastActivityDate) 
+                .Include(a=> a.Laps)
+                .OrderByDescending(a=> a.StartDate)
                 .Take((int)perPage)
                 .ToList();
 
@@ -196,11 +190,11 @@ namespace server.Services
             return profile == null ? throw new KeyNotFoundException("User not found.") : profile;
         }
         
-        public List<long> GetSyncedActivitiesId(long? id)
+        public List<long> GetSyncedActivitiesId(Guid? id)
         {
 
             List<long>? userActivitiesId = _context.StravaActivity
-                .Where(sa => sa.StravaProfileID == id)
+                .Where(sa => sa.UserId == id)
                 .Select(sa => sa.StravaActivityID)
                 .ToList();
 

@@ -9,7 +9,7 @@ namespace server.Services
     {
         Task<ActivityDetailsResponse> GetDetailsById(long id, HttpClient httpClient);
         Task<List<Streams>> GetStreamsById(long id, HttpClient httpClient);
-        Task<StravaProfileStats> GetAthleteStats(long id, HttpClient httpClient);
+        Task<StravaProfileStats> GetAthleteStats(long profileId, HttpClient httpClient);
     }
 
     public class StravaApiService : IStravaApiService
@@ -50,11 +50,11 @@ namespace server.Services
             return null;
         }
 
-        public async Task<StravaProfileStats> GetAthleteStats(long id, HttpClient stravaClient)
+        public async Task<StravaProfileStats> GetAthleteStats(long profileId, HttpClient stravaClient)
         {
             try
             {
-                using HttpResponseMessage response = await stravaClient.GetAsync($"athletes/{id}/stats");
+                using HttpResponseMessage response = await stravaClient.GetAsync($"athletes/{profileId}/stats");
                 var stats = await response.Content.ReadFromJsonAsync<AthleteStats>();
 
                 RideTotals recent = new RideTotals

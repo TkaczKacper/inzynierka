@@ -32,7 +32,7 @@ namespace server.Services
         public async Task<string> GetActivityDetails(string accesstoken, Guid? userId)
         {
             User user = await GetUserByIdAsync(userId);
-            List<long> ids = user.StravaProfile.ActivitiesToFetch;
+            List<long> ids = user.ActivitiesToFetch;
             List<long> activitiesAdded = new List<long>();
 
             List<StravaActivity> activities = new List<StravaActivity>();
@@ -171,8 +171,7 @@ namespace server.Services
                         Lat = latStream,
                         Lng = lngStream,
                         Laps = activityLaps,
-                        UserProfile = user.StravaProfile
-                        
+                        UserProfile = user
                     };
                     if (details.Average_heartrate > 0 && HrMax is not null && HrRest is not null)
                     {
@@ -211,7 +210,7 @@ namespace server.Services
             _context.SaveChanges();
 
             List<long> remainingActivities = ids.Where(id => !activitiesAdded.Contains(id)).ToList();
-            user.StravaProfile.ActivitiesToFetch = remainingActivities;
+            user.ActivitiesToFetch = remainingActivities;
             _context.SaveChanges();
 
 

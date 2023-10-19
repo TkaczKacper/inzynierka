@@ -61,8 +61,8 @@ namespace server.Models.Strava
         public List<double>? Lng { get; set; }
 
         //foreign key property
-        [ForeignKey("StravaProfile")]
-        public virtual long StravaProfileID { get; set; }
-        public virtual required StravaProfile UserProfile { get; set; }
+        [ForeignKey("User")]
+        public virtual Guid UserId { get; set; }
+        public virtual required User UserProfile { get; set; }
     }
 }

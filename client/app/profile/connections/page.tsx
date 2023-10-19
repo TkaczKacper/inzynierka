@@ -11,9 +11,7 @@ import {
 } from "@/utils/stravaUtils";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
-import Cookies from "universal-cookie";
-const cookies = new Cookies();
+import {getCookie} from "cookies-next";
 
 const client_id = process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID;
 const redirect_uri = "http://localhost:3000/profile/connections";
@@ -126,10 +124,12 @@ const page = () => {
   };
 
   const disconnect = async () => {
+    const token = getCookie("strava_access_token");
     const response = await deauthorize(
-      cookies.get("strava_access_token")?.value,
-    );
+        typeof token === "string" ? token : ""
+      );
     setConnectedAthlete(undefined);
+    return response;
   };
 
   return (
