@@ -1,6 +1,7 @@
 import { Activity } from "@/app/profile/connections/page";
 import axios from "axios";
 import Cookies from "universal-cookie";
+import {getCookie} from "cookies-next";
 
 const cookies = new Cookies();
 const backend_url = process.env.NEXT_PUBLIC_BACKEND_API_URL;
@@ -40,6 +41,22 @@ export const updateProfileInfo = async (
    }
 };
 
+export const getAthleteActivities = async () => {
+    try {
+        const response = await axios.get(
+            `${backend_url}/strava/profile/get-activities`, 
+            { 
+                withCredentials:true, 
+                headers: {
+                    Authorization: getCookie("jwtToken")
+                }
+            }
+        );
+        console.log(response);
+    } catch (err) {
+        console.log(err)
+    }
+}
 export const getActivitiesDetails = async (activities: Activity[]) => {
    const activitiesId: number[] = [];
    activities.map((activity) => {

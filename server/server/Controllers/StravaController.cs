@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using server.Authorization;
 using server.Models;
 using server.Models.Profile;
@@ -86,11 +87,20 @@ namespace server.Controllers
         }
 
         [HttpGet("get-athlete-stats")]
-        public IActionResult GetUserActivities()
+        public IActionResult GetUserStats()
         {
             Guid? userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
             var response =  _stravaService.GetProfileData(userId);
             
+            return Ok(response);
+        }
+        
+        [HttpGet("profile/get-activities")]
+        public IActionResult GetUserActivities()
+        {
+            Guid? userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
+            var response = _stravaService.GetAthleteActivities(userId, null,null);
+            if (response.IsNullOrEmpty()) return NotFound("Athlete does not have any activities yet.");
             return Ok(response);
         }
     }

@@ -15,8 +15,8 @@ namespace server.Services
         Task<string> SaveActivitiesToFetch(List<long> activityIds, Guid? userId);
         ProfileHeartRate ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId);
         ProfilePower ProfilePowerUpdate(ProfilePower profilePower, Guid userId);
-        List<StravaActivity> GetUserActivities(Guid? userId);
         AthleteData GetProfileData(Guid? userId);
+        IEnumerable<StravaActivity> GetAthleteActivities(Guid? userId, DateTime? lastActivityDate, int? perPage);
     }
 
     public class StravaService : IStravaService
@@ -161,11 +161,21 @@ namespace server.Services
             
             return response;
         }
-        public List<StravaActivity> GetUserActivities(Guid? userId)
+        public IEnumerable<StravaActivity> GetAthleteActivities(Guid? userId, DateTime? lastActivityDate, int? perPage)
         {
-            
-            return new List<StravaActivity>();
+            perPage ??= 10;
+            lastActivityDate ??= DateTime.UtcNow;
+            var stravaProfileId = GetUserById(userId).StravaProfile.ID;
+            var activities = _context.StravaActivity
+                .Where(activity => activity.StravaProfileID == stravaProfileId && activity.StartDate < lastActivityDate) 
+                .Include(activity => activity.Laps)
+                .OrderByDescending(activity => activity.StartDate)
+                .Take((int)perPage)
+                .ToList();
+
+            return activities;
         }
+
         // helpers 
         public User GetUserById(Guid? id)
         {

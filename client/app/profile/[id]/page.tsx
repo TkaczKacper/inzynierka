@@ -5,6 +5,7 @@ import { useUserContext } from "@/contexts/UserContextProvider";
 import axios from "axios";
 import { getCookie } from "cookies-next";
 import { AthleteInfo, AthleteStats } from "@/app/profile/[id]/types";
+import {getAthleteActivities} from "@/utils/serverUtils";
 
 const jwt_token = getCookie("jwtToken");
 const backend_url = process.env.NEXT_PUBLIC_BACKEND_API_URL;
@@ -26,6 +27,10 @@ const page = () => {
       console.log(res);
     };
     userStats();
+    const userActivities = async () => {
+      getAthleteActivities();
+    }
+    userActivities();
   }, []);
 
   console.log(athleteInfo);

@@ -17,6 +17,7 @@ export const getToken = async (authToken: string) => {
     const response = await axios.post(
       `${strava_url}/oauth/token?client_id=${client_id}&client_secret=${client_secret}&code=${authToken}&grant_type=authorization_code`,
     );
+    console.log(response);
     setCookie("strava_refresh_token", response.data.refresh_tokenm, {
       path: "/",
     });
