@@ -159,13 +159,7 @@ namespace server.Services
         {
             perPage ??= 10;
             lastActivityDate ??= DateTime.UtcNow;
-            var stravaProfileId = GetUserById(userId).ID;
-            var activities = _context.StravaActivity
-                .Where(a => a.UserId == stravaProfileId && a.StartDate < lastActivityDate) 
-                .Include(a=> a.Laps)
-                .OrderByDescending(a=> a.StartDate)
-                .Take((int)perPage)
-                .ToList();
+            var activities = GetSyncedActivities((Guid)userId, (DateTime)lastActivityDate, (int)perPage);
 
             return activities;
         }
@@ -199,6 +193,18 @@ namespace server.Services
                 .ToList();
 
             return userActivitiesId;
+        }
+
+        public List<StravaActivity> GetSyncedActivities(Guid userId, DateTime date, int perPage)
+        {
+            var activities = _context.StravaActivity
+                .Where(a => a.UserId == userId && a.StartDate < date) 
+                .Include(a=> a.Laps)
+                .OrderByDescending(a=> a.StartDate)
+                .Take(perPage)
+                .ToList();
+
+            return activities;
         }
     }
 }

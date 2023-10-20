@@ -14,7 +14,7 @@ namespace server.Models
         public DateTime RegisterDate { get; set; }
 
         [JsonIgnore]
-        public required string Password { get; set; }
+        public string Password { get; set; }
 
         [JsonIgnore]
         public List<RefreshToken> RefreshTokens { get; set; }

@@ -100,7 +100,8 @@ namespace server.Controllers
         {
             Guid? userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
             var response = _stravaService.GetAthleteActivities(userId, null,null);
-            if (response.IsNullOrEmpty()) return NotFound("Athlete does not have any activities yet.");
+            Console.WriteLine(response);
+            //if (response.IsNullOrEmpty()) return NotFound("Athlete does not have any activities yet.");
             return Ok(response);
         }
     }
