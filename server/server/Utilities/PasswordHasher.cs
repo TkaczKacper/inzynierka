@@ -4,29 +4,7 @@ using System.Text.Json;
 using Konscious.Security.Cryptography;
 
 namespace server.Utilities;
-public static class PasswordHasher
-{
-    /// <summary>
-    /// Stores indices of different parts of the encoded argon2 hash format.
-    /// </summary>
-    private enum EncodedParameters
-    {
-        /// <summary>The Argon2 implementation; can be one of: <see cref="Argon2i"/>, <see cref="Argon2d"/>, <see cref="Argon2id"/>.</summary>
-        Type = 1,
-        /// <summary>The Argon2 version; as of right now, hard-coded to 19 (v1.3).</summary>
-        Version,
-        /// <summary>The memory cost, iterations and the degree of parallelism.</summary>
-        Options,
-        /// <summary>The salt in Base64 format.</summary>
-        Salt,
-        /// <summary>The actual hash in Base64 format.</summary>
-        Hash
-    }
-
-    /// <summary>
-    /// Stores the algorithm configuration.
-    /// </summary>
-    public readonly struct HashOptions
+public readonly struct HashOptions
     {
         public HashOptions() { }
 
@@ -52,6 +30,33 @@ public static class PasswordHasher
 
         public override string ToString() => JsonSerializer.Serialize(this);
     }
+public interface IPasswordHasher
+{
+    public Task<string> Hash(string password, HashOptions? hashOptions = null);
+    public Task<bool> Verify(string hash, string password);
+}
+public class PasswordHasher : IPasswordHasher
+{
+    /// <summary>
+    /// Stores indices of different parts of the encoded argon2 hash format.
+    /// </summary>
+    private enum EncodedParameters
+    {
+        /// <summary>The Argon2 implementation; can be one of: <see cref="Argon2i"/>, <see cref="Argon2d"/>, <see cref="Argon2id"/>.</summary>
+        Type = 1,
+        /// <summary>The Argon2 version; as of right now, hard-coded to 19 (v1.3).</summary>
+        Version,
+        /// <summary>The memory cost, iterations and the degree of parallelism.</summary>
+        Options,
+        /// <summary>The salt in Base64 format.</summary>
+        Salt,
+        /// <summary>The actual hash in Base64 format.</summary>
+        Hash
+    }
+
+    /// <summary>
+    /// Stores the algorithm configuration.
+    /// </summary>
 
     /// <summary>
     /// Hashes and encodes the supplied <paramref name="password" />.
@@ -59,7 +64,8 @@ public static class PasswordHasher
     /// <param name="password">The password to hash</param>
     /// <param name="hashOptions">Allows to specify different options for the hashing algorithm</param>
     /// <returns>An encoded representation of the supplied <paramref name="password"/></returns>
-    public static async Task<string> Hash(string password, HashOptions? hashOptions = null)
+
+    public async Task<string> Hash(string password, HashOptions? hashOptions = null)
     {
         var options = hashOptions ?? new HashOptions();
         using var argon2 = new Argon2id(Encoding.UTF8.GetBytes(password));
@@ -75,12 +81,17 @@ public static class PasswordHasher
 
         /* For some reason,this causes an absurd memory leak that fixes itself from time to time.
          * I have absolutely no idea what causes it and there's likely no way for me to fix that. */
-         try{
+        try
+        {
             var hash = await argon2.GetBytesAsync(options.HashLength);
             var saltBase64 = Convert.ToBase64String(salt);
             var hashBase64 = Convert.ToBase64String(hash);
             return FormatHash(argon2, saltBase64, hashBase64);
-         } catch (Exception ex ) {Console.WriteLine(ex.Message);} 
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
         // Convert salt and hash into Base64 format
 
         // Return fully encoded argon2 hash
@@ -94,7 +105,7 @@ public static class PasswordHasher
     /// <param name="password">The password to verify</param>
     /// <returns><c>true</c> if the password is correct, <c>false</c> otherwise</returns>
     /// <exception cref="InvalidHashFormatException">An error has occured while trying to parse the hash encoding</exception>
-    public static async Task<bool> Verify(string hash, string password)
+    public async Task<bool> Verify(string hash, string password)
     {
         // Grab the salt and the hash from the provided encoded hash
         var decodedOldHash = hash.Split('$');
@@ -128,7 +139,7 @@ public static class PasswordHasher
     /// <param name="salt"><see cref="EncodedParameters.Salt"/></param>
     /// <param name="hash"><see cref="EncodedParameters.Hash"/></param>
     /// <returns></returns>
-    private static string FormatHash(Argon2 argon, string salt, string hash)
+    private string FormatHash(Argon2 argon, string salt, string hash)
     {
         // Version is v=19 because Argon2 1.3 => 0x13 == 19
         return $"${argon.GetType().Name.ToLower()}$v=19$m={argon.MemorySize},t={argon.Iterations},p={argon.DegreeOfParallelism}${salt}${hash}";
@@ -139,7 +150,7 @@ public static class PasswordHasher
     /// </summary>
     /// <param name="length">Sets the salt length</param>
     /// <returns>The <c>byte[]</c> containing the salt.</returns>
-    private static byte[] CreateSalt(int length = 16)
+    private byte[] CreateSalt(int length = 16)
     {
         var buffer = new byte[length];
         var rng = RandomNumberGenerator.Create();

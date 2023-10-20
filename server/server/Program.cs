@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using server.Authorization;
 using server.Helpers;
 using server.Services;
+using server.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,7 @@ var builder = WebApplication.CreateBuilder(args);
     // configure dependency injection for app services
     services.AddScoped<IJwtUtils, JwtUtils>();
     services.AddScoped<IUserService, UserService>();
+    services.AddScoped<IPasswordHasher, PasswordHasher>();
     services.AddScoped<IStravaService, StravaService>();
     services.AddScoped<IActivityService, ActivityService>();
     services.AddScoped<IStravaApiService, StravaApiService>();

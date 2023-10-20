@@ -23,15 +23,18 @@ namespace server.Services
         private DataContext _context;
         private IJwtUtils _jwtUtils;
         private readonly AppSettings _appSettings;
+        private IPasswordHasher _passwordHasher;
 
         public UserService(
             DataContext context,
             IJwtUtils jwtUtils,
-            IOptions<AppSettings> appSettings)
+            IOptions<AppSettings> appSettings,
+            IPasswordHasher passwordHasher)
         {
             _context = context;
             _jwtUtils = jwtUtils;
             _appSettings = appSettings.Value;
+            _passwordHasher = passwordHasher;
         }
 
         public AuthResponse Authenticate(LoginRequest model, string ipAddress)
@@ -39,7 +42,7 @@ namespace server.Services
             var user = _context.Users.Include(u => u.StravaProfile).SingleOrDefault(x => x.Username == model.Username);
 
             // validate
-            if (user == null || !PasswordHasher.Verify(user.Password, model.Password).Result)
+            if (user == null || !_passwordHasher.Verify(user.Password, model.Password).Result)
                 throw new AppException("Username or password is incorrect");
 
             // auth success, generate jwt and refresh tokens
@@ -66,7 +69,7 @@ namespace server.Services
             {
                 Email = model.Email,
                 Username = model.Username,
-                Password = PasswordHasher.Hash(model.Password).Result,
+                Password = _passwordHasher.Hash(model.Password).Result,
                 RegisterDate = DateTime.UtcNow
             };
             _context.Add(userRegister);
