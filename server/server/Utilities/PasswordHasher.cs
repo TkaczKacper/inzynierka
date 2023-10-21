@@ -19,7 +19,7 @@ public readonly struct HashOptions
         public int SaltLength { get; init; } = 16;
 
         /// <summary>The amount of memory to be used by the hash function.</summary>
-        public int MemorySize { get; init; } = 1024 * 1024;
+        public int MemorySize { get; init; } = 256 * 256;
 
         /// <summary>The amount of CPU threads to be used by the hash function.</summary>
         /// <remarks>Changing the setting affects the resulting hash</remarks>
@@ -124,7 +124,6 @@ public class PasswordHasher : IPasswordHasher
 
         // Hash the given password using the provided hash's salt
         var encodedNewHash = await Hash(password, new HashOptions { Salt = oldSalt });
-
         // Grab just the hash from the new encoded hash
         var deserializedNewHash = encodedNewHash.Split('$');
         var newHash = deserializedNewHash[(int)EncodedParameters.Hash];

@@ -42,10 +42,8 @@ namespace server.Services
         {
             Console.WriteLine("profile update");
             User? user = GetUserById(id);
-            if (!stravaClient.DefaultRequestHeaders.Contains("Authorization"))
-            {
-                stravaClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accesstoken}");
-            }
+            stravaClient.DefaultRequestHeaders.Clear();
+            stravaClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accesstoken}");
 
             var athleteStats = await _stravaApi.GetAthleteStats(profile.ProfileID, stravaClient);           
             
