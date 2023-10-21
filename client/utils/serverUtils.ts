@@ -1,9 +1,7 @@
 import { Activity } from "@/app/profile/connections/page";
 import axios from "axios";
-import Cookies from "universal-cookie";
 import { getCookie } from "cookies-next";
 
-const cookies = new Cookies();
 const backend_url = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 export const updateProfileInfo = async (
