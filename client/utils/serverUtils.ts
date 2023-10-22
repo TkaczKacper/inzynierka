@@ -29,7 +29,7 @@ export const updateProfileInfo = async (
       {
         withCredentials: true,
         headers: {
-          Authorization: cookies.get("jwtToken"),
+          Authorization: getCookie("jwtToken"),
         },
       },
     );
@@ -69,7 +69,7 @@ export const getActivitiesDetails = async (activities: Activity[]) => {
       {
         withCredentials: true,
         headers: {
-          Authorization: cookies.get("jwtToken"),
+          Authorization: getCookie("jwtToken"),
         },
       },
     );
@@ -77,7 +77,7 @@ export const getActivitiesDetails = async (activities: Activity[]) => {
     const xd = await axios.get(`${backend_url}/strava/process-data`, {
       withCredentials: true,
       headers: {
-        Authorization: cookies.get("jwtToken"),
+        Authorization: getCookie("jwtToken"),
       },
     });
     console.log(xd);
@@ -96,7 +96,7 @@ export const updateFtp = async (ftp: number) => {
       },
       {
         headers: {
-          Authorization: cookies.get("jwtToken"),
+          Authorization: getCookie("jwtToken"),
         },
       },
     );
@@ -117,7 +117,7 @@ export const updateHr = async (hrRest: number, hrMax: number) => {
       },
       {
         headers: {
-          Authorization: cookies.get("jwtToken"),
+          Authorization: getCookie("jwtToken"),
         },
       },
     );
@@ -131,6 +131,21 @@ export const updateHr = async (hrRest: number, hrMax: number) => {
 export const getAthleteStats = async () => {
   try {
     const res = await axios.get(`${backend_url}/strava/get-athlete-stats`, {
+      withCredentials: true,
+      headers: {
+        Authorization: getCookie("jwtToken"),
+      },
+    });
+    console.log(res);
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getSyncedActivities = async () => {
+  try {
+    const res = await axios.get(`${backend_url}/strava/get-synced-activites`, {
       withCredentials: true,
       headers: {
         Authorization: getCookie("jwtToken"),

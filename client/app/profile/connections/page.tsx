@@ -1,5 +1,5 @@
 "use client";
-import { getActivitiesDetails } from "@/utils/serverUtils";
+import { getActivitiesDetails, getSyncedActivities } from "@/utils/serverUtils";
 import {
   cleanUpAuthToken,
   getActivityById,
@@ -11,7 +11,8 @@ import {
 } from "@/utils/stravaUtils";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import {getCookie} from "cookies-next";
+import { getCookie } from "cookies-next";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 const client_id = process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID;
 const redirect_uri = "http://localhost:3000/profile/connections";
@@ -36,8 +37,26 @@ const page = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [connectedAthlete, setConnectedAthlete] = useState<Athlete>();
   const [sendVisibility, setSendVisibility] = useState<boolean>(false);
-
+  const [syncedActivities, setSyncedActivities] = useLocalStorage(
+    "syncedActivities",
+    [],
+  );
+  const [latestActivity, setLatestActivity] = useLocalStorage(
+    "latestActivity",
+    0,
+  );
   console.log(connectedAthlete);
+  useEffect(() => {
+    const getSyncedActivitiesData = async () => {
+      const response = await getSyncedActivities();
+
+      setSyncedActivities(response?.data.syncedActivitiesId);
+      setLatestActivity(
+        new Date(response?.data.latestActivityDateTime).getTime() / 1000,
+      );
+    };
+    getSyncedActivitiesData();
+  }, []);
   const stravaAuth = () => {
     router.push(
       `https://www.strava.com/oauth/authorize?client_id=${client_id}&response_type=code&redirect_uri=${redirect_uri}&approval_prompt=force&scope=${scope}`,
@@ -78,16 +97,6 @@ const page = () => {
     getConnectedProfile();
   }, []);
 
-  const get = async () => {
-    const data = await getActivityById(3607405747);
-    console.log(data);
-  };
-
-  const getSterams = async () => {
-    const data = await getStreams(3607405747);
-    console.log(data);
-  };
-
   const userActivities = async (page: number) => {
     const data = await getUserActivites(page);
     console.log(data);
@@ -125,9 +134,7 @@ const page = () => {
 
   const disconnect = async () => {
     const token = getCookie("strava_access_token");
-    const response = await deauthorize(
-        typeof token === "string" ? token : ""
-      );
+    const response = await deauthorize(typeof token === "string" ? token : "");
     setConnectedAthlete(undefined);
     return response;
   };
@@ -148,8 +155,6 @@ const page = () => {
             <button onClick={() => getAllActivities()}>Import</button>
             rides from Strava
           </div>
-          <button onClick={get}>get1</button>
-          <button onClick={getSterams}>getSterams</button>
           <div>
             {sendVisibility ? (
               <button onClick={importActivities}>import</button>

@@ -16,6 +16,8 @@ namespace server.Services
         ProfilePower ProfilePowerUpdate(ProfilePower profilePower, Guid userId);
         AthleteData GetProfileData(Guid? userId);
         IEnumerable<StravaActivity> GetAthleteActivities(Guid? userId, DateTime? lastActivityDate, int? perPage);
+        List<long> GetSyncedActivitiesId(Guid? userId);
+        DateTime GetLatestActivity(Guid? userId);
     }
 
     public class StravaService : IStravaService
@@ -162,6 +164,16 @@ namespace server.Services
             return activities;
         }
 
+        public DateTime GetLatestActivity(Guid? userId)
+        {
+            var date = _context.StravaActivity
+                .Where(sa => sa.UserId == userId)
+                .OrderByDescending(sa => sa.StartDate)
+                .Select(sa => sa.StartDate)
+                .FirstOrDefault();
+            return date;
+        }
+        
         // helpers 
         public User GetUserById(Guid? id)
         {

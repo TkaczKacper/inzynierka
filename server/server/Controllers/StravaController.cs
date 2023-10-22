@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using server.Authorization;
 using server.Models;
 using server.Models.Profile;
+using server.Responses;
 using server.Services;
 
 namespace server.Controllers
@@ -102,6 +103,21 @@ namespace server.Controllers
             var response = _stravaService.GetAthleteActivities(userId, null,null);
             Console.WriteLine(response);
             //if (response.IsNullOrEmpty()) return NotFound("Athlete does not have any activities yet.");
+            return Ok(response);
+        }
+
+        [HttpGet("get-synced-activites")]
+        public IActionResult GetSyncedActivitiesId()
+        {
+            Guid? userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
+            var syncedActivitiesId = _stravaService.GetSyncedActivitiesId(userId);
+            var latestActivityDate = _stravaService.GetLatestActivity(userId);
+            var response = new SyncedActivities()
+            {
+                SyncedActivitiesId = syncedActivitiesId,
+                LatestActivityDateTime = latestActivityDate
+            };
+            
             return Ok(response);
         }
     }
