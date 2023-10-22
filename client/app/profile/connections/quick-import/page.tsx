@@ -1,26 +1,23 @@
 ﻿"use client";
 
-import { useRef, useState } from "react";
-import { Activity } from "@/app/profile/connections/page";
-import { getUserActivites } from "@/utils/stravaUtils";
-import { getActivitiesDetails } from "@/utils/serverUtils";
 import Link from "next/link";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useState } from "react";
+import { Activity } from "@/app/profile/connections/page";
+import { getUserActivites } from "@/utils/stravaUtils";
 
 const page = () => {
-  const [syncedActivities, setSyncedActivities] = useLocalStorage(
-    "syncedActivities",
-    [],
+  const [latestActivity, setLatestActivity] = useLocalStorage(
+    "latestActivity",
+    0,
   );
-  const [activities, setActivities] = useState<Activity[]>([]);
   const [fetching, setFetching] = useState<boolean>(false);
-  const stopFetching = useRef(false);
-  const getAllActivities = async () => {
+  const [activities, setActivities] = useState<Activity[]>([]);
+
+  const getRecentActivities = async () => {
     setFetching(true);
     let page_number = 1;
-    while (!stopFetching.current) {
-      console.log(stop);
-      console.log(fetching);
+    while (true) {
       const activities_temp: any = await userActivities(page_number);
       if (!activities_temp.data[0]) break;
       console.log(activities_temp.data);
@@ -43,41 +40,32 @@ const page = () => {
   };
 
   const userActivities = async (page: number) => {
-    const data = await getUserActivites(page, 0);
+    const data = await getUserActivites(page, latestActivity);
     console.log(data);
     return data;
   };
-  const importActivities = async () => {
-    const response = await getActivitiesDetails(activities);
-    console.log(response);
-  };
+
   return (
     <div>
-      <h1>Strava import</h1>
+      <h1>Strava quick import.</h1>
       <Link href={"/profile/connections"}>back to connections page</Link>
-      <div>
-        <p>Select rides to import from Strava and click the Import button.</p>
-        <p>
-          If the ride already exists in database, it is unavailable for
-          importing and is grayed out.
-        </p>
-      </div>
+      <p>
+        Select rides to import from Strava and click Import button when
+        finished.
+      </p>
+      <p>
+        This shows only the rides on Strava that are most recent than any rides
+        synced.
+      </p>
       <div>
         {fetching ? (
           <div>
-            <h2>Is {activities.length} latest activities enough?</h2>
-            <button
-              onClick={() => {
-                stopFetching.current = true;
-              }}
-            >
-              Press to stop fetching.
-            </button>
+            <p>fetching activities...</p>
           </div>
         ) : (
           <div>
             {activities.length === 0 ? (
-              <button onClick={getAllActivities}>Start importing.</button>
+              <button onClick={getRecentActivities}>Start importing.</button>
             ) : null}
             {activities.map((activity, index) => {
               return (

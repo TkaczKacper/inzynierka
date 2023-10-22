@@ -85,10 +85,10 @@ export const getAuthenticatedAthlete = async () => {
   } catch (error) {}
 };
 
-export const getUserActivites = async (page: number) => {
+export const getUserActivites = async (page: number, after: number) => {
   try {
     const response = await axios.get(
-      `${strava_url}/athlete/activities?page=${page}&per_page=100`,
+      `${strava_url}/athlete/activities?page=${page}&per_page=100&after=${after}`,
       {
         headers: {
           Authorization: `Bearer ${getCookie("strava_access_token")}`,

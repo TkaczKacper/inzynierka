@@ -120,6 +120,11 @@ const page = () => {
               Import rides from Strava.
             </Link>
           </div>
+          <div>
+            <Link href={"/profile/connections/quick-import"}>
+              Import only latest rides from Strava.
+            </Link>
+          </div>
         </div>
       ) : (
         <div>
