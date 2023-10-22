@@ -85,7 +85,7 @@ export const getAuthenticatedAthlete = async () => {
   } catch (error) {}
 };
 
-export const getUserActivites = async (page: number, after: number) => {
+export const getUserActivities = async (page: number, after: number) => {
   try {
     const response = await axios.get(
       `${strava_url}/athlete/activities?page=${page}&per_page=100&after=${after}`,
@@ -100,7 +100,21 @@ export const getUserActivites = async (page: number, after: number) => {
     console.log(error);
   }
 };
-
+export const getUserAllActivities = async (page: number) => {
+  try {
+    const response = await axios.get(
+      `${strava_url}/athlete/activities?page=${page}&per_page=100`,
+      {
+        headers: {
+          Authorization: `Bearer ${getCookie("strava_access_token")}`,
+        },
+      },
+    );
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
 export const getActivityById = async (id: number) => {
   try {
     const response = await axios.get(`${strava_url}/activities/${id}`, {

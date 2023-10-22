@@ -2,16 +2,18 @@
 
 import { useRef, useState } from "react";
 import { Activity } from "@/app/profile/connections/page";
-import { getUserActivites } from "@/utils/stravaUtils";
+import { getUserAllActivities } from "@/utils/stravaUtils";
 import { getActivitiesDetails } from "@/utils/serverUtils";
 import Link from "next/link";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { Field, Form, Formik } from "formik";
 
 const page = () => {
   const [syncedActivities, setSyncedActivities] = useLocalStorage(
     "syncedActivities",
     [],
   );
+  const syncedActivitiesSet = new Set(syncedActivities.map((a: number) => a));
   const [activities, setActivities] = useState<Activity[]>([]);
   const [fetching, setFetching] = useState<boolean>(false);
   const stopFetching = useRef(false);
@@ -43,12 +45,12 @@ const page = () => {
   };
 
   const userActivities = async (page: number) => {
-    const data = await getUserActivites(page, 0);
-    console.log(data);
+    const data = await getUserAllActivities(page);
+    //console.log(data);
     return data;
   };
-  const importActivities = async () => {
-    const response = await getActivitiesDetails(activities);
+  const importActivities = async (activitiesId: number[]) => {
+    const response = await getActivitiesDetails(activitiesId);
     console.log(response);
   };
 
@@ -80,17 +82,48 @@ const page = () => {
             {activities.length === 0 ? (
               <button onClick={getAllActivities}>Start importing.</button>
             ) : (
-              <button onClick={importActivities}>import</button>
+              <Formik
+                initialValues={{
+                  activityId: new Set(activities.map((a) => a.id)),
+                }}
+                onSubmit={(values) => {
+                  importActivities(Array.from(values.activityId));
+                }}
+              >
+                {({ values, handleChange }) => (
+                  <Form>
+                    <div
+                      role={"group"}
+                      style={{ display: "flex", flexDirection: "column" }}
+                    >
+                      {activities.map((activity: Activity, index: number) => {
+                        const [checked, setChecked] = useState(true);
+                        return (
+                          <label key={index}>
+                            <Field
+                              type={"checkbox"}
+                              name={"activityId"}
+                              value={activity.id}
+                              checked={checked}
+                              disabled={syncedActivitiesSet.has(activity.id)}
+                              onChange={() => {
+                                values.activityId.has(activity.id)
+                                  ? values.activityId.delete(activity.id)
+                                  : values.activityId.add(activity.id);
+                                setChecked(!checked);
+                              }}
+                            />
+                            {index + 1}. id: {activity.id}, title:{" "}
+                            {activity.title}
+                          </label>
+                        );
+                      })}
+                    </div>
+                    <button type={"submit"}>Import</button>
+                  </Form>
+                )}
+              </Formik>
             )}
-            {activities.map((activity, index) => {
-              return (
-                <div key={index}>
-                  <h2>
-                    {index + 1}. id: {activity.id}, title: {activity.title}
-                  </h2>
-                </div>
-              );
-            })}
           </div>
         )}
       </div>

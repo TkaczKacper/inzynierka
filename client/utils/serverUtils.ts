@@ -56,12 +56,7 @@ export const getAthleteActivities = async () => {
     console.log(err);
   }
 };
-export const getActivitiesDetails = async (activities: Activity[]) => {
-  const activitiesId: number[] = [];
-  activities.map((activity) => {
-    activitiesId.push(activity.id);
-  });
-
+export const getActivitiesDetails = async (activitiesId: number[]) => {
   try {
     const response = await axios.post(
       `${backend_url}/strava/get-activity-details`,
