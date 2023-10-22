@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getCookie } from "cookies-next";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import Link from "next/link";
 
 const client_id = process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID;
 const redirect_uri = "http://localhost:3000/profile/connections";
@@ -34,9 +35,7 @@ type Athlete = {
 
 const page = () => {
   const router = useRouter();
-  const [activities, setActivities] = useState<Activity[]>([]);
   const [connectedAthlete, setConnectedAthlete] = useState<Athlete>();
-  const [sendVisibility, setSendVisibility] = useState<boolean>(false);
   const [syncedActivities, setSyncedActivities] = useLocalStorage(
     "syncedActivities",
     [],
@@ -97,41 +96,6 @@ const page = () => {
     getConnectedProfile();
   }, []);
 
-  const userActivities = async (page: number) => {
-    const data = await getUserActivites(page);
-    console.log(data);
-    return data;
-  };
-
-  const getAllActivities = async () => {
-    let page_number = 1;
-    while (true) {
-      const activities_temp: any = await userActivities(page_number);
-      if (!activities_temp.data[0]) break;
-      console.log(activities_temp.data);
-      activities_temp.data.map((element: any) => {
-        console.log(element);
-        setActivities((prev) => [
-          ...prev,
-          {
-            id: element.id,
-            title: element.name,
-            date: new Date(element.start_date),
-            duration: element.elapsed_time,
-            distance: element.distance,
-          },
-        ]);
-      });
-      page_number++;
-      setSendVisibility(true);
-    }
-  };
-
-  const importActivities = async () => {
-    const response = await getActivitiesDetails(activities);
-    console.log(response);
-  };
-
   const disconnect = async () => {
     const token = getCookie("strava_access_token");
     const response = await deauthorize(typeof token === "string" ? token : "");
@@ -152,24 +116,9 @@ const page = () => {
           </h3>
           <button onClick={disconnect}>Disconnect</button>
           <div>
-            <button onClick={() => getAllActivities()}>Import</button>
-            rides from Strava
-          </div>
-          <div>
-            {sendVisibility ? (
-              <button onClick={importActivities}>import</button>
-            ) : null}
-            <div>
-              {activities.map((activity, index) => {
-                return (
-                  <div key={index}>
-                    <h2>
-                      {index + 1}. id: {activity.id}, title: {activity.title}
-                    </h2>
-                  </div>
-                );
-              })}
-            </div>
+            <Link href={"/profile/connections/import"}>
+              Import rides from Strava.
+            </Link>
           </div>
         </div>
       ) : (
