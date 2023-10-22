@@ -5,6 +5,7 @@ import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useState } from "react";
 import { Activity } from "@/app/profile/connections/page";
 import { getUserActivites } from "@/utils/stravaUtils";
+import { getActivitiesDetails } from "@/utils/serverUtils";
 
 const page = () => {
   const [latestActivity, setLatestActivity] = useLocalStorage(
@@ -44,6 +45,10 @@ const page = () => {
     console.log(data);
     return data;
   };
+  const importActivities = async () => {
+    const response = await getActivitiesDetails(activities);
+    console.log(response);
+  };
 
   return (
     <div>
@@ -66,7 +71,9 @@ const page = () => {
           <div>
             {activities.length === 0 ? (
               <button onClick={getRecentActivities}>Start importing.</button>
-            ) : null}
+            ) : (
+              <button onClick={importActivities}>import</button>
+            )}
             {activities.map((activity, index) => {
               return (
                 <div key={index}>

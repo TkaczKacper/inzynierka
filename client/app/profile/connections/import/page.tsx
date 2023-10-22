@@ -51,6 +51,7 @@ const page = () => {
     const response = await getActivitiesDetails(activities);
     console.log(response);
   };
+
   return (
     <div>
       <h1>Strava import</h1>
@@ -78,7 +79,9 @@ const page = () => {
           <div>
             {activities.length === 0 ? (
               <button onClick={getAllActivities}>Start importing.</button>
-            ) : null}
+            ) : (
+              <button onClick={importActivities}>import</button>
+            )}
             {activities.map((activity, index) => {
               return (
                 <div key={index}>
