@@ -27,7 +27,7 @@ export const ProfileStats = () => {
     <div>
       {athleteInfo ? (
         <div>
-          <img src={athleteInfo.profileAvatar} alt={"profile photo"} />
+          {/*<img src={athleteInfo.profileAvatar} alt={"profile photo"} />*/}
           <div>
             <h1>
               {athleteInfo.firstName} {athleteInfo.lastName}

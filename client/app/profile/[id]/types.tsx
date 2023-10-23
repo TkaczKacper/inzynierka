@@ -52,6 +52,7 @@ export type ActivityLap = {
 };
 
 export type Activity = {
+  id: number;
   achievements: number;
   altitude: number[];
   avgCadence: number;

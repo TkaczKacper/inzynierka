@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from "react";
 import { getAthleteActivities } from "@/utils/serverUtils";
 import { Activity } from "@/app/profile/[id]/types";
+import Link from "next/link";
 
 export const ProfileActivities = () => {
   const [activities, setActivities] = useState<Activity[]>();
@@ -17,11 +18,13 @@ export const ProfileActivities = () => {
   return (
     <div>
       <h1>Activities</h1>
-      {activities?.map((activity, index) => {
+      {activities?.map((activity: Activity, index) => {
         return (
           <div key={index}>
             <h2>
-              {index + 1}. {activity.title}
+              <Link href={`/activities/${activity.id}`}>
+                {index + 1}. {activity.title}
+              </Link>
             </h2>
           </div>
         );

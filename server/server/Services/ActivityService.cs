@@ -9,6 +9,7 @@ namespace server.Services
     public interface IActivityService
     {
         Task<string> GetActivityDetails(string accessToken, Guid? userId);
+        StravaActivity GetActivityById(long activityId);
     }
 
     public class ActivityService : IActivityService
@@ -215,6 +216,13 @@ namespace server.Services
 
 
             return $"{activities.Count} synced.";
+        }
+
+        public StravaActivity GetActivityById(long activityId)
+        {
+            var activity = _context.StravaActivity.FirstOrDefault(sa => sa.ID == activityId);
+
+            return activity == null ? throw new KeyNotFoundException("Activity not found.") : activity;
         }
 
         private async Task<User> GetUserByIdAsync(Guid? id)

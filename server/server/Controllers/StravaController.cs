@@ -120,5 +120,14 @@ namespace server.Controllers
             
             return Ok(response);
         }
+
+        [HttpGet("activities/get-activity-by-id/{activityId:long}")]
+        public IActionResult GetActivityById(long activityId)
+        {
+            Console.WriteLine($"activity: {activityId}");
+            var response = _activityService.GetActivityById(activityId);
+
+            return Ok(response);
+        }
     }
 }

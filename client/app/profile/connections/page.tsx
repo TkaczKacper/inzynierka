@@ -6,7 +6,6 @@ import {
   getAuthenticatedAthlete,
   getStreams,
   getToken,
-  getUserActivites,
   deauthorize,
 } from "@/utils/stravaUtils";
 import { useRouter } from "next/navigation";

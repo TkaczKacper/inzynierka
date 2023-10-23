@@ -152,3 +152,19 @@ export const getSyncedActivities = async () => {
     console.log(error);
   }
 };
+
+export const getActivityDataById = async (activityId: number) => {
+  try {
+    return await axios.get(
+      `${backend_url}/strava/activities/get-activity-by-id/${activityId}`,
+      {
+        withCredentials: true,
+        headers: {
+          Authorization: getCookie("jwtToken"),
+        },
+      },
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
