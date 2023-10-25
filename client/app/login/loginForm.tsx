@@ -3,10 +3,8 @@
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 
-import jwt_decode from "jwt-decode";
-import Cookies from "universal-cookie";
 import { useRouter } from "next/navigation";
-import { setCookie } from "cookies-next";
+import { getCookie, setCookie } from "cookies-next";
 import { useEffect } from "react";
 import { useUserContext } from "@/contexts/UserContextProvider";
 import axios, { Axios } from "axios";
@@ -24,8 +22,7 @@ export interface jwtdecoded {
   nbf: number;
 }
 
-const cookies = new Cookies();
-const jwt = cookies.get("jwtToken");
+const jwt = getCookie("jwtToken");
 const backend_url = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 const passwordRule =

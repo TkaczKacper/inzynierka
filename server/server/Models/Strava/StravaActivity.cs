@@ -45,20 +45,8 @@ namespace server.Models.Strava
         public double? IntensityFactor { get; set; }
         public double? VariabilityIndex { get; set; }
         public double? Tss { get; set; }
-
-        //streams
-        public List<int>? TimeStream { get; set; }
-        public List<float>? Distance { get; set; }
-        public List<float>? Velocity { get; set; }
-        public List<int>? Watts { get; set; }
-        public List<int>? Cadence { get; set; }
-        public List<int>? HeartRate { get; set; }
-        public List<int>? Temperature { get; set; }
-        public List<float>? Altitude { get; set; }
-        public List<float>? GradeSmooth { get; set; }
-        public List<bool>? Moving { get; set; }
-        public List<double>? Lat { get; set; } 
-        public List<double>? Lng { get; set; }
+        
+        public StravaActivityStreams ActivityStreams { get; set; }
 
         //foreign key property
         [ForeignKey("User")]

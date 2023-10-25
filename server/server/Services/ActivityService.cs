@@ -55,55 +55,15 @@ namespace server.Services
                     activitiesAdded.Add(id);
                     continue;
                 };
-                var streams = await _stravaApi.GetStreamsById(id, stravaClient);
+                
+                StravaActivityStreams streams = await _stravaApi.GetStreamsById(id, stravaClient);
+                
                 if (details is null || streams is null) break;
 
                 Console.WriteLine($"creating activity {id}");
 
-                Dictionary<string, List<int>> intStreams = new();
-                Dictionary<string, List<float>> floatStreams = new();
-                List<bool> movingStream = new List<bool>();
-                List<double> latStream = new List<double>();
-                List<double> lngStream = new List<double>();
                 List<StravaActivityLap> activityLaps = new List<StravaActivityLap>();
-                foreach (var stream in streams)
-                {
-                    string type = stream.type;
-                    if (type == "latlng")
-                    {
-                        foreach (object obj in stream.data)
-                        {
-                            string[] parts = obj.ToString().Trim('[', ']').Split(',');
-                            latStream.Add(double.Parse(parts[0]));
-                            lngStream.Add(double.Parse(parts[1]));
-                        }
-                        continue;
-                    }
-                    if (type == "moving")
-                    {
-                        foreach (object obj in stream.data)
-                        {
-                            movingStream.Add(bool.Parse(obj.ToString()));
-                        }
-                        continue;
-                    }
-                    if (type == "velocity_smooth" || type == "grade_smooth" || type == "distance" || type == "altitude")
-                    {
-                        floatStreams[type] = new List<float>();
-                        foreach (object obj in stream.data)
-                        {
-                            floatStreams[type].Add(float.Parse(obj.ToString()));
-                        }
-                    }
-                    else
-                    {
-                        intStreams[type] = new List<int>();
-                        foreach (object obj in stream.data)
-                        {
-                            intStreams[type].Add(int.Parse(obj.ToString()));
-                        }
-                    }
-                }
+                
 
                 foreach (var lap in details.Laps)
                 {
@@ -159,18 +119,7 @@ namespace server.Services
                         SummaryPolyline = details.Map?.summary_polyline,
                         DetailedPolyline = details.Map?.polyline,
                         Achievements = details.Achievement_count,
-                        TimeStream = intStreams.ContainsKey("time") ? intStreams["time"] : null,
-                        Distance = floatStreams.ContainsKey("distance") ? floatStreams["distance"] : null,
-                        Velocity = floatStreams.ContainsKey("velocity_smooth") ? floatStreams["velocity_smooth"] : null,
-                        Watts = intStreams.ContainsKey("watts") ? intStreams["watts"] : null,
-                        Cadence = intStreams.ContainsKey("cadence") ? intStreams["cadence"] : null,
-                        HeartRate = intStreams.ContainsKey("heartrate") ? intStreams["heartrate"] : null,
-                        Temperature = intStreams.ContainsKey("temp") ? intStreams["temp"] : null,
-                        Altitude = floatStreams.ContainsKey("altitude") ? floatStreams["altitude"] : null,
-                        GradeSmooth = floatStreams.ContainsKey("grade_smooth") ? floatStreams["grade_smooth"] : null,
-                        Moving = movingStream,
-                        Lat = latStream,
-                        Lng = lngStream,
+                        ActivityStreams = streams,
                         Laps = activityLaps,
                         UserProfile = user
                     };
@@ -184,12 +133,12 @@ namespace server.Services
                             * Math.Exp(multiplier * (details.Average_heartrate - (int)HrRest) / ((int)HrMax - (int)HrRest));
                         activity.Trimp = trimp;
                     }
-                    if (details.Device_watts && intStreams.ContainsKey("watts"))
+                    if (details.Device_watts && streams.Watts?.Count > 0) 
                     {
                         int FTP = userFtp is null ? 250 : (int)userFtp;
-                        List<double> avg = Enumerable.Range(0, intStreams["watts"]
+                        List<double> avg = Enumerable.Range(0, streams.Watts 
                             .Count - 29).
-                            Select(i => Math.Pow(intStreams["watts"].Skip(i).Take(30).Average(), 4)).ToList();
+                            Select(i => Math.Pow(streams.Watts.Skip(i).Take(30).Average(), 4)).ToList();
 
                         double NormalizedPower = Math.Pow(avg.Average(), 0.25);
                         double IntensityFactor = NormalizedPower / FTP;
