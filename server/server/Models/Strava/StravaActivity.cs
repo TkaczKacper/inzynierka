@@ -47,6 +47,7 @@ namespace server.Models.Strava
         public double? Tss { get; set; }
         
         public StravaActivityStreams ActivityStreams { get; set; }
+        public List<int>? PowerCurve { get; set; }
 
         //foreign key property
         [ForeignKey("User")]

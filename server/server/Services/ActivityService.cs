@@ -63,8 +63,16 @@ namespace server.Services
                 Console.WriteLine($"creating activity {id}");
 
                 List<StravaActivityLap> activityLaps = new List<StravaActivityLap>();
-                
 
+                List<int> activityPowerCurve = new List<int>();
+                if (streams.Watts.Count > 0)
+                {
+                    for (int i = 1; i < streams.Watts.Count; i++)
+                    {
+                        activityPowerCurve.Add(CalculateActivityPowerCurve(streams.Watts, i));
+                    }
+                } 
+                    
                 foreach (var lap in details.Laps)
                 {
                     StravaActivityLap activityLap = new StravaActivityLap()
@@ -121,6 +129,7 @@ namespace server.Services
                         Achievements = details.Achievement_count,
                         ActivityStreams = streams,
                         Laps = activityLaps,
+                        PowerCurve = activityPowerCurve,
                         UserProfile = user
                     };
                     if (details.Average_heartrate > 0 && HrMax is not null && HrRest is not null)
@@ -184,19 +193,32 @@ namespace server.Services
             return user == null ? throw new KeyNotFoundException("User not found.") : user;
         }
 
-        private string test()
+        private int CalculateActivityPowerCurve(List<int> watts, int k)
         {
-            var firstActivity = new DateOnly(2023, 6, 1);
-            List<DateOnly> date = new List<DateOnly>();
-            
-            while (firstActivity <= DateOnly.FromDateTime(DateTime.UtcNow.AddDays(42)))
+            int max = 0, curr_sum = 0;
+            //int curr_start = 0, start = 0, end = 0;
+
+            for (int i = 0; i < watts.Count; i++)
             {
-                date.Add(firstActivity);
-                firstActivity = firstActivity.AddDays(1);
+                curr_sum += watts[i];
+
+                if (i >= k)
+                    curr_sum -= watts[i - k];
+
+                if (i >= k - 1)
+                {
+                    if (curr_sum > max)
+                    {
+                        max = curr_sum;
+                        // end = curr_start;
+                        // start = curr_start - k + 1;
+                    }
+                }
+
+                //curr_start++;
             }
 
-            Console.WriteLine(date);
-            return "";
+            return max / k;
         }
     }
 }
