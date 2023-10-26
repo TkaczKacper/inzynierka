@@ -35,7 +35,11 @@ const page = () => {
               <h1>activity page</h1>
               <div style={{ height: 593, width: 890 }}>
                 <MapContainer center={[42, 22]} scrollWheelZoom={true}>
-                  <MapController polyline={activity.detailedPolyline} />
+                  <MapController
+                    polyline={activity.detailedPolyline}
+                    startLatLng={activity.startLatLng}
+                    endLatLng={activity.endLatLng}
+                  />
                   <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

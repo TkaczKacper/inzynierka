@@ -1,4 +1,5 @@
 ﻿import { Numeric } from "type-fest/source/numeric";
+import { LatLngLiteral } from "leaflet";
 
 export type AthleteInfo = {
   bio: string;
@@ -68,7 +69,7 @@ export type Activity = {
   elapsedTime: number;
   elevationHigh: number;
   elevationLow: number;
-  endLatLng: number[];
+  endLatLng: LatLngLiteral;
   gear: string;
   gradeSmooth: number[];
   hasPowerMeter: boolean;
@@ -84,7 +85,7 @@ export type Activity = {
   movingTime: number;
   normalizedPower: number;
   startDate: Date;
-  startLatLng: number[];
+  startLatLng: LatLngLiteral;
   stravaActivityID: number;
   summaryPolyline: string;
   timeStream: number[];
