@@ -1,6 +1,6 @@
 ﻿import { MapContainer, Polyline, TileLayer, useMap } from "react-leaflet";
 import React, { useEffect, useState } from "react";
-import { polylineDecoder } from "@/Maps/PolylineDecoder";
+import { polylineDecoder } from "@/maps/PolylineDecoder";
 import L, { LatLngLiteral, Map } from "leaflet";
 
 interface MapProps {

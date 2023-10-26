@@ -98,4 +98,5 @@ export type Activity = {
   velocity: number[];
   watts: number[];
   weightedAvgWatts: number[];
+  powerCurve: number[];
 };
