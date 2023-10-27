@@ -66,18 +66,27 @@ class ChartController extends Component<ChartProps> {
       }
       return skip--;
     });
-    console.log(this.props.data);
-    console.log(dataPoints);
     const stripLines = axisXstripLines();
     const options = {
       scales: {},
       title: {
         text: "Power curve",
       },
+      toolTip: {
+        shared: true,
+        contentFormatter: function (e: any) {
+          let time = parseDurationNumeric(e.entries[0].dataPoint.x);
+          let watt = e.entries[0].dataPoint.y;
+          let content = `Time: ${time} <br>`;
+          content += `Power: ${watt}W`;
+          return content;
+        },
+      },
       axisX: {
         labelAutoFit: false,
         crosshair: {
-          enabled: true, //disable here
+          enabled: true,
+          label: "",
         },
         stripLines: stripLines,
         logarithmic: true,
@@ -86,10 +95,12 @@ class ChartController extends Component<ChartProps> {
           return parseDurationNumeric(e.value);
         },
       },
+      axisY: {
+        suffix: "W",
+      },
       data: [
         {
           type: "line",
-          toolTipContent: "Time: {x}s, Watts: {y}",
           dataPoints: dataPoints,
         },
       ],
@@ -117,6 +128,7 @@ type stipLines = {
   labelBackgroundColor: string;
   labelWrap: boolean;
   labelMaxWidth: number;
+  opacity: number;
 };
 
 const axisXstripLines = () => {
@@ -127,7 +139,7 @@ const axisXstripLines = () => {
   index.map((value, index) => {
     stripLines.push({
       value: value,
-      color: "black",
+      color: "#black",
       thickness: 1,
       label: parseDurationNumeric(value),
       labelPlacement: "outside",
@@ -135,6 +147,7 @@ const axisXstripLines = () => {
       labelBackgroundColor: "transparent",
       labelWrap: false,
       labelMaxWidth: 100,
+      opacity: 0.3,
     });
   });
 
