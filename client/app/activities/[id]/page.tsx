@@ -10,6 +10,7 @@ import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import MapController from "@/maps/MapController";
 import ChartController from "@/charts/ChartController";
+
 const page = () => {
   const [activity, setActivity] = useState<Activity>();
   const [loading, setLoading] = useState(true);

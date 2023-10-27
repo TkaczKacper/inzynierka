@@ -13,10 +13,62 @@ interface ChartProps {
 class ChartController extends Component<ChartProps> {
   render() {
     const dataPoints: { x: number; y: number }[] = [];
+    let skip = 0;
     this.props.data.map((value, index) => {
-      return dataPoints.push({ x: index + 1, y: value });
+      if (index < 300) {
+        return dataPoints.push({ x: index + 1, y: value });
+      }
+      if (300 <= index && index < 600) {
+        if (skip == 0) {
+          skip = 4;
+          return dataPoints.push({ x: index + 1, y: value });
+        }
+        return skip--;
+      }
+      if (600 <= index && index < 1200) {
+        if (skip == 0) {
+          skip = 9;
+          return dataPoints.push({ x: index + 1, y: value });
+        }
+        return skip--;
+      }
+      if (1200 <= index && index < 2400) {
+        if (skip == 0) {
+          skip = 14;
+          return dataPoints.push({ x: index + 1, y: value });
+        }
+        return skip--;
+      }
+      if (2400 <= index && index < 3600) {
+        if (skip == 0) {
+          skip = 29;
+          return dataPoints.push({ x: index + 1, y: value });
+        }
+        return skip--;
+      }
+      if (3600 <= index && index < 7200) {
+        if (skip == 0) {
+          skip = 59;
+          return dataPoints.push({ x: index + 1, y: value });
+        }
+        return skip--;
+      }
+      if (3600 * 2 <= index && index < 3600 * 3) {
+        if (skip == 0) {
+          skip = 149;
+          return dataPoints.push({ x: index + 1, y: value });
+        }
+        return skip--;
+      }
+      if (skip == 0) {
+        skip = 299;
+        return dataPoints.push({ x: index + 1, y: value });
+      }
+      return skip--;
     });
     console.log(this.props.data);
+    console.log(dataPoints);
+    const stripLines = axisXstripLines();
     const options = {
       scales: {},
       title: {
@@ -27,56 +79,9 @@ class ChartController extends Component<ChartProps> {
         crosshair: {
           enabled: true, //disable here
         },
-        stripLines: [
-          {
-            value: 2,
-            color: "black",
-            thickness: 1,
-          },
-          {
-            value: 5,
-            color: "black",
-            thickness: 1,
-          },
-          {
-            value: 10,
-            color: "black",
-            thickness: 1,
-          },
-          {
-            value: 30,
-            color: "black",
-            thickness: 1,
-          },
-          {
-            value: 60,
-            color: "black",
-            thickness: 1,
-          },
-          {
-            value: 180,
-            color: "black",
-            thickness: 1,
-          },
-          {
-            value: 300,
-            color: "black",
-            thickness: 1,
-          },
-          {
-            value: 600,
-            color: "black",
-            thickness: 1,
-          },
-          {
-            value: 1200,
-            color: "black",
-            thickness: 1,
-          },
-        ],
+        stripLines: stripLines,
         logarithmic: true,
-        // interval: 0.2,
-        interval: Math.log10(1.6),
+        interval: 1110,
         labelFormatter: function (e: any) {
           return parseDurationNumeric(e.value);
         },
@@ -101,3 +106,37 @@ class ChartController extends Component<ChartProps> {
   }
 }
 export default ChartController;
+
+type stipLines = {
+  value: number;
+  color: string;
+  thickness: number;
+  label: string;
+  labelPlacement: string;
+  labelFontColor: string;
+  labelBackgroundColor: string;
+  labelWrap: boolean;
+  labelMaxWidth: number;
+};
+
+const axisXstripLines = () => {
+  const index = [2, 5, 10, 30, 60, 180, 300, 600, 1200, 3600, 7200, 18000];
+
+  const stripLines: stipLines[] = [];
+
+  index.map((value, index) => {
+    stripLines.push({
+      value: value,
+      color: "black",
+      thickness: 1,
+      label: parseDurationNumeric(value),
+      labelPlacement: "outside",
+      labelFontColor: "black",
+      labelBackgroundColor: "transparent",
+      labelWrap: false,
+      labelMaxWidth: 100,
+    });
+  });
+
+  return stripLines;
+};
