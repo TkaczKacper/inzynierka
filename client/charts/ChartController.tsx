@@ -1,7 +1,10 @@
 ﻿import React, { Component } from "react";
 // @ts-ignore
 import CanvasJSReact from "@canvasjs/react-charts";
-import { parseDurationNumeric } from "@/utils/parseDuration";
+import {
+  parseDurationExact,
+  parseDurationNumeric,
+} from "@/utils/parseDuration";
 
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
@@ -75,7 +78,7 @@ class ChartController extends Component<ChartProps> {
       toolTip: {
         shared: true,
         contentFormatter: function (e: any) {
-          let time = parseDurationNumeric(e.entries[0].dataPoint.x);
+          let time = parseDurationExact(e.entries[0].dataPoint.x);
           let watt = e.entries[0].dataPoint.y;
           let content = `Time: ${time} <br>`;
           content += `Power: ${watt}W`;
@@ -92,7 +95,7 @@ class ChartController extends Component<ChartProps> {
         logarithmic: true,
         interval: 1110,
         labelFormatter: function (e: any) {
-          return parseDurationNumeric(e.value);
+          return parseDurationExact(e.value);
         },
       },
       axisY: {
@@ -141,7 +144,7 @@ const axisXstripLines = () => {
       value: value,
       color: "#black",
       thickness: 1,
-      label: parseDurationNumeric(value),
+      label: parseDurationExact(value),
       labelPlacement: "outside",
       labelFontColor: "black",
       labelBackgroundColor: "transparent",

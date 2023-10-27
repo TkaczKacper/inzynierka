@@ -3,9 +3,9 @@
   const minutes = Math.floor((time - hours * 3600) / 60);
   const seconds = Math.floor(time - hours * 3600 - minutes * 60);
 
-  return `${hours > 0 ? hours + "h" : null} ${
-    time > 60 ? minutes + "m" : null
-  } ${seconds + "s"}`;
+  return `${hours > 0 ? hours + "h" : ""} ${minutes > 0 ? minutes + "m" : ""} ${
+    seconds > 0 ? seconds + "s" : ""
+  }`;
 };
 
 export const parseDurationNumeric = (time: number) => {
