@@ -12,11 +12,13 @@ import MapController from "@/maps/MapController";
 import ChartController from "@/charts/ChartController";
 import HrZoneChart from "@/charts/HrZoneChart";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import PowerZoneChart from "@/charts/PowerZoneChart";
 
 const page = () => {
   const [activity, setActivity] = useState<Activity>();
   const [loading, setLoading] = useState(true);
   const [userHrZones, setUserHrZones] = useLocalStorage("hrZones", {});
+  const [userPowerZones, setUserPowerZones] = useLocalStorage("powerZones", {});
   const { userId } = useUserContext();
 
   useEffect(() => {
@@ -51,6 +53,10 @@ const page = () => {
                 </MapContainer>
               </div>
               <HrZoneChart data={activity.hrTimeInZone} zones={userHrZones} />
+              <PowerZoneChart
+                data={activity.powerTimeInZone}
+                zones={userPowerZones}
+              />
               {activity.powerCurve.length > 0 ? (
                 <ChartController data={activity.powerCurve} />
               ) : null}

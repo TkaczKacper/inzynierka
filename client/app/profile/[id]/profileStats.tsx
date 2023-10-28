@@ -11,6 +11,7 @@ export const ProfileStats = () => {
   const [userHrZones, setUserHrZones] = useLocalStorage("hrZones", {});
 
   console.log(userPowerZones);
+  console.log(userHrZones);
   useEffect(() => {
     const stats = async () => {
       const res = await getAthleteStats();
