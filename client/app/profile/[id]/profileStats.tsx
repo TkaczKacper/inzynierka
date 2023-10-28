@@ -1,15 +1,23 @@
 ﻿import React, { useEffect, useState } from "react";
 import { getAthleteStats } from "@/utils/serverUtils";
 import { AthleteInfo, AthleteStats } from "@/app/profile/[id]/types";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 export const ProfileStats = () => {
   const [athleteStats, setAthleteStats] = useState<AthleteStats>();
   const [athleteInfo, setAthleteInfo] = useState<AthleteInfo>();
+
+  const [userPowerZones, setUserPowerZones] = useLocalStorage("powerZones", {});
+  const [userHrZones, setUserHrZones] = useLocalStorage("hrZones", {});
+
+  console.log(userPowerZones);
   useEffect(() => {
     const stats = async () => {
       const res = await getAthleteStats();
       setAthleteStats(res?.data.athleteStats);
       setAthleteInfo(res?.data.stravaProfileInfo);
+      setUserHrZones(res?.data.hrZones);
+      setUserPowerZones(res?.data.powerZones);
     };
     stats();
   }, []);

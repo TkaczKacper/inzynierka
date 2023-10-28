@@ -10,10 +10,13 @@ import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import MapController from "@/maps/MapController";
 import ChartController from "@/charts/ChartController";
+import HrZoneChart from "@/charts/HrZoneChart";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 const page = () => {
   const [activity, setActivity] = useState<Activity>();
   const [loading, setLoading] = useState(true);
+  const [userHrZones, setUserHrZones] = useLocalStorage("hrZones", {});
   const { userId } = useUserContext();
 
   useEffect(() => {
@@ -47,6 +50,7 @@ const page = () => {
                   />
                 </MapContainer>
               </div>
+              <HrZoneChart data={activity.hrTimeInZone} zones={userHrZones} />
               {activity.powerCurve.length > 0 ? (
                 <ChartController data={activity.powerCurve} />
               ) : null}

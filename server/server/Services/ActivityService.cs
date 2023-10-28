@@ -192,7 +192,10 @@ namespace server.Services
 
         public StravaActivity GetActivityById(long activityId)
         {
-            var activity = _context.StravaActivity.FirstOrDefault(sa => sa.ID == activityId);
+            var activity = _context.StravaActivity
+                .Include(sa => sa.HrTimeInZone)
+                .Include(sa => sa.PowerTimeInZone)
+                .FirstOrDefault(sa => sa.ID == activityId);
 
             return activity == null ? throw new KeyNotFoundException("Activity not found.") : activity;
         }

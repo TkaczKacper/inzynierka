@@ -1,7 +1,10 @@
-﻿namespace server.Models.Profile;
+﻿using System.Text.Json.Serialization;
+
+namespace server.Models.Profile;
 
 public class TimeInHrZone
 {
+    [JsonIgnore]
     public long Id { get; set; }
     public int TimeInZ1 { get; set; }
     public int TimeInZ2 { get; set; }

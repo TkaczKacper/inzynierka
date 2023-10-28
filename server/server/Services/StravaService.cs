@@ -144,11 +144,16 @@ namespace server.Services
             StravaProfile? profile = GetUserById(userId).StravaProfile;
             if (profile is null) return null;
             StravaProfileStats? stats = GetAthleteStats(profile.AthleteStatsId);
+
+            ProfileHeartRate? heartRate = _context.ProfileHeartRate.FirstOrDefault(phr => phr.UserID == userId);
+            ProfilePower? power = _context.ProfilePower.FirstOrDefault(pp => pp.UserID == userId);
             
             AthleteData response = new AthleteData
             {
                 AthleteStats = stats,
-                StravaProfileInfo = profile
+                StravaProfileInfo = profile,
+                HrZones = heartRate,
+                PowerZones = power
             };
             
             return response;

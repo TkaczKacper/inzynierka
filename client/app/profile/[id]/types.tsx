@@ -52,6 +52,24 @@ export type ActivityLap = {
   totalElevationGain: number;
 };
 
+export type hrTimeInZoneType = {
+  timeInZ1: number;
+  timeInZ2: number;
+  timeInZ3: number;
+  timeInZ4: number;
+  timeInZ5: number;
+};
+
+export type powerTimeInZoneType = {
+  timeInZ1: number;
+  timeInZ2: number;
+  timeInZ3: number;
+  timeInZ4: number;
+  timeInZ5: number;
+  timeInZ6: number;
+  timeInZ7: number;
+};
+
 export type Activity = {
   id: number;
   achievements: number;
@@ -99,4 +117,6 @@ export type Activity = {
   watts: number[];
   weightedAvgWatts: number[];
   powerCurve: number[];
+  hrTimeInZone: hrTimeInZoneType;
+  powerTimeInZone: powerTimeInZoneType;
 };

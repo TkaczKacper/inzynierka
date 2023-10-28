@@ -22,6 +22,7 @@ namespace server.Models.Profile
         public int? Zone5c { get; set; }
 
         //foreign key property
+        [JsonIgnore]
         [ForeignKey("Users")]
         public virtual Guid UserID { get; set; }
     }
