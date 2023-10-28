@@ -47,7 +47,9 @@ const page = () => {
                   />
                 </MapContainer>
               </div>
-              <ChartController data={activity.powerCurve} />
+              {activity.powerCurve.length > 0 ? (
+                <ChartController data={activity.powerCurve} />
+              ) : null}
             </>
           ) : (
             <>

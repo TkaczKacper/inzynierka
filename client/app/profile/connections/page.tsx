@@ -105,7 +105,7 @@ const page = () => {
   return (
     <div>
       <h1>Connections</h1>
-      {connectedAthlete?.id != undefined ? (
+      {connectedAthlete?.id !== undefined ? (
         <div>
           <h3>
             Connected as{" "}
@@ -119,11 +119,13 @@ const page = () => {
               Import rides from Strava.
             </Link>
           </div>
-          <div>
-            <Link href={"/profile/connections/quick-import"}>
-              Import only latest rides from Strava.
-            </Link>
-          </div>
+          {latestActivity > 0 ? (
+            <div>
+              <Link href={"/profile/connections/quick-import"}>
+                Import only latest rides from Strava.
+              </Link>
+            </div>
+          ) : null}
         </div>
       ) : (
         <div>

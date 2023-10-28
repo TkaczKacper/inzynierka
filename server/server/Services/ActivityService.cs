@@ -34,6 +34,13 @@ namespace server.Services
         public async Task<string> GetActivityDetails(string accesstoken, Guid? userId)
         {
             User user = await GetUserByIdAsync(userId);
+            
+            ProfilePower? powerZones = _context.ProfilePower
+                .FirstOrDefault(pp => pp.UserID == userId);
+            
+            ProfileHeartRate? hrZones = _context.ProfileHeartRate
+                .FirstOrDefault(hr => hr.UserID == userId);
+            
             List<long> ids = user.ActivitiesToFetch;
             List<long> activitiesAdded = new List<long>();
 
@@ -135,7 +142,7 @@ namespace server.Services
                     };
                     if (details.Average_heartrate > 0 && HrMax is not null && HrRest is not null && streams.HeartRate?.Count > 0)
                     {
-                        TimeInHrZone timeInHrZones = CalculateTimeInHrZones(streams.HeartRate, userId);
+                        TimeInHrZone timeInHrZones = CalculateTimeInHrZones(streams.HeartRate, userId, hrZones);
                         activity.HrTimeInZone = timeInHrZones;
                         
                         double multiplier = user.StravaProfile.Sex == "M" ? 1.92 : 1.67;
@@ -148,7 +155,7 @@ namespace server.Services
                     }
                     if (details.Device_watts && streams.Watts?.Count > 0)
                     {
-                        TimeInPowerZone timeInPowerZone = CalculateTimeInPowerZones(streams.Watts, userId);
+                        TimeInPowerZone timeInPowerZone = CalculateTimeInPowerZones(streams.Watts, userId, powerZones);
                         activity.PowerTimeInZone = timeInPowerZone;
                         
                         int FTP = userFtp is null ? 250 : (int)userFtp;
@@ -228,11 +235,8 @@ namespace server.Services
             return max / k;
         }
 
-        private TimeInHrZone CalculateTimeInHrZones(List<int> hr, Guid? userId)
+        private TimeInHrZone CalculateTimeInHrZones(List<int> hr, Guid? userId, ProfileHeartRate? hrZones)
         {
-            ProfileHeartRate? hrZones = _context.ProfileHeartRate
-                .FirstOrDefault(hr => hr.UserID == userId);
-            
             int Zone1 = 0;
             int Zone2 = 0;
             int Zone3 = 0;
@@ -260,11 +264,8 @@ namespace server.Services
             return timeInHrZone;
         }
 
-        private TimeInPowerZone CalculateTimeInPowerZones(List<int> watts, Guid? userId)
+        private TimeInPowerZone CalculateTimeInPowerZones(List<int> watts, Guid? userId, ProfilePower? powerZones)
         {
-            ProfilePower? powerZones = _context.ProfilePower
-                .FirstOrDefault(pp => pp.UserID == userId);
-
             int Zone1 = 0;
             int Zone2 = 0;
             int Zone3 = 0;
