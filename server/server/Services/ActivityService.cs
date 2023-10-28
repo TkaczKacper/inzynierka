@@ -3,6 +3,7 @@ using server.Helpers;
 using server.Models;
 using server.Models.Strava;
 using System.Globalization;
+using server.Models.Profile;
 
 namespace server.Services
 {
@@ -71,8 +72,8 @@ namespace server.Services
                     {
                         activityPowerCurve.Add(CalculateActivityPowerCurve(streams.Watts, i));
                     }
-                } 
-                    
+                }
+
                 foreach (var lap in details.Laps)
                 {
                     StravaActivityLap activityLap = new StravaActivityLap()
@@ -132,8 +133,9 @@ namespace server.Services
                         PowerCurve = activityPowerCurve,
                         UserProfile = user
                     };
-                    if (details.Average_heartrate > 0 && HrMax is not null && HrRest is not null)
+                    if (details.Average_heartrate > 0 && HrMax is not null && HrRest is not null && streams.HeartRate?.Count > 0)
                     {
+                        TimeInHrZone timeInHrZones = CalculateTimeInHrZones(streams.HeartRate, streams.Moving, userId);
                         double multiplier = user.StravaProfile.Sex == "M" ? 1.92 : 1.67;
                         double trimp = 
                             details.Moving_time / 60 
@@ -141,6 +143,7 @@ namespace server.Services
                             * 0.64 
                             * Math.Exp(multiplier * (details.Average_heartrate - (int)HrRest) / ((int)HrMax - (int)HrRest));
                         activity.Trimp = trimp;
+                        activity.HrTimeInZone = timeInHrZones;
                     }
                     if (details.Device_watts && streams.Watts?.Count > 0) 
                     {
@@ -219,6 +222,41 @@ namespace server.Services
             }
 
             return max / k;
+        }
+
+        private TimeInHrZone? CalculateTimeInHrZones(List<int> hr, List<bool> moving, Guid? userId)
+        {
+            ProfileHeartRate? hrZones = _context.ProfileHeartRate
+                .FirstOrDefault(hr => hr.UserID == userId);
+            
+            int Zone1 = 0;
+            int Zone2 = 0;
+            int Zone3 = 0;
+            int Zone4 = 0;
+            int Zone5 = 0;
+            
+            for (int i = 0; i < hr.Count; i++)
+            {
+                if (moving[i])
+                {
+                    if (hr[i] >= hrZones.Zone5) Zone5++;
+                    if (hr[i] >= hrZones.Zone4 && hr[i] < hrZones.Zone5) Zone4++;
+                    if (hr[i] >= hrZones.Zone3 && hr[i] < hrZones.Zone4) Zone3++;
+                    if (hr[i] >= hrZones.Zone2 && hr[i] < hrZones.Zone3) Zone2++;
+                    if (hr[i] >= hrZones.Zone1 && hr[i] < hrZones.Zone2) Zone1++;
+                }
+            }
+
+            TimeInHrZone timeInHrZone = new TimeInHrZone
+            {
+                TimeInZ1 = Zone1,
+                TimeInZ2 = Zone2,
+                TimeInZ3 = Zone3,
+                TimeInZ4 = Zone4,
+                TimeInZ5 = Zone5
+            };
+
+            return timeInHrZone;
         }
     }
 }

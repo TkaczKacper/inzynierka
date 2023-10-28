@@ -95,21 +95,19 @@ namespace server.Services
         public ProfileHeartRate ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId)
         {
             int hrMax = (int)profileHeartRate.HrMax;
-            HrZones userHrZones = new HrZones
-            {
-                Zone1 = (int)Math.Round(0.5 * hrMax),
-                Zone2 = (int)Math.Round(0.6 * hrMax),
-                Zone3 = (int)Math.Round(0.7 * hrMax),
-                Zone4 = (int)Math.Round(0.8 * hrMax),
-                Zone5 = (int)Math.Round(0.9 * hrMax)
-            };
 
             ProfileHeartRate userHr = new ProfileHeartRate
             {
                 DateAdded = DateOnly.FromDateTime(DateTime.UtcNow),
                 HrRest = profileHeartRate.HrRest,
                 HrMax = hrMax,
-                HrZones = userHrZones,
+                
+                Zone1 = (int)Math.Round(0.5 * hrMax),
+                Zone2 = (int)Math.Round(0.6 * hrMax),
+                Zone3 = (int)Math.Round(0.7 * hrMax),
+                Zone4 = (int)Math.Round(0.8 * hrMax),
+                Zone5 = (int)Math.Round(0.9 * hrMax),
+                
                 UserID = userId
             };
             _context.ProfileHeartRate.Add(userHr);
@@ -132,7 +130,7 @@ namespace server.Services
                 Zone4 = (int)Math.Floor(0.90 * ftp),
                 Zone5 = (int)Math.Floor(1.05 * ftp),
                 Zone6 = (int)Math.Floor(1.20 * ftp),
-                Zone7 = (int)Math.Floor(1.50 * ftp)
+                Zone7 = (int)Math.Floor(1.75 * ftp)
             };
 
             _context.ProfilePower.Add(power);

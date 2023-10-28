@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using server.Models.Profile;
 
 namespace server.Models.Strava
 {
@@ -48,6 +49,9 @@ namespace server.Models.Strava
         
         public StravaActivityStreams ActivityStreams { get; set; }
         public List<int>? PowerCurve { get; set; }
+        
+        public TimeInHrZone? HrTimeInZone { get; set; }
+        public TimeInPowerZone? PowerTimeInZone { get; set; }
 
         //foreign key property
         [ForeignKey("User")]

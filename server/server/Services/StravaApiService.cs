@@ -206,6 +206,7 @@ namespace server.Services
             List<float> grade_processed = new List<float>();
             List<double> lat_processed = new List<double>();
             List<double> lng_processed = new List<double>();
+            List<bool> moving = new List<bool>();
             List<bool> havedata = new List<bool>();    
             
             int sec = 1;
@@ -232,6 +233,7 @@ namespace server.Services
                     grade_processed.Add(grade[i]);
                     lat_processed.Add(lat[i]);
                     lng_processed.Add(lng[i]);
+                    moving.Add(true);
                     havedata.Add(true);
 
                     if (watts.Count > 0) 
@@ -261,6 +263,7 @@ namespace server.Services
                             grade_processed.Add(0);
                             lat_processed.Add(lat[i]);
                             lng_processed.Add(lng[i]);
+                            moving.Add(false);
                             havedata.Add(false);
                             
                             if (watts.Count > 0)
@@ -284,6 +287,7 @@ namespace server.Services
                             grade_processed.Add((grade[i - 1] + grade[i]) / 2);
                             lat_processed.Add(lat[i]); 
                             lng_processed.Add(lng[i]);
+                            moving.Add(true);
                             havedata.Add(false);
                             
                             if (watts.Count > 0)
@@ -313,6 +317,7 @@ namespace server.Services
             grade_processed.Add(grade[lastIdx]);
             lat_processed.Add(lat[lastIdx]);
             lng_processed.Add(lng[lastIdx]);
+            moving.Add(true);
             havedata.Add(true);
             
             if (watts.Count > 0)
@@ -340,6 +345,7 @@ namespace server.Services
                 GradeSmooth = grade_processed,
                 Lat = lat_processed,
                 Lng = lng_processed,
+                Moving = moving,
                 HaveData = havedata
             };
 

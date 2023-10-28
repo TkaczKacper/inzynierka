@@ -11,7 +11,15 @@ namespace server.Models.Profile
         public int? HrRest { get; set; }
         public int? HrMax { get; set; }
         public int? LTHr { get; set; }
-        public HrZones? HrZones { get; set; }
+        
+        public int Zone1 { get; set; }
+        public int Zone2 { get; set; }
+        public int Zone3 { get; set; }
+        public int Zone4 { get; set; }
+        public int? Zone5 { get; set; }
+        public int? Zone5a { get; set; }
+        public int? Zone5b { get; set; }
+        public int? Zone5c { get; set; }
 
         //foreign key property
         [ForeignKey("Users")]
