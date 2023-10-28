@@ -19,9 +19,6 @@ public class StravaActivityStreams
     public List<double>? Lat { get; set; } 
     public List<double>? Lng { get; set; }
     
-    [JsonIgnore]
-    public List<bool>? Moving { get; set; }
-    
     //foreign key property
     [ForeignKey("StravaActivity")]
     public virtual long StravaActivityId { get; set; }

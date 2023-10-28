@@ -18,45 +18,45 @@ class ChartController extends Component<ChartProps> {
     const dataPoints: { x: number; y: number }[] = [];
     let skip = 0;
     this.props.data.map((value, index) => {
-      if (index < 300) {
+      if (index < 299) {
         return dataPoints.push({ x: index + 1, y: value });
       }
-      if (300 <= index && index < 600) {
+      if (299 <= index && index < 599) {
         if (skip == 0) {
           skip = 4;
           return dataPoints.push({ x: index + 1, y: value });
         }
         return skip--;
       }
-      if (600 <= index && index < 1200) {
+      if (599 <= index && index < 1199) {
         if (skip == 0) {
           skip = 9;
           return dataPoints.push({ x: index + 1, y: value });
         }
         return skip--;
       }
-      if (1200 <= index && index < 2400) {
+      if (1199 <= index && index < 2399) {
         if (skip == 0) {
           skip = 14;
           return dataPoints.push({ x: index + 1, y: value });
         }
         return skip--;
       }
-      if (2400 <= index && index < 3600) {
+      if (2399 <= index && index < 3599) {
         if (skip == 0) {
           skip = 29;
           return dataPoints.push({ x: index + 1, y: value });
         }
         return skip--;
       }
-      if (3600 <= index && index < 7200) {
+      if (3599 <= index && index < 7199) {
         if (skip == 0) {
           skip = 59;
           return dataPoints.push({ x: index + 1, y: value });
         }
         return skip--;
       }
-      if (3600 * 2 <= index && index < 3600 * 3) {
+      if (7199 <= index && index < 10799) {
         if (skip == 0) {
           skip = 149;
           return dataPoints.push({ x: index + 1, y: value });

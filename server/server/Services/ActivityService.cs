@@ -135,7 +135,9 @@ namespace server.Services
                     };
                     if (details.Average_heartrate > 0 && HrMax is not null && HrRest is not null && streams.HeartRate?.Count > 0)
                     {
-                        TimeInHrZone timeInHrZones = CalculateTimeInHrZones(streams.HeartRate, streams.Moving, userId);
+                        TimeInHrZone timeInHrZones = CalculateTimeInHrZones(streams.HeartRate, userId);
+                        activity.HrTimeInZone = timeInHrZones;
+                        
                         double multiplier = user.StravaProfile.Sex == "M" ? 1.92 : 1.67;
                         double trimp = 
                             details.Moving_time / 60 
@@ -143,10 +145,12 @@ namespace server.Services
                             * 0.64 
                             * Math.Exp(multiplier * (details.Average_heartrate - (int)HrRest) / ((int)HrMax - (int)HrRest));
                         activity.Trimp = trimp;
-                        activity.HrTimeInZone = timeInHrZones;
                     }
-                    if (details.Device_watts && streams.Watts?.Count > 0) 
+                    if (details.Device_watts && streams.Watts?.Count > 0)
                     {
+                        TimeInPowerZone timeInPowerZone = CalculateTimeInPowerZones(streams.Watts, userId);
+                        activity.PowerTimeInZone = timeInPowerZone;
+                        
                         int FTP = userFtp is null ? 250 : (int)userFtp;
                         List<double> avg = Enumerable.Range(0, streams.Watts 
                             .Count - 29).
@@ -224,7 +228,7 @@ namespace server.Services
             return max / k;
         }
 
-        private TimeInHrZone? CalculateTimeInHrZones(List<int> hr, List<bool> moving, Guid? userId)
+        private TimeInHrZone CalculateTimeInHrZones(List<int> hr, Guid? userId)
         {
             ProfileHeartRate? hrZones = _context.ProfileHeartRate
                 .FirstOrDefault(hr => hr.UserID == userId);
@@ -237,14 +241,11 @@ namespace server.Services
             
             for (int i = 0; i < hr.Count; i++)
             {
-                if (moving[i])
-                {
                     if (hr[i] >= hrZones.Zone5) Zone5++;
                     if (hr[i] >= hrZones.Zone4 && hr[i] < hrZones.Zone5) Zone4++;
                     if (hr[i] >= hrZones.Zone3 && hr[i] < hrZones.Zone4) Zone3++;
                     if (hr[i] >= hrZones.Zone2 && hr[i] < hrZones.Zone3) Zone2++;
                     if (hr[i] >= hrZones.Zone1 && hr[i] < hrZones.Zone2) Zone1++;
-                }
             }
 
             TimeInHrZone timeInHrZone = new TimeInHrZone
@@ -257,6 +258,44 @@ namespace server.Services
             };
 
             return timeInHrZone;
+        }
+
+        private TimeInPowerZone CalculateTimeInPowerZones(List<int> watts, Guid? userId)
+        {
+            ProfilePower? powerZones = _context.ProfilePower
+                .FirstOrDefault(pp => pp.UserID == userId);
+
+            int Zone1 = 0;
+            int Zone2 = 0;
+            int Zone3 = 0;
+            int Zone4 = 0;
+            int Zone5 = 0;
+            int Zone6 = 0;
+            int Zone7 = 0;
+
+            for (int i = 0; i < watts.Count; i++)
+            {
+                if (watts[i] >= powerZones.Zone7) Zone7++;
+                if (watts[i] >= powerZones.Zone6 && watts[i] < powerZones.Zone7) Zone6++;
+                if (watts[i] >= powerZones.Zone5 && watts[i] < powerZones.Zone6) Zone5++;
+                if (watts[i] >= powerZones.Zone4 && watts[i] < powerZones.Zone5) Zone4++;
+                if (watts[i] >= powerZones.Zone3 && watts[i] < powerZones.Zone4) Zone3++;
+                if (watts[i] >= powerZones.Zone2 && watts[i] < powerZones.Zone3) Zone2++;
+                if (watts[i] >= powerZones.Zone1 && watts[i] < powerZones.Zone2) Zone1++;
+            }
+
+            TimeInPowerZone timeInPowerZone = new TimeInPowerZone
+            {
+                TimeInZ1 = Zone1,
+                TimeInZ2 = Zone2,
+                TimeInZ3 = Zone3,
+                TimeInZ4 = Zone4,
+                TimeInZ5 = Zone5,
+                TimeInZ6 = Zone6,
+                TimeInZ7 = Zone7,
+            };
+
+            return timeInPowerZone;
         }
     }
 }

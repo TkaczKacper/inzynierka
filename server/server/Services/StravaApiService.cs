@@ -221,7 +221,7 @@ namespace server.Services
             List<float> grade = streams.GradeSmooth;
             List<double> lat = streams.Lat;
             List<double> lng = streams.Lng;
-            
+
             for (int i = 1; i < time.Count - 1; i++)
             {
                 if (time[i-1] + 1 == time[i])
@@ -252,9 +252,9 @@ namespace server.Services
                 else
                 {
                     int j = 0; 
-                    while (time[i-1] + j != time[i])
+                    while (time[i - 1] + j != time[i])
                     {
-                        if (time[i - i] - time[i] > 3)
+                        if (time[i] - time[i - 1] > 3)
                         {
                             time_processed.Add(sec);
                             distance_processed.Add(0);
@@ -263,8 +263,8 @@ namespace server.Services
                             grade_processed.Add(0);
                             lat_processed.Add(lat[i]);
                             lng_processed.Add(lng[i]);
-                            moving.Add(false);
                             havedata.Add(false);
+                            moving.Add(false);
                             
                             if (watts.Count > 0)
                                 watts_processed.Add(0);
@@ -277,6 +277,8 @@ namespace server.Services
 
                             if (temp.Count > 0)
                                 temp_processed.Add(0);
+                            sec++;
+                            j++;
                         }
                         else
                         {
@@ -287,7 +289,6 @@ namespace server.Services
                             grade_processed.Add((grade[i - 1] + grade[i]) / 2);
                             lat_processed.Add(lat[i]); 
                             lng_processed.Add(lng[i]);
-                            moving.Add(true);
                             havedata.Add(false);
                             
                             if (watts.Count > 0)
@@ -301,12 +302,12 @@ namespace server.Services
 
                             if (temp.Count > 0)
                                 temp_processed.Add((temp[i] + temp[i + 1]) / 2);
+                            sec++;
+                            j++;
                         }
-
-                        sec++;
-                        j++;
                     }
                 }
+
             }
 
             int lastIdx = time.Count - 1;
@@ -345,7 +346,6 @@ namespace server.Services
                 GradeSmooth = grade_processed,
                 Lat = lat_processed,
                 Lng = lng_processed,
-                Moving = moving,
                 HaveData = havedata
             };
 
