@@ -53,6 +53,18 @@ namespace server.Services
             
             List<ProfileWeeklySummary> weeklySummariesToAdd = new List<ProfileWeeklySummary>();
             List<int[]> existingWeeklySummaryToAdd = new List<int[]>();
+
+            List<ProfileMonthlySummary>? monthlySummary = _context.ProfileMonthlySummary
+                .Where(sum => sum.UserId == userId)
+                .ToList();
+            List<int[]> existingMonthlySummary = new List<int[]>();
+            foreach (var obj in monthlySummary)
+            {
+               existingMonthlySummary.Add(new []{obj.Year, obj.Month}); 
+            }
+
+            List<ProfileMonthlySummary> monthlySummariesToAdd = new List<ProfileMonthlySummary>();
+            List<int[]> existingMonthlySummaryToAdd = new List<int[]>();
             
             List<long> ids = user.ActivitiesToFetch;
             List<long> activitiesAdded = new List<long>();
@@ -203,7 +215,7 @@ namespace server.Services
                             activity.StartDate.Year,
                             weekNumber
                         })));
-                    if (weeklySummaryId > -1)
+                    if (weeklySummaryId >= 0)
                     {
                         weeklySummary[weeklySummaryId].TotalDistance += activity.TotalDistance;
                         weeklySummary[weeklySummaryId].TotalElevationGain += activity.TotalElevationGain;
@@ -220,7 +232,7 @@ namespace server.Services
                                 activity.StartDate.Year,
                                 weekNumber 
                             })));
-                        if (weeklySummaryToAddId > -1)
+                        if (weeklySummaryToAddId >= 0)
                         {
                             weeklySummariesToAdd[weeklySummaryToAddId].TotalDistance += activity.TotalDistance;
                             weeklySummariesToAdd[weeklySummaryToAddId].TotalElevationGain += activity.TotalElevationGain;
@@ -244,7 +256,7 @@ namespace server.Services
                                 lastDay = activity.StartDate.AddDays(7 - (int)activity.StartDate.DayOfWeek);
                             }
                             
-                            ProfileWeeklySummary newWeeklySummary = new ProfileWeeklySummary()
+                            ProfileWeeklySummary newWeeklySummary = new ProfileWeeklySummary
                             {
                                 Year = activity.StartDate.Year,
                                 Week = weekNumber,
@@ -264,6 +276,54 @@ namespace server.Services
                         }
                     }
                     
+                    //monthly summary
+                    int monthlySummaryId = existingMonthlySummary.IndexOf(
+                        existingMonthlySummary.Find(arr =>
+                            arr.SequenceEqual(new[] { activity.StartDate.Year, activity.StartDate.Month })));
+
+                    if (monthlySummaryId >= 0)
+                    {
+                        monthlySummary[monthlySummaryId].TotalDistance += activity.TotalDistance;
+                        monthlySummary[monthlySummaryId].TotalElevationGain += activity.TotalElevationGain;
+                        monthlySummary[monthlySummaryId].TotalCalories += activity.Calories;
+                        monthlySummary[monthlySummaryId].TotalMovingTime += activity.MovingTime;
+                        monthlySummary[monthlySummaryId].TotalElapsedTime += activity.ElapsedTime;
+                        monthlySummary[monthlySummaryId].TrainingLoad += trainingLoad;
+                    }
+                    else
+                    {
+                        int monthlySummaryToAddId = existingMonthlySummaryToAdd.IndexOf(
+                            existingMonthlySummaryToAdd.Find(arr =>
+                                arr.SequenceEqual(new[] { activity.StartDate.Year, activity.StartDate.Month })));
+                        if (monthlySummaryToAddId >= 0)
+                        {
+                            monthlySummariesToAdd[monthlySummaryToAddId].TotalDistance += activity.TotalDistance;
+                            monthlySummariesToAdd[monthlySummaryToAddId].TotalElevationGain +=
+                                activity.TotalElevationGain;
+                            monthlySummariesToAdd[monthlySummaryToAddId].TotalCalories += activity.Calories;
+                            monthlySummariesToAdd[monthlySummaryToAddId].TotalMovingTime += activity.MovingTime;
+                            monthlySummariesToAdd[monthlySummaryToAddId].TotalElapsedTime += activity.ElapsedTime;
+                            monthlySummariesToAdd[monthlySummaryToAddId].TrainingLoad += trainingLoad;
+                        }
+                        else
+                        {
+                            ProfileMonthlySummary newMonthlySummary = new ProfileMonthlySummary
+                            {
+                                Year = activity.StartDate.Year,
+                                Month = activity.StartDate.Month,
+                                TotalDistance = activity.TotalDistance,
+                                TotalElevationGain = activity.TotalElevationGain,
+                                TotalMovingTime = activity.MovingTime,
+                                TotalElapsedTime = activity.ElapsedTime,
+                                TrainingLoad = trainingLoad,
+                                TotalCalories = activity.Calories,
+                                UserId = (Guid)userId
+                            };
+                            monthlySummariesToAdd.Add(newMonthlySummary);
+                            existingMonthlySummaryToAdd.Add(new []{activity.StartDate.Year, activity.StartDate.Month});
+                        }
+                    }
+                    
                     activities.Add(activity);
                     activitiesAdded.Add(id);
                 }
@@ -272,6 +332,7 @@ namespace server.Services
             
             _context.StravaActivity.AddRange(activities);
             _context.ProfileWeeklySummary.AddRange(weeklySummariesToAdd);
+            _context.ProfileMonthlySummary.AddRange(monthlySummariesToAdd);
             _context.SaveChanges();
 
             List<long> remainingActivities = ids.Where(id => !activitiesAdded.Contains(id)).ToList();
