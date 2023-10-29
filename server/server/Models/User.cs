@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using server.Models.Profile;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using server.Models.Profile.Summary;
 using server.Models.Strava;
 
 namespace server.Models
@@ -26,6 +27,8 @@ namespace server.Models
         
         [JsonIgnore]
         public virtual List<StravaActivity>? Activities { get; set; }
+        
+        public List<ProfileWeeklySummary>? ProfileWeeklySummaries { get; set; }
         
         [JsonIgnore]
         public List<long>? ActivitiesToFetch { get; set; }

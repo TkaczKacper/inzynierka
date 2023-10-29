@@ -52,13 +52,18 @@ const page = () => {
                   />
                 </MapContainer>
               </div>
-              <HrZoneChart data={activity.hrTimeInZone} zones={userHrZones} />
-              <PowerZoneChart
-                data={activity.powerTimeInZone}
-                zones={userPowerZones}
-              />
+              {activity.hrTimeInZone ? (
+                <HrZoneChart data={activity.hrTimeInZone} zones={userHrZones} />
+              ) : null}
+
               {activity.powerCurve.length > 0 ? (
-                <ChartController data={activity.powerCurve} />
+                <>
+                  <PowerZoneChart
+                    data={activity.powerTimeInZone}
+                    zones={userPowerZones}
+                  />
+                  <ChartController data={activity.powerCurve} />
+                </>
               ) : null}
             </>
           ) : (

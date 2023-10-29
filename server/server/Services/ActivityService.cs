@@ -4,6 +4,7 @@ using server.Models;
 using server.Models.Strava;
 using System.Globalization;
 using server.Models.Profile;
+using server.Models.Profile.Summary;
 
 namespace server.Services
 {
@@ -40,6 +41,18 @@ namespace server.Services
             
             ProfileHeartRate? hrZones = _context.ProfileHeartRate
                 .FirstOrDefault(hr => hr.UserID == userId);
+
+            List<ProfileWeeklySummary>? weeklySummary = _context.ProfileWeeklySummary
+                .Where(sum => sum.UserId == userId)
+                .ToList();
+            List<int[]> existingWeeklySummary = new List<int[]>();
+            foreach (var obj in weeklySummary)
+            {
+                existingWeeklySummary.Add(new []{obj.Year, obj.Week});
+            }
+            
+            List<ProfileWeeklySummary> weeklySummariesToAdd = new List<ProfileWeeklySummary>();
+            List<int[]> existingWeeklySummaryToAdd = new List<int[]>();
             
             List<long> ids = user.ActivitiesToFetch;
             List<long> activitiesAdded = new List<long>();
@@ -55,6 +68,9 @@ namespace server.Services
             int? HrMax = user.UserHeartRate?.LastOrDefault()?.HrMax;
             int? userFtp = user.UserPower?.LastOrDefault()?.FTP;
 
+            CultureInfo myCI = new CultureInfo("pl-PL");
+            Calendar myCal = myCI.Calendar;
+            
             foreach (long id in ids)
             {
                 var details = await _stravaApi.GetDetailsById(id, stravaClient);
@@ -67,9 +83,10 @@ namespace server.Services
                 StravaActivityStreams streams = await _stravaApi.GetStreamsById(id, stravaClient);
                 
                 if (details is null || streams is null) break;
-
+                
                 Console.WriteLine($"creating activity {id}");
-
+                
+                
                 List<StravaActivityLap> activityLaps = new List<StravaActivityLap>();
 
                 List<int> activityPowerCurve = new List<int>();
@@ -140,6 +157,7 @@ namespace server.Services
                         PowerCurve = activityPowerCurve,
                         UserProfile = user
                     };
+                    double trainingLoad = 0;
                     if (details.Average_heartrate > 0 && HrMax is not null && HrRest is not null && streams.HeartRate?.Count > 0)
                     {
                         TimeInHrZone timeInHrZones = CalculateTimeInHrZones(streams.HeartRate, userId, hrZones);
@@ -152,6 +170,7 @@ namespace server.Services
                             * 0.64 
                             * Math.Exp(multiplier * (details.Average_heartrate - (int)HrRest) / ((int)HrMax - (int)HrRest));
                         activity.Trimp = trimp;
+                        trainingLoad = trimp;
                     }
                     if (details.Device_watts && streams.Watts?.Count > 0)
                     {
@@ -172,7 +191,79 @@ namespace server.Services
                         activity.IntensityFactor = IntensityFactor;
                         activity.VariabilityIndex = VariabilityIndex;
                         activity.Tss = Tss;
+                        trainingLoad = Tss;
                     }
+                    
+                    //weekly summary
+                    int weekNumber = myCal.GetWeekOfYear(activity.StartDate, CalendarWeekRule.FirstFourDayWeek,
+                        DayOfWeek.Monday); 
+                    int weeklySummaryId = existingWeeklySummary.IndexOf(
+                        existingWeeklySummary.Find(arr => arr.SequenceEqual(new[]
+                        {
+                            activity.StartDate.Year,
+                            weekNumber
+                        })));
+                    if (weeklySummaryId > -1)
+                    {
+                        weeklySummary[weeklySummaryId].TotalDistance += activity.TotalDistance;
+                        weeklySummary[weeklySummaryId].TotalElevationGain += activity.TotalElevationGain;
+                        weeklySummary[weeklySummaryId].TotalCalories += activity.Calories;
+                        weeklySummary[weeklySummaryId].TotalMovingTime += activity.MovingTime;
+                        weeklySummary[weeklySummaryId].TotalElapsedTime += activity.ElapsedTime;
+                        weeklySummary[weeklySummaryId].TrainingLoad += trainingLoad;
+                    }
+                    else
+                    {
+                        int weeklySummaryToAddId = existingWeeklySummaryToAdd.IndexOf(
+                            existingWeeklySummaryToAdd.Find(arr => arr.SequenceEqual(new[]
+                            {
+                                activity.StartDate.Year,
+                                weekNumber 
+                            })));
+                        if (weeklySummaryToAddId > -1)
+                        {
+                            weeklySummariesToAdd[weeklySummaryToAddId].TotalDistance += activity.TotalDistance;
+                            weeklySummariesToAdd[weeklySummaryToAddId].TotalElevationGain += activity.TotalElevationGain;
+                            weeklySummariesToAdd[weeklySummaryToAddId].TotalCalories += activity.Calories;
+                            weeklySummariesToAdd[weeklySummaryToAddId].TotalMovingTime += activity.MovingTime;
+                            weeklySummariesToAdd[weeklySummaryToAddId].TotalElapsedTime += activity.ElapsedTime;
+                            weeklySummariesToAdd[weeklySummaryToAddId].TrainingLoad += trainingLoad;
+                        }
+                        else
+                        {
+                            DateTime firstDay = DateTime.Now;
+                            DateTime lastDay = DateTime.Now;
+                            if ((int)activity.StartDate.DayOfWeek == 0)
+                            {
+                                firstDay = activity.StartDate.AddDays(-6);
+                                lastDay = activity.StartDate;
+                            }
+                            else
+                            {
+                                firstDay = activity.StartDate.AddDays(1 - (int)activity.StartDate.DayOfWeek);
+                                lastDay = activity.StartDate.AddDays(7 - (int)activity.StartDate.DayOfWeek);
+                            }
+                            
+                            ProfileWeeklySummary newWeeklySummary = new ProfileWeeklySummary()
+                            {
+                                Year = activity.StartDate.Year,
+                                Week = weekNumber,
+                                WeekStartDate = firstDay,
+                                WeekEndDate = lastDay,
+                                TotalDistance = activity.TotalDistance,
+                                TotalElevationGain = activity.TotalElevationGain,
+                                TotalCalories = activity.Calories,
+                                TotalMovingTime = activity.MovingTime,
+                                TotalElapsedTime = activity.ElapsedTime,
+                                TrainingLoad = trainingLoad,
+                                UserId = (Guid)userId
+                            };
+                            
+                            weeklySummariesToAdd.Add(newWeeklySummary);
+                            existingWeeklySummaryToAdd.Add(new[] { activity.StartDate.Year, weekNumber });
+                        }
+                    }
+                    
                     activities.Add(activity);
                     activitiesAdded.Add(id);
                 }
@@ -180,6 +271,7 @@ namespace server.Services
             }
             
             _context.StravaActivity.AddRange(activities);
+            _context.ProfileWeeklySummary.AddRange(weeklySummariesToAdd);
             _context.SaveChanges();
 
             List<long> remainingActivities = ids.Where(id => !activitiesAdded.Contains(id)).ToList();
