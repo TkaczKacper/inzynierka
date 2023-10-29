@@ -207,8 +207,8 @@ namespace server.Services
             List<double> lat_processed = new List<double>();
             List<double> lng_processed = new List<double>();
             List<bool> moving = new List<bool>();
-            List<bool> havedata = new List<bool>();    
-            
+            List<bool> havedata = new List<bool>();
+
             int sec = 1;
             List<int> time = streams.TimeStream;
             List<float> distance = streams.Distance;
@@ -222,21 +222,26 @@ namespace server.Services
             List<double> lat = streams.Lat;
             List<double> lng = streams.Lng;
 
+
             for (int i = 1; i < time.Count - 1; i++)
             {
-                if (time[i-1] + 1 == time[i])
+                if (time[i - 1] + 1 == time[i])
                 {
                     time_processed.Add(sec);
                     distance_processed.Add(distance[i]);
                     velocity_processed.Add(velocity[i]);
                     altitude_processed.Add(altitude[i]);
                     grade_processed.Add(grade[i]);
-                    lat_processed.Add(lat[i]);
-                    lng_processed.Add(lng[i]);
                     moving.Add(true);
                     havedata.Add(true);
 
-                    if (watts.Count > 0) 
+                    if (lat.Count > 0)
+                    {
+                        lat_processed.Add(lat[i]);
+                        lng_processed.Add(lng[i]);
+                    }
+
+                    if (watts.Count > 0)
                         watts_processed.Add(watts[i]);
 
                     if (cadence.Count > 0)
@@ -251,7 +256,7 @@ namespace server.Services
                 }
                 else
                 {
-                    int j = 0; 
+                    int j = 0;
                     while (time[i - 1] + j != time[i])
                     {
                         if (time[i] - time[i - 1] > 3)
@@ -261,17 +266,20 @@ namespace server.Services
                             velocity_processed.Add(0);
                             altitude_processed.Add(0);
                             grade_processed.Add(0);
-                            lat_processed.Add(lat[i]);
-                            lng_processed.Add(lng[i]);
                             havedata.Add(false);
                             moving.Add(false);
-                            
+
+                            if (lat.Count > 0)
+                            {
+                                lat_processed.Add(lat[i]);
+                                lng_processed.Add(lng[i]);
+                            }
                             if (watts.Count > 0)
                                 watts_processed.Add(0);
 
                             if (cadence.Count > 0)
                                 cadence_processed.Add(0);
-                            
+
                             if (hr.Count > 0)
                                 hr_processed.Add(0);
 
@@ -287,16 +295,19 @@ namespace server.Services
                             velocity_processed.Add((velocity[i - 1] + velocity[i]) / 2);
                             altitude_processed.Add((altitude[i - 1] + altitude[i]) / 2);
                             grade_processed.Add((grade[i - 1] + grade[i]) / 2);
-                            lat_processed.Add(lat[i]); 
-                            lng_processed.Add(lng[i]);
                             havedata.Add(false);
-                            
+
+                            if (lat.Count > 0)
+                            {
+                                lat_processed.Add(lat[i]);
+                                lng_processed.Add(lng[i]);
+                            }
                             if (watts.Count > 0)
                                 watts_processed.Add((watts[i] + watts[i + 1]) / 2);
 
                             if (cadence.Count > 0)
                                 cadence_processed.Add((cadence[i] + cadence[i + 1]) / 2);
-                            
+
                             if (hr.Count > 0)
                                 hr_processed.Add((hr[i] + hr[i + 1]) / 2);
 
@@ -310,29 +321,33 @@ namespace server.Services
 
             }
 
+
             int lastIdx = time.Count - 1;
             time_processed.Add(sec);
             distance_processed.Add(distance[lastIdx]);
             velocity_processed.Add(velocity[lastIdx]);
             altitude_processed.Add(altitude[lastIdx]);
             grade_processed.Add(grade[lastIdx]);
-            lat_processed.Add(lat[lastIdx]);
-            lng_processed.Add(lng[lastIdx]);
             moving.Add(true);
             havedata.Add(true);
-            
+            if (lat.Count > 0)
+            {
+                lat_processed.Add(lat[lastIdx]);
+                lng_processed.Add(lng[lastIdx]);
+            }
+
             if (watts.Count > 0)
                 watts_processed.Add(watts[lastIdx]);
-            
+
             if (cadence.Count > 0)
                 cadence_processed.Add(cadence[lastIdx]);
-                                
+
             if (hr.Count > 0)
                 hr_processed.Add(hr[lastIdx]);
-        
+
             if (temp.Count > 0)
                 temp_processed.Add(temp[lastIdx]);
-            
+
             StravaActivityStreams streamsProcessed = new StravaActivityStreams
             {
                 TimeStream = time_processed,
@@ -348,7 +363,7 @@ namespace server.Services
                 Lng = lng_processed,
                 HaveData = havedata
             };
-
+            
             return streamsProcessed;
         }
     }
