@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using server.Authorization;
-using server.Responses;
 using server.Services;
 
 namespace server.Controllers
@@ -16,9 +15,11 @@ namespace server.Controllers
         
         public StravaController(
             IStravaService stravaService, 
+            IActivityService activityService,
             IJwtUtils jwtUtils)
         {
             _stravaService = stravaService;
+            _activityService = activityService;
             _jwtUtils = jwtUtils;
         }
         

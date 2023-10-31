@@ -43,6 +43,7 @@ public class ProfileController : ControllerBase
     public IActionResult HrUpdate([FromBody] ProfileHeartRate heartRate)
     {
         var userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
+        Console.WriteLine(Request.Cookies.Count);
         var response = _stravaService.ProfileHeartRateUpdate(heartRate, (Guid)userId);
 
         return Ok(response);
