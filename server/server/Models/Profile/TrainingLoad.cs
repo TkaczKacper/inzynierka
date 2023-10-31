@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace server.Models.Profile;
 
 public class TrainingLoad
 {
+    [JsonIgnore]
     public long Id { get; set; }
     public DateOnly Date { get; set; }
     public int TrainingStressScore { get; set; }
@@ -25,6 +27,7 @@ public class TrainingLoad
     public float StressBalanceHr { get; set; }
     
     // foreign key property
+    [JsonIgnore]
     [ForeignKey("User")]
     public virtual Guid UserId { get; set; }
 }

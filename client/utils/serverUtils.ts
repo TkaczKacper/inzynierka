@@ -168,3 +168,19 @@ export const getActivityDataById = async (activityId: number) => {
     console.log(error);
   }
 };
+
+export const getUserTrainingLoad = async () => {
+  try {
+    return await axios.get(
+      `${backend_url}/strava/profile/get-user-training-load`,
+      {
+        withCredentials: true,
+        headers: {
+          Authorization: getCookie("jwtToken"),
+        },
+      },
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};

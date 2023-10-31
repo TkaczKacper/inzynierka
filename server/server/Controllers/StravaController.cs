@@ -129,5 +129,15 @@ namespace server.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet("profile/get-user-training-load")]
+        public IActionResult GetUserTrainingLoadData()
+        {
+            Guid? userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
+
+            var trainingLoadData = _activityService.GetUserTrainingLoad(userId);
+
+            return Ok(trainingLoadData);
+        }
     }
 }
