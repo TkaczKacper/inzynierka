@@ -15,11 +15,9 @@ namespace server.Controllers
         private IJwtUtils _jwtUtils;
         
         public StravaController(
-            IActivityService activityService,
             IStravaService stravaService, 
             IJwtUtils jwtUtils)
         {
-            _activityService = activityService;
             _stravaService = stravaService;
             _jwtUtils = jwtUtils;
         }
@@ -54,16 +52,6 @@ namespace server.Controllers
             var process = await _activityService.GetActivityDetails(stravaAccessToken, userID);
             
             return Ok($"Done. {process}");
-        }
-
-
-        [HttpGet("activities/get-activity-by-id/{activityId:long}")]
-        public IActionResult GetActivityById(long activityId)
-        {
-            Console.WriteLine($"activity: {activityId}");
-            var response = _activityService.GetActivityById(activityId);
-
-            return Ok(response);
         }
     }
 }
