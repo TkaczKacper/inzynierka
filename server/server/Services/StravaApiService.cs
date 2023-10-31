@@ -230,10 +230,14 @@ namespace server.Services
                     time_processed.Add(sec);
                     distance_processed.Add(distance[i]);
                     velocity_processed.Add(velocity[i]);
-                    altitude_processed.Add(altitude[i]);
-                    grade_processed.Add(grade[i]);
                     moving.Add(true);
                     havedata.Add(true);
+
+                    if (altitude.Count > 0)
+                    {
+                        altitude_processed.Add(altitude[i]);
+                        grade_processed.Add(grade[i]);
+                    }
 
                     if (lat.Count > 0)
                     {
@@ -264,16 +268,21 @@ namespace server.Services
                             time_processed.Add(sec);
                             distance_processed.Add(0);
                             velocity_processed.Add(0);
-                            altitude_processed.Add(0);
-                            grade_processed.Add(0);
                             havedata.Add(false);
                             moving.Add(false);
+
+                            if (altitude.Count > 0)
+                            {
+                                grade_processed.Add(0);
+                                altitude_processed.Add(0);
+                            }
 
                             if (lat.Count > 0)
                             {
                                 lat_processed.Add(lat[i]);
                                 lng_processed.Add(lng[i]);
                             }
+
                             if (watts.Count > 0)
                                 watts_processed.Add(0);
 
@@ -293,15 +302,20 @@ namespace server.Services
                             time_processed.Add(sec);
                             distance_processed.Add((distance[i - 1] + distance[i]) / 2);
                             velocity_processed.Add((velocity[i - 1] + velocity[i]) / 2);
-                            altitude_processed.Add((altitude[i - 1] + altitude[i]) / 2);
-                            grade_processed.Add((grade[i - 1] + grade[i]) / 2);
                             havedata.Add(false);
 
+                            if (altitude.Count > 0)
+                            {
+                                altitude_processed.Add((altitude[i - 1] + altitude[i]) / 2);
+                                grade_processed.Add((grade[i - 1] + grade[i]) / 2);
+                            }
+                            
                             if (lat.Count > 0)
                             {
                                 lat_processed.Add(lat[i]);
                                 lng_processed.Add(lng[i]);
                             }
+
                             if (watts.Count > 0)
                                 watts_processed.Add((watts[i] + watts[i + 1]) / 2);
 
@@ -320,16 +334,23 @@ namespace server.Services
                 }
 
             }
+            
+
 
 
             int lastIdx = time.Count - 1;
             time_processed.Add(sec);
             distance_processed.Add(distance[lastIdx]);
             velocity_processed.Add(velocity[lastIdx]);
-            altitude_processed.Add(altitude[lastIdx]);
-            grade_processed.Add(grade[lastIdx]);
             moving.Add(true);
             havedata.Add(true);
+            
+            if (altitude.Count > 0)
+            {
+                altitude_processed.Add(altitude[lastIdx]);
+                grade_processed.Add(grade[lastIdx]);
+            }
+            
             if (lat.Count > 0)
             {
                 lat_processed.Add(lat[lastIdx]);

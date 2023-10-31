@@ -65,6 +65,13 @@ namespace server.Services
 
             List<ProfileMonthlySummary> monthlySummariesToAdd = new List<ProfileMonthlySummary>();
             List<int[]> existingMonthlySummaryToAdd = new List<int[]>();
+
+            List<TrainingLoad>? trainingLoads = _context.TrainingLoad
+                .Where(tl => tl.UserId == userId)
+                .ToList();
+
+            List<TrainingLoad>? trainingLoadsToAdd = new List<TrainingLoad>();
+            
             
             List<long> ids = user.ActivitiesToFetch;
             List<long> activitiesAdded = new List<long>();
@@ -97,7 +104,6 @@ namespace server.Services
                 if (details is null || streams is null) break;
                 
                 Console.WriteLine($"creating activity {id}");
-                
                 
                 List<StravaActivityLap> activityLaps = new List<StravaActivityLap>();
 
@@ -324,12 +330,38 @@ namespace server.Services
                         }
                     }
                     
+                    // training load
+                    int tlIndex = trainingLoads.IndexOf(trainingLoads
+                        .Find(trainingLoad => 
+                            trainingLoad.Date == DateOnly.FromDateTime(activity.StartDate)));
+                    
+                    if (tlIndex >= 0)
+                    {
+                        trainingLoads[tlIndex].TrainingImpulse += activity.Trimp > 0 ? (int)activity.Trimp : 0;
+                        trainingLoads[tlIndex].TrainingStressScore += activity.Tss > 0 ? (int)activity.Tss : 0;
+                    }
+                    else
+                    {
+                        trainingLoadsToAdd.Add(new TrainingLoad
+                        {
+                            Date = DateOnly.FromDateTime(activity.StartDate),
+                            TrainingStressScore = activity.Tss > 0 ? (int)activity.Tss : 0, 
+                            TrainingImpulse = activity.Trimp > 0 ? (int)activity.Trimp : 0,
+                            UserId = (Guid)userId
+                        });
+                    }
+                    
                     activities.Add(activity);
                     activitiesAdded.Add(id);
                 }
                 catch (Exception ex) { Console.WriteLine("ERROR" + ex.Message); }
             }
-            
+
+            foreach (var trainingLoad in trainingLoads)
+            {
+                _context.TrainingLoad.Update(trainingLoad);
+            }
+            _context.TrainingLoad.AddRange(trainingLoadsToAdd);
             _context.StravaActivity.AddRange(activities);
             _context.ProfileWeeklySummary.AddRange(weeklySummariesToAdd);
             _context.ProfileMonthlySummary.AddRange(monthlySummariesToAdd);
