@@ -10,7 +10,7 @@ export const updateProfileInfo = async (
 ) => {
   try {
     const response = await axios.post(
-      `${backend_url}/strava/profile/update`,
+      `${backend_url}/profile/update`,
       {
         StravaRefreshToken: refresh_token,
         ProfileID: profile.id,
@@ -41,15 +41,12 @@ export const updateProfileInfo = async (
 
 export const getAthleteActivities = async () => {
   try {
-    const response = await axios.get(
-      `${backend_url}/strava/profile/get-activities`,
-      {
-        withCredentials: true,
-        headers: {
-          Authorization: getCookie("jwtToken"),
-        },
+    const response = await axios.get(`${backend_url}/profile/get-activities`, {
+      withCredentials: true,
+      headers: {
+        Authorization: getCookie("jwtToken"),
       },
-    );
+    });
     console.log(response);
     return response;
   } catch (err) {
@@ -85,7 +82,7 @@ export const getActivitiesDetails = async (activitiesId: number[]) => {
 export const updateFtp = async (ftp: number) => {
   try {
     const response = await axios.post(
-      `${backend_url}/strava/profile/power-update`,
+      `${backend_url}/profile/power-update`,
       {
         FTP: ftp,
       },
@@ -105,7 +102,7 @@ export const updateFtp = async (ftp: number) => {
 export const updateHr = async (hrRest: number, hrMax: number) => {
   try {
     const response = await axios.post(
-      `${backend_url}/strava/profile/hr-update`,
+      `${backend_url}/profile/hr-update`,
       {
         HrRest: hrRest,
         HrMax: hrMax,
@@ -125,7 +122,7 @@ export const updateHr = async (hrRest: number, hrMax: number) => {
 
 export const getAthleteStats = async () => {
   try {
-    const res = await axios.get(`${backend_url}/strava/get-athlete-stats`, {
+    const res = await axios.get(`${backend_url}/profile/get-athlete-stats`, {
       withCredentials: true,
       headers: {
         Authorization: getCookie("jwtToken"),
@@ -140,7 +137,7 @@ export const getAthleteStats = async () => {
 
 export const getSyncedActivities = async () => {
   try {
-    const res = await axios.get(`${backend_url}/strava/get-synced-activites`, {
+    const res = await axios.get(`${backend_url}/profile/get-synced-activites`, {
       withCredentials: true,
       headers: {
         Authorization: getCookie("jwtToken"),
@@ -171,15 +168,12 @@ export const getActivityDataById = async (activityId: number) => {
 
 export const getUserTrainingLoad = async () => {
   try {
-    return await axios.get(
-      `${backend_url}/strava/profile/get-user-training-load`,
-      {
-        withCredentials: true,
-        headers: {
-          Authorization: getCookie("jwtToken"),
-        },
+    return await axios.get(`${backend_url}/profile/get-user-training-load`, {
+      withCredentials: true,
+      headers: {
+        Authorization: getCookie("jwtToken"),
       },
-    );
+    });
   } catch (error) {
     console.log(error);
   }
