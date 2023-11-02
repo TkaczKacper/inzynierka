@@ -145,8 +145,13 @@ namespace server.Services
             if (profile is null) return null;
             StravaProfileStats? stats = GetAthleteStats(profile.AthleteStatsId);
 
-            ProfileHeartRate? heartRate = _context.ProfileHeartRate.FirstOrDefault(phr => phr.UserID == userId);
-            ProfilePower? power = _context.ProfilePower.FirstOrDefault(pp => pp.UserID == userId);
+            List<ProfileHeartRate>? heartRate = _context.ProfileHeartRate
+                .Where(phr => phr.UserID == userId)
+                .ToList();
+
+            List<ProfilePower>? power = _context.ProfilePower
+                .Where(pp => pp.UserID == userId)
+                .ToList();
             
             AthleteData response = new AthleteData
             {

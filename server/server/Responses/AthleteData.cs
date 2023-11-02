@@ -8,6 +8,6 @@ public class AthleteData
     public StravaProfileStats AthleteStats { get; set; }
     public StravaProfile StravaProfileInfo { get; set; }
     
-    public ProfileHeartRate? HrZones { get; set; }
-    public ProfilePower? PowerZones { get; set; }
+    public List<ProfileHeartRate>? HrZones { get; set; }
+    public List<ProfilePower>? PowerZones { get; set; }
 }
