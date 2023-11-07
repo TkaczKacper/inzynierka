@@ -43,7 +43,6 @@ public class ProfileController : ControllerBase
     public IActionResult HrUpdate([FromBody] ProfileHeartRate heartRate)
     {
         var userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
-        Console.WriteLine(Request.Cookies.Count);
         var response = _stravaService.ProfileHeartRateUpdate(heartRate, (Guid)userId);
 
         return Ok(response);
@@ -54,7 +53,6 @@ public class ProfileController : ControllerBase
     public IActionResult PowerUpdate([FromBody] ProfilePower power)
     {
         var userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
-    
         var response = _stravaService.ProfilePowerUpdate(power, (Guid)userId);
     
         return Ok(response);
@@ -75,7 +73,6 @@ public class ProfileController : ControllerBase
     public IActionResult GetUserTrainingLoadData()
     {
         Guid? userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
-    
         var trainingLoadData = _activityService.GetUserTrainingLoad(userId);
     
         return Ok(trainingLoadData);

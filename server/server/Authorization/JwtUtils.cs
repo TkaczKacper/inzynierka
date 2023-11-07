@@ -48,7 +48,6 @@ namespace server.Authorization
 
         public Guid? ValidateJwtToken(string? token)
         {
-            Console.WriteLine(token);
             if (token == null) return null;
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -70,8 +69,6 @@ namespace server.Authorization
                 var jwtToken = (JwtSecurityToken)validatedToken;
                 var userId = Guid.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
 
-                Console.WriteLine(jwtToken);
-                Console.WriteLine($"xd");
                 return userId;
             }
             catch

@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using server.Models;
 using server.Models.Profile;
 using server.Models.Profile.Summary;
-using server.Models.Responses.Strava.AthleteStats.cs;
 using server.Models.Strava;
 
 namespace server.Helpers

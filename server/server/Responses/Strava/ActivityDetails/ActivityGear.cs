@@ -1,4 +1,4 @@
-﻿namespace server.Models.Responses.Strava.ActivityDetails
+﻿namespace server.Responses.Strava.ActivityDetails
 {
     public class ActivityGear
     {

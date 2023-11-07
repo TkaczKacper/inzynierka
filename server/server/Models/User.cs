@@ -1,6 +1,4 @@
-using Microsoft.EntityFrameworkCore;
 using server.Models.Profile;
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using server.Models.Profile.Summary;
 using server.Models.Strava;

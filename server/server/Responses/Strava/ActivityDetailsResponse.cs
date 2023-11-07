@@ -1,7 +1,6 @@
-﻿using server.Models.Responses.Strava.ActivityDetails;
-using server.Models.Strava;
+﻿using server.Responses.Strava.ActivityDetails;
 
-namespace server.Models.Responses.Strava
+namespace server.Responses.Strava
 {
     public class ActivityDetailsResponse
     {

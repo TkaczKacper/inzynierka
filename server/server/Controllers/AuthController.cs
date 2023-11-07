@@ -28,9 +28,15 @@ namespace server.Controllers
             try
             {
                 Response.Cookies.Append("strava_refresh_token", response.StravaRefreshToken);
-            } catch(Exception ex){}
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            
             return Ok(response);
         }
+        
 
         [AllowAnonymous]
         [HttpPost("register")]
@@ -42,12 +48,12 @@ namespace server.Controllers
             return Ok(response);
         }
 
+        
         [AllowAnonymous]
         [HttpPost("logout")]
         public IActionResult Logout() 
         {
             var token = Request.Cookies["refreshToken"];
-            Console.WriteLine("Logged out");
 
             if (string.IsNullOrEmpty(token))
                 return BadRequest(new { message = "Token is required." });
@@ -59,21 +65,21 @@ namespace server.Controllers
             Response.Cookies.Delete("strava_refresh_token");
             return Ok(new { message = "Logged out."});
         }
+        
+        
         [AllowAnonymous]
         [HttpGet("renew-token")]
         public IActionResult RenewAccessToken(){
             string? token = Request.Cookies["refreshToken"];
-            Console.WriteLine('1');
             if (string.IsNullOrEmpty(token)) {
-            Console.WriteLine('2');
                 return BadRequest(new { message = "Token is required." });
             }
-            Console.WriteLine('3');
             var response = _userService.RenewAccessToken(token);
             setTokenCookie(response.RefreshToken);
             return Ok(response);
             
         }
+        
 
         // helper methods
         private void setTokenCookie(string token)

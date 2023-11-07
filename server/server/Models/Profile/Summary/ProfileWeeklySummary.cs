@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace server.Models.Profile.Summary;
+﻿namespace server.Models.Profile.Summary;
 
 public class ProfileWeeklySummary
 {

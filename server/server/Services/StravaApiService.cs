@@ -1,7 +1,7 @@
 ﻿using server.Models.Profile;
-using server.Models.Responses.Strava.ActivityStreams;
-using server.Models.Responses.Strava;
-using server.Models.Responses.Strava.AthleteStats.cs;
+using server.Responses.Strava.ActivityStreams;
+using server.Responses.Strava;
+using server.Responses.Strava.AthleteStats;
 using server.Models.Strava;
 
 namespace server.Services
@@ -15,7 +15,6 @@ namespace server.Services
 
     public class StravaApiService : IStravaApiService
     {
-
 
         public async Task<ActivityDetailsResponse> GetDetailsById(long id, HttpClient stravaClient)
         {

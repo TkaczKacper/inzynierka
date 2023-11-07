@@ -1,4 +1,4 @@
-﻿namespace server.Models.Responses.Strava.AthleteStats.cs;
+﻿namespace server.Responses.Strava.AthleteStats;
 
 public class StatsTotal
 {

@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
-
-namespace server.Models.Strava
+﻿namespace server.Models.Strava
 {
     public class StravaActivityLap
     {

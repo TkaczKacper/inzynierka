@@ -1,4 +1,4 @@
-﻿namespace server.Models.Responses.Strava.ActivityStreams
+﻿namespace server.Responses.Strava.ActivityStreams
 {
     public class Streams
     {

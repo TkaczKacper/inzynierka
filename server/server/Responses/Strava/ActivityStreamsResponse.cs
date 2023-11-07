@@ -1,4 +1,4 @@
-﻿using server.Models.Responses.Strava.ActivityStreams;
+﻿using server.Responses.Strava.ActivityStreams;
 
 namespace server.Models.Responses.Strava
 {
