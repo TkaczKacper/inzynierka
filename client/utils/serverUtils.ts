@@ -178,3 +178,16 @@ export const getUserTrainingLoad = async () => {
     console.log(error);
   }
 };
+
+export const deleteHrEntry = async (id: number) => {
+  try {
+    return await axios.delete(`${backend_url}/profile/hr-delete-entry/${id}`, {
+      withCredentials: true,
+      headers: {
+        Authorization: getCookie("jwtToken"),
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};

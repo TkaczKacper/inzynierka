@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 import styles from "./navbar.module.css";
 import Link from "next/link";
@@ -41,6 +41,8 @@ const navbar = () => {
         </>
       ) : (
         <>
+          <Link href={"/profile/heartrate-management"}>Hr</Link>
+          <Link href={"/profile/power-management"}>Power</Link>
           <Link href={`/profile/${userId}`}>Profile</Link>
           <Link href={"/profile/connections"}>Connections</Link>
           <button onClick={logoutHandler}>Logout</button>
