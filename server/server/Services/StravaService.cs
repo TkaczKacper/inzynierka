@@ -16,6 +16,7 @@ namespace server.Services
         ProfileHeartRate ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId);
         string ProfileHeartRateDelete(long entryId, Guid? userId);
         ProfilePower ProfilePowerUpdate(ProfilePower profilePower, Guid userId);
+        string ProfilePowerDelete(long entryId, Guid? userId);
         AthleteData GetProfileData(Guid? userId);
         IEnumerable<StravaActivity> GetAthleteActivities(Guid? userId, DateTime? lastActivityDate, int? perPage);
         List<long> GetSyncedActivitiesId(Guid? userId);
@@ -156,6 +157,22 @@ namespace server.Services
 
             return power;
         }
+        
+        public string ProfilePowerDelete(long entryId, Guid? userId)
+        {
+            ProfilePower? powerEntry = _context.ProfilePower
+                .FirstOrDefault(pwr => pwr.Id == entryId && pwr.UserID == userId);
+
+            if (powerEntry is null)
+            {
+                throw new AppException("Entry not found.");
+            }
+            
+            _context.ProfilePower.Remove(powerEntry);
+            _context.SaveChanges();
+
+            return "Deleted";
+        } 
 
         public AthleteData GetProfileData(Guid? userId)
         {

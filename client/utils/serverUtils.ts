@@ -191,3 +191,19 @@ export const deleteHrEntry = async (id: number) => {
     console.log(error);
   }
 };
+
+export const deletePowerEntry = async (id: number) => {
+  try {
+    return await axios.delete(
+      `${backend_url}/profile/power-delete-entry/${id}`,
+      {
+        withCredentials: true,
+        headers: {
+          Authorization: getCookie("jwtToken"),
+        },
+      },
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};

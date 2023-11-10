@@ -27,10 +27,11 @@ export const HrUpdateForm = ({ data, setData }: any) => {
     <div>
       <Formik
         initialValues={initialValues}
-        onSubmit={(values, { setSubmitting }) => {
+        onSubmit={async (values, { setSubmitting }) => {
           console.log(values);
           setSubmitting(true);
-          submitHandler(values);
+          await submitHandler(values);
+          setSubmitting(false);
         }}
       >
         {({ isSubmitting }) => (

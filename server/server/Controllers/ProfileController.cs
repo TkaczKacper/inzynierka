@@ -68,6 +68,15 @@ public class ProfileController : ControllerBase
         return Ok(response);
     }
     
+    [HttpDelete("power-delete-entry/{id:int}")]
+    public IActionResult PowerDeleteEntry(int id)
+    {
+        var userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
+
+        var response = _stravaService.ProfilePowerDelete(id, userId);
+
+        return Ok(response);
+    }
     
     [HttpGet("get-activities")]
     public IActionResult GetUserActivities()
