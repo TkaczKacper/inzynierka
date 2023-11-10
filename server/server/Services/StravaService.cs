@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using server.Helpers;
 using server.Models;
@@ -13,6 +14,7 @@ namespace server.Services
         Task<StravaProfile> ProfileUpdate(StravaProfile profileInfo, Guid? userId, string? accesstoken, string? refreshtoken);
         Task<string> SaveActivitiesToFetch(List<long> activityIds, Guid? userId);
         ProfileHeartRate ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId);
+        string ProfileHeartRateDelete(long entryId, Guid? userId);
         ProfilePower ProfilePowerUpdate(ProfilePower profilePower, Guid userId);
         AthleteData GetProfileData(Guid? userId);
         IEnumerable<StravaActivity> GetAthleteActivities(Guid? userId, DateTime? lastActivityDate, int? perPage);
@@ -115,6 +117,22 @@ namespace server.Services
 
             return userHr;
         }
+
+        public string ProfileHeartRateDelete(long entryId, Guid? userId)
+        {
+            ProfileHeartRate? hrEntry = _context.ProfileHeartRate
+                .FirstOrDefault(hr => hr.ID == entryId && hr.UserID == userId);
+
+            if (hrEntry is null)
+            {
+                throw new AppException("Entry not found.");
+            }
+            
+            _context.ProfileHeartRate.Remove(hrEntry);
+            _context.SaveChanges();
+
+            return "Deleted";
+        } 
         
         public ProfilePower ProfilePowerUpdate(ProfilePower profilePower, Guid userId)
         {

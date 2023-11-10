@@ -5,7 +5,6 @@ namespace server.Models.Profile
 {
     public class ProfilePower
     {
-        [JsonIgnore]
         public long Id { get; set; }
         public DateOnly DateAdded { get; set; }
         public int? FTP { get; set; }

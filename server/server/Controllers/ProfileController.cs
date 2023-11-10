@@ -47,6 +47,16 @@ public class ProfileController : ControllerBase
 
         return Ok(response);
     }
+
+    [HttpDelete("hr-delete-entry/{id:int}")]
+    public IActionResult HrDeleteEntry(int id)
+    {
+        var userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
+
+        var response = _stravaService.ProfileHeartRateDelete(id, userId);
+
+        return Ok(response);
+    }
     
     
     [HttpPost("power-update")]
@@ -103,5 +113,6 @@ public class ProfileController : ControllerBase
                 
         return Ok(response);
     }
+    
 
 }

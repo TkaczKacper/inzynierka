@@ -5,7 +5,6 @@ namespace server.Models.Profile
 {
     public class ProfileHeartRate
     {
-        [JsonIgnore]
         public long ID { get; set; }
         public DateOnly DateAdded { get; set; }
         public int? HrRest { get; set; }
