@@ -18,7 +18,7 @@ export type hrZonesType = {
 };
 
 const page = () => {
-  const [data, setData] = useState<hrZonesType[] | null>(null);
+  const [data, setData] = useState<hrZonesType[]>([]);
 
   useEffect(() => {
     const userHrZones = localStorage.getItem("hrZones");
@@ -37,7 +37,7 @@ const page = () => {
     <>
       <HrUpdateForm data={data} setData={setData} />
 
-      {data ? (
+      {data.length > 0 ? (
         <>
           <table>
             <thead>

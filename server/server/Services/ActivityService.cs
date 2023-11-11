@@ -520,26 +520,26 @@ namespace server.Services
 
             float prev_lts_hr = alfa_lts * trainingLoads[0].TrainingImpulse;
             float prev_sts_hr = alfa_sts * trainingLoads[0].TrainingImpulse;
-            trainingLoads[0].LongTermStressHr = prev_lts_hr;
-            trainingLoads[0].ShortTermStressHr = prev_sts_hr;
+            trainingLoads[0].LongTermStressHr = (int)prev_lts_hr;
+            trainingLoads[0].ShortTermStressHr = (int)prev_sts_hr;
 
             float prev_lts = alfa_lts * trainingLoads[0].TrainingImpulse;
             float prev_sts = alfa_sts * trainingLoads[0].TrainingImpulse;
-            trainingLoads[0].LongTermStress = prev_lts;
-            trainingLoads[0].ShortTermStress = prev_sts;
+            trainingLoads[0].LongTermStress = (int)prev_lts;
+            trainingLoads[0].ShortTermStress = (int)prev_sts;
 
             if (trainingLoads[0].TrainingStressScore > 0)
             {
                 prev_lts = alfa_lts * trainingLoads[0].TrainingStressScore;
                 prev_sts = alfa_sts * trainingLoads[0].TrainingStressScore;
-                trainingLoads[0].LongTermStress = prev_lts;
-                trainingLoads[0].ShortTermStress = prev_sts;
+                trainingLoads[0].LongTermStress = (int)prev_lts;
+                trainingLoads[0].ShortTermStress = (int)prev_sts;
             }
 
             float prev_lts_p = alfa_lts * trainingLoads[0].TrainingStressScore;
             float prev_sts_p = alfa_sts * trainingLoads[0].TrainingStressScore;
-            trainingLoads[0].LongTermStressPower = prev_lts_p;
-            trainingLoads[0].ShortTermStressPower = prev_sts_p;
+            trainingLoads[0].LongTermStressPower = (int)prev_lts_p;
+            trainingLoads[0].ShortTermStressPower = (int)prev_sts_p;
 
             for (int i = 1; i < trainingLoads.Count; i++)
             {
@@ -562,17 +562,17 @@ namespace server.Services
                         {
                             Date = prev_date,
 
-                            LongTermStress = curr_lts,
-                            ShortTermStress = curr_sts,
-                            StressBalance = curr_lts - curr_sts,
+                            LongTermStress = (int)curr_lts,
+                            ShortTermStress = (int)curr_sts,
+                            StressBalance = (int)(curr_lts - curr_sts),
 
-                            LongTermStressPower = curr_lts_p,
-                            ShortTermStressPower = curr_sts_p,
-                            StressBalancePower = curr_lts_p - curr_lts_hr,
+                            LongTermStressPower = (int)curr_lts_p,
+                            ShortTermStressPower = (int)curr_sts_p,
+                            StressBalancePower = (int)(curr_lts_p - curr_lts_hr),
 
-                            LongTermStressHr = curr_lts_hr,
-                            ShortTermStressHr = curr_sts_hr,
-                            StressBalanceHr = curr_lts_hr - curr_sts_hr,
+                            LongTermStressHr = (int)curr_lts_hr,
+                            ShortTermStressHr = (int)curr_sts_hr,
+                            StressBalanceHr = (int)(curr_lts_hr - curr_sts_hr),
 
                             UserId = (Guid)userId
                         });
@@ -589,32 +589,32 @@ namespace server.Services
                     }
                 }
 
-                trainingLoads[i].LongTermStress =
-                    alfa_lts * trainingLoads[i].TrainingImpulse + (1 - alfa_lts) * prev_lts;
-                trainingLoads[i].ShortTermStress =
-                    alfa_sts * trainingLoads[i].TrainingImpulse + (1 - alfa_sts) * prev_sts;
+                trainingLoads[i].LongTermStress = (int)(
+                    alfa_lts * trainingLoads[i].TrainingImpulse + (1 - alfa_lts) * prev_lts);
+                trainingLoads[i].ShortTermStress = (int)(
+                    alfa_sts * trainingLoads[i].TrainingImpulse + (1 - alfa_sts) * prev_sts);
 
-                trainingLoads[i].LongTermStressHr =
-                    alfa_lts * trainingLoads[i].TrainingImpulse + (1 - alfa_lts) * prev_lts_hr;
-                trainingLoads[i].ShortTermStressHr =
-                    alfa_sts * trainingLoads[i].TrainingImpulse + (1 - alfa_sts) * prev_sts_hr;
+                trainingLoads[i].LongTermStressHr = (int)( 
+                    alfa_lts * trainingLoads[i].TrainingImpulse + (1 - alfa_lts) * prev_lts_hr);
+                trainingLoads[i].ShortTermStressHr = (int)(
+                    alfa_sts * trainingLoads[i].TrainingImpulse + (1 - alfa_sts) * prev_sts_hr);
                 trainingLoads[i].StressBalanceHr =
                     trainingLoads[i].LongTermStressHr - trainingLoads[i].ShortTermStressHr;
 
                 if (trainingLoads[i].TrainingStressScore > 0)
                 {
-                    trainingLoads[i].LongTermStress =
-                        alfa_lts * trainingLoads[i].TrainingStressScore + (1 - alfa_lts) * prev_lts;
-                    trainingLoads[i].ShortTermStress =
-                        alfa_sts * trainingLoads[i].TrainingStressScore + (1 - alfa_sts) * prev_sts;
+                    trainingLoads[i].LongTermStress = (int)(
+                        alfa_lts * trainingLoads[i].TrainingStressScore + (1 - alfa_lts) * prev_lts);
+                    trainingLoads[i].ShortTermStress = (int)(
+                        alfa_sts * trainingLoads[i].TrainingStressScore + (1 - alfa_sts) * prev_sts);
                 }
 
                 trainingLoads[i].StressBalance = trainingLoads[i].LongTermStress - trainingLoads[i].ShortTermStress;
 
-                trainingLoads[i].LongTermStressPower =
-                    alfa_lts * trainingLoads[i].TrainingStressScore + (1 - alfa_lts) * prev_lts_p;
-                trainingLoads[i].ShortTermStressPower =
-                    alfa_sts * trainingLoads[i].TrainingStressScore + (1 - alfa_sts) * prev_sts_p;
+                trainingLoads[i].LongTermStressPower = (int)(
+                    alfa_lts * trainingLoads[i].TrainingStressScore + (1 - alfa_lts) * prev_lts_p);
+                trainingLoads[i].ShortTermStressPower = (int)(
+                    alfa_sts * trainingLoads[i].TrainingStressScore + (1 - alfa_sts) * prev_sts_p);
                 trainingLoads[i].StressBalancePower =
                     trainingLoads[i].LongTermStressPower - trainingLoads[i].ShortTermStressPower;
 

@@ -12,19 +12,19 @@ public class TrainingLoad
     public int TrainingImpulse { get; set; }
     
     // power & hr data mixed
-    public float LongTermStress { get; set; } 
-    public float ShortTermStress { get; set; }
-    public float StressBalance { get; set; }
+    public int LongTermStress { get; set; } 
+    public int ShortTermStress { get; set; }
+    public int StressBalance { get; set; }
     
     // power only
-    public float LongTermStressPower { get; set; }
-    public float ShortTermStressPower { get; set; }
-    public float StressBalancePower { get; set; }
+    public int LongTermStressPower { get; set; }
+    public int ShortTermStressPower { get; set; }
+    public int StressBalancePower { get; set; }
     
     // heart rate only
-    public float LongTermStressHr { get; set; }
-    public float ShortTermStressHr { get; set; }
-    public float StressBalanceHr { get; set; }
+    public int LongTermStressHr { get; set; }
+    public int ShortTermStressHr { get; set; }
+    public int StressBalanceHr { get; set; }
     
     // foreign key property
     [JsonIgnore]

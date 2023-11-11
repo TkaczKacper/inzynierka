@@ -20,7 +20,7 @@ export type powerZonesType = {
 };
 
 const page = () => {
-  const [data, setData] = useState<powerZonesType[] | null>(null);
+  const [data, setData] = useState<powerZonesType[]>([]);
 
   useEffect(() => {
     const powerZones = localStorage.getItem("powerZones");
@@ -38,7 +38,7 @@ const page = () => {
   return (
     <>
       <FtpUpdateForm data={data} setData={setData} />
-      {data ? (
+      {data.length > 0 ? (
         <>
           <table>
             <thead>
