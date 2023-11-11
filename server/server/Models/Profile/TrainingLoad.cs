@@ -13,7 +13,7 @@ public class TrainingLoad
     
     // power & hr data mixed
     public float LongTermStress { get; set; } 
-    public float ShorTermStress { get; set; }
+    public float ShortTermStress { get; set; }
     public float StressBalance { get; set; }
     
     // power only
