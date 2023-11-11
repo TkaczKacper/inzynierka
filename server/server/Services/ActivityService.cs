@@ -402,6 +402,7 @@ namespace server.Services
         {
             List<TrainingLoad> trainingLoads = _context.TrainingLoad
                 .Where(tl => tl.UserId == userId)
+                .OrderBy(tl => tl.Date)
                 .ToList();
 
             return trainingLoads;

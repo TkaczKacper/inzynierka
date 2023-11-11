@@ -1,10 +1,7 @@
-﻿import React, { Component, useState } from "react";
+﻿import React, { Component } from "react";
 // @ts-ignore
 import CanvasJSReact from "@canvasjs/react-charts";
-import {
-  TrainingLoadResponseType,
-  TrainingLoadType,
-} from "@/app/profile/training-load/page";
+import { TrainingLoadResponseType } from "@/app/profile/training-load/page";
 
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
@@ -35,7 +32,10 @@ class TrainingLoadChart extends Component<props> {
 
     return (
       <div>
-        <CanvasJSChart options={options} />
+        <CanvasJSChart
+          options={options}
+          // onRef = {ref => this.chart = ref}
+        />
       </div>
     );
   }
@@ -54,7 +54,6 @@ const chartDataLts = (dataType: number, data: TrainingLoadResponseType[]) => {
         });
       });
   }
-  console.log(chartData);
   return chartData;
 };
 const chartDataSts = (dataType: number, data: TrainingLoadResponseType[]) => {
@@ -68,7 +67,6 @@ const chartDataSts = (dataType: number, data: TrainingLoadResponseType[]) => {
         });
       });
   }
-  console.log(chartData);
   return chartData;
 };
 const chartDataSb = (dataType: number, data: TrainingLoadResponseType[]) => {
@@ -82,7 +80,6 @@ const chartDataSb = (dataType: number, data: TrainingLoadResponseType[]) => {
         });
       });
   }
-  console.log(chartData);
   return chartData;
 };
 
@@ -100,6 +97,5 @@ const chartDataTL = (dataType: number, data: TrainingLoadResponseType[]) => {
         });
       });
   }
-  console.log(chartData);
   return chartData;
 };

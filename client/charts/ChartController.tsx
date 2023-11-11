@@ -1,10 +1,7 @@
 ﻿import React, { Component } from "react";
 // @ts-ignore
 import CanvasJSReact from "@canvasjs/react-charts";
-import {
-  parseDurationExact,
-  parseDurationNumeric,
-} from "@/utils/parseDuration";
+import { parseDurationExact } from "@/utils/parseDuration";
 
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
