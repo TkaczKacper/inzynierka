@@ -19,6 +19,7 @@ class TrainingLoadChart extends Component<Props> {
     const SBDataSet = chartDataSb(this.props.dataType, this.props.data);
     const TLDataSet = chartDataTL(this.props.dataType, this.props.data);
     const options = {
+      exportEnabled: true,
       toolTip: {
         shared: true,
         contentFormatter: function (e: any) {
@@ -68,6 +69,12 @@ class TrainingLoadChart extends Component<Props> {
         },
       },
       zoomEnabled: true,
+      rangeSelector: {
+        inputFields: {
+          startValue: 0,
+          endValue: dates.length - 1,
+        },
+      },
       data: [
         {
           type: "line",

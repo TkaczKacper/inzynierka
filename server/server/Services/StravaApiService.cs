@@ -227,11 +227,15 @@ namespace server.Services
                 if (time[i - 1] + 1 == time[i])
                 {
                     time_processed.Add(sec);
-                    distance_processed.Add(distance[i]);
-                    velocity_processed.Add(velocity[i]);
                     moving.Add(true);
                     havedata.Add(true);
 
+                    if (distance.Count > 0)
+                    {
+                        distance_processed.Add(distance[i]);
+                        velocity_processed.Add(velocity[i]);
+                    }
+                    
                     if (altitude.Count > 0)
                     {
                         altitude_processed.Add(altitude[i]);
@@ -249,6 +253,7 @@ namespace server.Services
 
                     if (cadence.Count > 0)
                         cadence_processed.Add(cadence[i]);
+                    
                     if (hr.Count > 0)
                         hr_processed.Add(hr[i]);
 
@@ -265,11 +270,15 @@ namespace server.Services
                         if (time[i] - time[i - 1] > 3)
                         {
                             time_processed.Add(sec);
-                            distance_processed.Add(0);
-                            velocity_processed.Add(0);
                             havedata.Add(false);
                             moving.Add(false);
 
+                            if (distance.Count > 0)
+                            {
+                                distance_processed.Add(0);
+                                velocity_processed.Add(0);
+                            }
+                            
                             if (altitude.Count > 0)
                             {
                                 grade_processed.Add(0);
@@ -299,9 +308,12 @@ namespace server.Services
                         else
                         {
                             time_processed.Add(sec);
-                            distance_processed.Add((distance[i - 1] + distance[i]) / 2);
-                            velocity_processed.Add((velocity[i - 1] + velocity[i]) / 2);
                             havedata.Add(false);
+                            if (distance.Count > 0)
+                            {
+                                distance_processed.Add((distance[i - 1] + distance[i]) / 2);
+                                velocity_processed.Add((velocity[i - 1] + velocity[i]) / 2);
+                            }
 
                             if (altitude.Count > 0)
                             {
@@ -339,10 +351,15 @@ namespace server.Services
 
             int lastIdx = time.Count - 1;
             time_processed.Add(sec);
-            distance_processed.Add(distance[lastIdx]);
-            velocity_processed.Add(velocity[lastIdx]);
             moving.Add(true);
             havedata.Add(true);
+            
+                            
+            if (distance.Count > 0)
+            {
+                distance_processed.Add(0);
+                velocity_processed.Add(0);
+            }
             
             if (altitude.Count > 0)
             {
