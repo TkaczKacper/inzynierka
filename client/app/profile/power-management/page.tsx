@@ -2,8 +2,7 @@
 
 import { FtpUpdateForm } from "./updateFtp";
 import React, { useEffect, useState } from "react";
-import { hrZonesType } from "@/app/profile/heartrate-management/page";
-import { deleteHrEntry, deletePowerEntry } from "@/utils/serverUtils";
+import { deletePowerEntry } from "@/utils/serverUtils";
 import PowerZones from "@/app/profile/power-management/powerZones";
 
 export type powerZonesType = {

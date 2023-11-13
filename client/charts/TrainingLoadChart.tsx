@@ -2,30 +2,89 @@
 // @ts-ignore
 import CanvasJSReact from "@canvasjs/react-charts";
 import { TrainingLoadResponseType } from "@/app/profile/training-load/page";
+import { parseDurationExact } from "@/utils/parseDuration";
 
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
-interface props {
+interface Props {
   dataType: number;
   data: TrainingLoadResponseType[];
 }
-class TrainingLoadChart extends Component<props> {
+class TrainingLoadChart extends Component<Props> {
   render() {
+    const dates = this.props.data.map((x) => x.date);
+    const LTSDataSet = chartDataLts(this.props.dataType, this.props.data);
+    const STSDataSet = chartDataSts(this.props.dataType, this.props.data);
+    const SBDataSet = chartDataSb(this.props.dataType, this.props.data);
+    const TLDataSet = chartDataTL(this.props.dataType, this.props.data);
     const options = {
+      toolTip: {
+        shared: true,
+        contentFormatter: function (e: any) {
+          //date (day of week, day month year)
+          //lts
+          //sts
+          //sb
+          //load
+          const date = CanvasJS.formatDate(
+            dates[e.entries[0].index],
+            "DDD, DD MMM, YYYY",
+          );
+          const LTS = e.entries[0].dataPoint.y;
+          const STS = e.entries[1].dataPoint.y;
+          const SB = e.entries[2].dataPoint.y;
+          const TL = TLDataSet[e.entries[0].index].y;
+          let content = `${date} <br>`;
+          content += `LTS: ${LTS} <br>`;
+          content += `STS: ${STS} <br>`;
+          content += `SB: ${SB} <br>`;
+          content += `Load: ${TL} <br>`;
+          return content;
+        },
+      },
+      axisX: {
+        crosshair: {
+          enabled: true,
+          label: "",
+        },
+        interval: 1,
+        labelAngle: 0,
+        labelTextAlign: "center",
+        labelAutoFit: false,
+        labelWrap: true,
+        labelMaxWidth: 70,
+        labelFormatter: function (e: any) {
+          let label = "";
+          const date = new Date(dates[e.value]);
+          if (date.getDate() === 1) {
+            label = CanvasJS.formatDate(dates[e.value], "MMMM");
+            if (date.getMonth() === 0) {
+              label += ` ${date.getFullYear()}`;
+            }
+          }
+
+          return label;
+        },
+      },
       zoomEnabled: true,
       data: [
         {
           type: "line",
-          dataPoints: chartDataLts(this.props.dataType, this.props.data),
+          color: "rgb(46,111,234)",
+          dataPoints: LTSDataSet,
         },
         {
           type: "line",
-          dataPoints: chartDataSts(this.props.dataType, this.props.data),
+          color: "rgb(236,143,77)",
+          dataPoints: STSDataSet,
         },
         {
-          type: "line",
-          dataPoints: chartDataSb(this.props.dataType, this.props.data),
+          type: "area",
+          color: "rgba(167,167,167)",
+          fillOpacity: "0.15",
+          lineThickness: "1.5",
+          dataPoints: SBDataSet,
         },
       ],
     };
