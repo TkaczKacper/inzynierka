@@ -342,11 +342,21 @@ namespace server.Services
                     int tlIndex = trainingLoads.IndexOf(trainingLoads
                         .Find(trainingLoad =>
                             trainingLoad.Date == DateOnly.FromDateTime(activity.StartDate)));
+                    int tlToAddIndex = trainingLoadsToAdd.IndexOf(trainingLoadsToAdd
+                        .Find(trainingLoadToAdd =>
+                            trainingLoadToAdd.Date == DateOnly.FromDateTime(activity.StartDate)));
 
                     if (tlIndex >= 0)
                     {
                         trainingLoads[tlIndex].TrainingImpulse += activity.Trimp > 0 ? (int)activity.Trimp : 0;
                         trainingLoads[tlIndex].TrainingStressScore += activity.Tss > 0 ? (int)activity.Tss : 0;
+                    }
+                    else if (tlToAddIndex >= 0)
+                    {
+                        trainingLoadsToAdd[tlToAddIndex].TrainingImpulse +=
+                            activity.Trimp > 0 ? (int)activity.Trimp : 0;
+                        trainingLoadsToAdd[tlToAddIndex].TrainingStressScore +=
+                            activity.Tss > 0 ? (int)activity.Tss : 0;
                     }
                     else
                     {
