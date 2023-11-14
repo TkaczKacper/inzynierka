@@ -1,0 +1,24 @@
+﻿.activityMap {
+    width: 100%;
+    min-width: 300px;
+    padding: 10px;
+    height: 500px;
+    margin-bottom: 20px;
+}
+
+.activityPrimary {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.activitySecondary {
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+    padding: 10px;
+}
+.gearInfo {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}

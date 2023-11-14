@@ -112,6 +112,7 @@ export type Activity = {
   totalElevationGain: number;
   trainer: boolean;
   tss: number;
+  trimp: number;
   variabilityIndex: number;
   velocity: number[];
   watts: number[];
