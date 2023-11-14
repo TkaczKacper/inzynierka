@@ -70,9 +70,15 @@ const navbar = () => {
             <Link href={"/"} className={styles.navBlock}>
               Activities
             </Link>
-            <Link href={"/profile/training-load"} className={styles.navBlock}>
-              Analysis
-            </Link>
+            <div className={`${styles.analysisDropdown} ${styles.navBlock}`}>
+              <span>Analysis</span>
+              <div
+                className={styles.dropdownContent}
+                id={styles.analysisDropdownContent}
+              >
+                <Link href={"/profile/training-load"}>Training load</Link>
+              </div>
+            </div>
             <div className={`${styles.profileDropdown} ${styles.navBlock}`}>
               <span>Profile</span>
               <div

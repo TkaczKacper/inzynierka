@@ -25,7 +25,7 @@
 .navBlock {
     display: flex; 
     height: 40px;
-    min-width: 100px;
+    min-width: 120px;
     align-items: center;
     justify-content: center;
 }
@@ -37,7 +37,7 @@
    cursor: pointer;
 }
 
-.userDropdown, .profileDropdown {
+.userDropdown, .profileDropdown, .analysisDropdown {
    float: left;
    overflow: hidden;
 }
@@ -45,6 +45,7 @@
 .dropdownContent {
    display: none;
    position: absolute;
+    width: 120px;
     top: 40px;
    background-color: #484848;
     z-index: 1;
@@ -62,6 +63,9 @@
    display: block;
 }
 .profileDropdown:hover #profileDropdownContent {
+    display: block;
+}
+.analysisDropdown:hover #analysisDropdownContent {
     display: block;
 }
 .dropdownContent > *:hover {
