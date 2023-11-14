@@ -24,9 +24,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <UserContextProvider>
-          <div style={{ height: "50px" }}>
-            <Navbar />
-          </div>
+          <Navbar />
           <Suspense fallback={<Loading />}>{children}</Suspense>
         </UserContextProvider>
       </body>

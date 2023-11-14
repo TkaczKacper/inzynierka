@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { getUserTrainingLoad } from "@/utils/serverUtils";
 import TrainingLoadChart from "@/charts/TrainingLoadChart";
+import Loading from "@/app/loading";
 
 export type TrainingLoadResponseType = {
   date: string;
@@ -31,22 +32,30 @@ const page = () => {
   const [trainingLoad, setTrainingLoad] =
     useState<TrainingLoadResponseType[]>();
   const [dataType, setDataType] = useState<number>(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       const res = await getUserTrainingLoad();
       setTrainingLoad(res?.data);
+      setLoading(false);
     };
     fetchData();
   }, []);
 
   return (
-    <div>
-      training load
-      {trainingLoad ? (
-        <TrainingLoadChart data={trainingLoad} dataType={dataType} />
-      ) : null}
-    </div>
+    <>
+      {!loading ? (
+        <div>
+          training load
+          {trainingLoad ? (
+            <TrainingLoadChart data={trainingLoad} dataType={dataType} />
+          ) : null}
+        </div>
+      ) : (
+        <Loading />
+      )}
+    </>
   );
 };
 
