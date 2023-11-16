@@ -179,6 +179,15 @@ namespace server.Services
                         PowerCurve = activityPowerCurve,
                         UserProfile = user
                     };
+                    if (streams.Temperature?.Count > 0)
+                    {
+                        activity.MaxTemp = streams.Temperature.Max();
+                    }
+                    if (streams.Cadence?.Count > 0)
+                    {
+                        activity.MaxCadence = streams.Cadence.Max();
+                    }
+                    
                     double trainingLoad = 0;
                     if (details.Average_heartrate > 0 && HrMax is not null && HrRest is not null &&
                         streams.HeartRate?.Count > 0)
@@ -210,6 +219,7 @@ namespace server.Services
                         double IntensityFactor = NormalizedPower / FTP;
                         double VariabilityIndex = NormalizedPower / details.Average_watts;
                         double Tss = (details.Moving_time * NormalizedPower * IntensityFactor) / (329 * 36);
+
 
                         activity.NormalizedPower = NormalizedPower;
                         activity.IntensityFactor = IntensityFactor;

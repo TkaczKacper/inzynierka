@@ -28,7 +28,9 @@ namespace server.Models.Strava
         public int MaxWatts { get; set; }
         public int WeightedAvgWatts { get; set; }
         public float AvgCadence { get; set; }
+        public int MaxCadence {get; set; }
         public float AvgTemp { get; set; }
+        public int MaxTemp { get; set; }
         public float ElevationHigh { get; set; }
         public float ElevationLow { get; set; }
         public List<StravaActivityLap>? Laps { get; set; }

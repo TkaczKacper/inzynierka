@@ -96,8 +96,10 @@ export type Activity = {
   laps: ActivityLap[];
   lat: number[];
   lng: number[];
+  maxCadence: number;
   maxHeartRate: number;
   maxSpeed: number;
+  maxTemperature: number;
   maxWatts: number;
   moving: boolean[];
   movingTime: number;

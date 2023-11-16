@@ -22,7 +22,8 @@ const page = () => {
 
   useEffect(() => {
     const userHrZones = localStorage.getItem("hrZones");
-    userHrZones ? setData(JSON.parse(userHrZones)) : null;
+    if (userHrZones)
+      setData(userHrZones !== "undefined" ? JSON.parse(userHrZones) : []);
   }, []);
 
   const deleteEntry = async (id: number, index: number) => {

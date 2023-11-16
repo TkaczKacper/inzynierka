@@ -23,7 +23,8 @@ const page = () => {
 
   useEffect(() => {
     const powerZones = localStorage.getItem("powerZones");
-    powerZones ? setData(JSON.parse(powerZones)) : null;
+    if (powerZones)
+      setData(powerZones !== "undefined" ? JSON.parse(powerZones) : []);
   }, []);
 
   const deleteEntry = async (id: number, index: number) => {

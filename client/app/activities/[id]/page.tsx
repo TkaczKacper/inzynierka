@@ -100,32 +100,36 @@ const page = () => {
                           <td>{(activity.maxSpeed * 3.6).toFixed(2)} km/h</td>
                         </tr>
                         {activity.hasPowerMeter ? (
-                          <>
-                            <tr>
-                              <td>Power</td>
-                              <td>{activity.avgWatts} W</td>
-                              <td>{activity.maxWatts} W</td>
-                            </tr>
-                            <tr>
-                              <td>Cadence</td>
-                              <td>{activity.avgCadence.toFixed(0)} rpm</td>
-                              <td>todo</td>
-                            </tr>
-                          </>
+                          <tr>
+                            <td>Power</td>
+                            <td>{activity.avgWatts} W</td>
+                            <td>{activity.maxWatts} W</td>
+                          </tr>
+                        ) : null}
+                        {activity.avgCadence > 0 ? (
+                          <tr>
+                            <td>Cadence</td>
+                            <td>{activity.avgCadence.toFixed(0)} rpm</td>
+                            <td>{activity.maxCadence} rpm</td>
+                          </tr>
                         ) : null}
                         {activity.avgHeartRate > 0 ? (
-                          <>
-                            <tr>
-                              <td>HeartRate</td>
-                              <td>{activity.avgHeartRate.toFixed(0)} bpm</td>
-                              <td>{activity.maxHeartRate} bpm</td>
-                            </tr>
-                          </>
+                          <tr>
+                            <td>HeartRate</td>
+                            <td>{activity.avgHeartRate.toFixed(0)} bpm</td>
+                            <td>{activity.maxHeartRate} bpm</td>
+                          </tr>
                         ) : null}
                         <tr>
                           <td>Calories</td>
                           <td>{activity.calories}</td>
                         </tr>
+                        {activity.avgTemp > 0 ? (
+                          <tr>
+                            <td>Temperature</td>
+                            <td>{activity.avgTemp}</td>
+                          </tr>
+                        ) : null}
                         <tr>
                           <td>Elapsed Time</td>
                           <td>{parseDurationNumeric(activity.elapsedTime)}</td>
