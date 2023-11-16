@@ -1,24 +1,46 @@
 ﻿.activityMap {
-    width: 100%;
-    min-width: 300px;
-    padding: 10px;
-    height: 500px;
-    margin-bottom: 20px;
+  width: 100%;
+  min-width: 300px;
+  padding: 10px;
+  height: 500px;
+  margin-bottom: 20px;
 }
 
 .activityPrimary {
-    display: flex;
-    justify-content: space-evenly;
+  display: flex;
+  justify-content: space-evenly;
 }
 
 .activitySecondary {
-    display: flex;
-    justify-content: space-evenly;
-    width: 100%;
-    padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  width: 100%;
+  align-items: center;
+  padding: 10px;
 }
+
 .gearInfo {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.metricsContainer {
+  width: 100vw;
+  margin-top: 20px;
+  padding: 20px;
+}
+
+.metricsHeader {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+@media screen and (min-width: 700px) {
+  .activitySecondary {
+    flex-direction: row;
+  }
+  .metricsContainer {
+    width: 60vw;
+  }
 }

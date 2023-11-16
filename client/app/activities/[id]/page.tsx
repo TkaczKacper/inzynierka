@@ -18,12 +18,11 @@ import {
   parseDurationExact,
   parseDurationNumeric,
 } from "@/utils/parseDuration";
+import ActivityTimeInZones from "@/app/activities/[id]/activityTimeInZones";
 
 const page = () => {
   const [activity, setActivity] = useState<Activity>();
   const [loading, setLoading] = useState(true);
-  const [userHrZones, setUserHrZones] = useLocalStorage("hrZones", {});
-  const [userPowerZones, setUserPowerZones] = useLocalStorage("powerZones", {});
   const { userId } = useUserContext();
 
   useEffect(() => {
@@ -127,7 +126,9 @@ const page = () => {
                         {activity.avgTemp > 0 ? (
                           <tr>
                             <td>Temperature</td>
-                            <td>{activity.avgTemp}</td>
+                            <td>
+                              {activity.avgTemp} {"\u00B0"}C
+                            </td>
                           </tr>
                         ) : null}
                         <tr>
@@ -141,7 +142,15 @@ const page = () => {
                       <div>{activity.gear}</div>
                     </div>
                   </div>
-                  <div>todo</div>
+                  <div>
+                    <ActivityTimeInZones
+                      hrTimeInZone={activity.hrTimeInZone}
+                      powerTimeInZone={activity.powerTimeInZone}
+                      powerCurve={activity.powerCurve}
+                      trimp={activity.trimp}
+                      tss={activity.tss}
+                    />
+                  </div>
                 </div>
               </div>
               <div className={styles.activityMap}>
@@ -157,19 +166,7 @@ const page = () => {
                   />
                 </MapContainer>
               </div>
-              {activity.hrTimeInZone ? (
-                <HrZoneChart data={activity.hrTimeInZone} zones={userHrZones} />
-              ) : null}
-
-              {activity.powerCurve.length > 0 ? (
-                <>
-                  <PowerZoneChart
-                    data={activity.powerTimeInZone}
-                    zones={userPowerZones}
-                  />
-                  <ChartController data={activity.powerCurve} />
-                </>
-              ) : null}
+              <ChartController data={activity.powerCurve} />
             </div>
           ) : (
             <>
