@@ -47,7 +47,12 @@ const page = () => {
     <>
       {!loading ? (
         <div>
-          training load
+          <div>
+            Source:
+            <div onClick={() => setDataType(0)}>Both</div>
+            <div onClick={() => setDataType(1)}>Power</div>
+            <div onClick={() => setDataType(2)}>HeartRate</div>
+          </div>
           {trainingLoad ? (
             <TrainingLoadChart data={trainingLoad} dataType={dataType} />
           ) : null}

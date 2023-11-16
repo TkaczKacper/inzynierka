@@ -57,10 +57,12 @@ const page = () => {
                     <h2>{parseDurationNumeric(activity.movingTime)}</h2>
                     moving time
                   </div>
-                  <div>
-                    <h2>{activity.trimp.toFixed(0)}</h2>
-                    relative effort
-                  </div>
+                  {activity.trimp > 0 ? (
+                    <div>
+                      <h2>{activity.trimp.toFixed(0)}</h2>
+                      relative effort
+                    </div>
+                  ) : null}
                 </div>
                 {activity.hasPowerMeter ? (
                   <div className={styles.activityPrimary}>

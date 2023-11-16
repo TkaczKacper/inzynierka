@@ -119,6 +119,23 @@ const chartDataLts = (dataType: number, data: TrainingLoadResponseType[]) => {
           y: value.longTermStress,
         });
       });
+      break;
+    case 1:
+      data.map((value, index) => {
+        chartData.push({
+          x: index,
+          y: value.longTermStressPower,
+        });
+      });
+      break;
+    case 2:
+      data.map((value, index) => {
+        chartData.push({
+          x: index,
+          y: value.longTermStressHr,
+        });
+      });
+      break;
   }
   return chartData;
 };
@@ -132,6 +149,23 @@ const chartDataSts = (dataType: number, data: TrainingLoadResponseType[]) => {
           y: value.shortTermStress,
         });
       });
+      break;
+    case 1:
+      data.map((value, index) => {
+        chartData.push({
+          x: index,
+          y: value.shortTermStressPower,
+        });
+      });
+      break;
+    case 2:
+      data.map((value, index) => {
+        chartData.push({
+          x: index,
+          y: value.shortTermStressHr,
+        });
+      });
+      break;
   }
   return chartData;
 };
@@ -145,6 +179,23 @@ const chartDataSb = (dataType: number, data: TrainingLoadResponseType[]) => {
           y: value.stressBalance,
         });
       });
+      break;
+    case 1:
+      data.map((value, index) => {
+        chartData.push({
+          x: index,
+          y: value.stressBalancePower,
+        });
+      });
+      break;
+    case 2:
+      data.map((value, index) => {
+        chartData.push({
+          x: index,
+          y: value.stressBalanceHr,
+        });
+      });
+      break;
   }
   return chartData;
 };
@@ -162,6 +213,23 @@ const chartDataTL = (dataType: number, data: TrainingLoadResponseType[]) => {
               : value.trainingImpulse,
         });
       });
+      break;
+    case 1:
+      data.map((value, index) => {
+        chartData.push({
+          x: index,
+          y: value.trainingStressScore,
+        });
+      });
+      break;
+    case 2:
+      data.map((value, index) => {
+        chartData.push({
+          x: index,
+          y: value.trainingImpulse,
+        });
+      });
+      break;
   }
   return chartData;
 };

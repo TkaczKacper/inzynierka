@@ -594,7 +594,7 @@ namespace server.Services
 
                             LongTermStressPower = curr_lts_p,
                             ShortTermStressPower = curr_sts_p,
-                            StressBalancePower = curr_lts_p - curr_lts_hr,
+                            StressBalancePower = curr_lts_p - curr_sts_p,
 
                             LongTermStressHr = curr_lts_hr,
                             ShortTermStressHr = curr_sts_hr,
@@ -717,9 +717,9 @@ namespace server.Services
                 prev_sts = curr_sts;
                 
                 prev_lts_hr = curr_lts_hr;
-                prev_sts_hr = curr_lts_hr;
+                prev_sts_hr = curr_sts_hr;
                 
-                prev_lts_pwr = curr_sts_pwr;
+                prev_lts_pwr = curr_lts_pwr;
                 prev_sts_pwr = curr_sts_pwr;
 
                 date = date.AddDays(1);
