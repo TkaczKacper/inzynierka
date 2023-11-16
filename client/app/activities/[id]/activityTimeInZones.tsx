@@ -33,22 +33,30 @@ const activityTimeInZones = (activity: props) => {
       <div>
         {activeChart ? (
           <>
-            <p>Trimp: {activity.trimp.toFixed(0)}</p>
-            {activity.hrTimeInZone ? (
-              <HrZoneChart
-                data={activity.hrTimeInZone}
-                zones={userHrZones[userHrZones.length - 1]}
-              />
+            {activity.trimp > 0 ? (
+              <>
+                <p>Trimp: {activity.trimp.toFixed(0)}</p>
+                {activity.hrTimeInZone ? (
+                  <HrZoneChart
+                    data={activity.hrTimeInZone}
+                    zones={userHrZones[userHrZones.length - 1]}
+                  />
+                ) : null}
+              </>
             ) : null}
           </>
         ) : (
           <>
-            <p>Trainig load: {activity.tss.toFixed(0)}</p>
-            {activity.powerCurve.length > 0 ? (
-              <PowerZoneChart
-                data={activity.powerTimeInZone}
-                zones={userPowerZones[userPowerZones.length - 1]}
-              />
+            {activity.tss > 0 ? (
+              <>
+                <p>Trainig load: {activity.tss.toFixed(0)}</p>
+                {activity.powerCurve.length > 0 ? (
+                  <PowerZoneChart
+                    data={activity.powerTimeInZone}
+                    zones={userPowerZones[userPowerZones.length - 1]}
+                  />
+                ) : null}
+              </>
             ) : null}
           </>
         )}

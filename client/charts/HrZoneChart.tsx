@@ -48,7 +48,7 @@ class HrZoneChart extends Component<HrProps> {
         contentFormatter: function (e: any) {
           let label = e.entries[0].dataPoint.label;
           let index = e.entries[0].dataPoint.x;
-          return `${label}: ${zones[index]} - ${zones[index + 1] - 1}`;
+          return `${label}: ${zones[index]} - ${zones[index + 1] - 1}bpm`;
         },
       },
       axisX: {
@@ -61,7 +61,7 @@ class HrZoneChart extends Component<HrProps> {
         },
         gridThickness: 0,
         labelPlacement: "inside",
-        labelFontColor: "#868686",
+        labelFontColor: "#575757",
         labelFormatter: function (e: any) {
           return parseDurationExact(timeInZone[e.value]);
         },
@@ -75,6 +75,7 @@ class HrZoneChart extends Component<HrProps> {
           return "";
         },
       },
+      dataPointWidth: 37,
       data: [
         {
           type: "bar",
@@ -103,7 +104,10 @@ class HrZoneChart extends Component<HrProps> {
 
     return (
       <>
-        <CanvasJsChart options={options} containerProps={{ width: "100%" }} />
+        <CanvasJsChart
+          options={options}
+          containerProps={{ width: "100%", height: "200px" }}
+        />
       </>
     );
   }

@@ -26,6 +26,5 @@ export function polylineDecoder(encoded: string, mul: number) {
     }
     decoded.push({ lat: latlng[0] * inv, lng: latlng[1] * inv });
   }
-  console.log(decoded);
   return decoded;
 }

@@ -154,7 +154,7 @@ const page = () => {
                 </div>
               </div>
               <div className={styles.activityMap}>
-                <MapContainer center={[42, 22]} scrollWheelZoom={true}>
+                <MapContainer center={[42, 22]} scrollWheelZoom={false}>
                   <MapController
                     polyline={activity.detailedPolyline}
                     startLatLng={activity.startLatLng}
