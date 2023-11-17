@@ -115,6 +115,8 @@ export type Activity = {
   trainer: boolean;
   tss: number;
   trimp: number;
+  type: string;
+  sportType: string;
   variabilityIndex: number;
   velocity: number[];
   watts: number[];

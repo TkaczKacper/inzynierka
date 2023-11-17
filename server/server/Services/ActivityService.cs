@@ -148,6 +148,8 @@ namespace server.Services
                     {
                         StravaActivityID = details.Id,
                         Title = details.Name,
+                        Type = details.Type,
+                        SportType = details.Sport_type,
                         TotalDistance = details.Distance,
                         MovingTime = details.Moving_time,
                         ElapsedTime = details.Elapsed_time,

@@ -1,4 +1,16 @@
-﻿.activityMap {
+﻿.activityContainer {
+}
+
+.activityInformation {
+}
+
+.activityHeader {
+  min-height: 120px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.activityMap {
   width: 100%;
   min-width: 300px;
   padding: 10px;
@@ -7,22 +19,51 @@
 }
 
 .activityPrimary {
+  display: grid;
+  max-width: 320px;
+  grid-template-columns: 50% 50%;
+  grid-template-rows: 50% 50%;
+  padding: 20px 0;
+  margin: 0 auto;
+}
+
+.activityPrimary > * {
   display: flex;
-  justify-content: space-evenly;
+  flex-direction: column;
+  align-content: center;
+  padding: 3px;
 }
 
 .activitySecondary {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+  flex-wrap: wrap;
   width: 100%;
   align-items: center;
-  padding: 10px;
 }
 
-.gearInfo {
+.activityStats {
+  width: 100%;
+  max-width: 440px;
+}
+
+.activityStatsTable {
+  width: 100%;
+}
+.activityStatsHeader {
+  font-size: 23px;
+  padding-right: 2px;
+}
+.activityStatsBody > * {
+  margin: 0.1vw;
+}
+
+.activityStatsFoot {
+  width: 100%;
   display: flex;
   justify-content: space-between;
+  padding-top: 10px;
 }
 
 .metricsContainer {
@@ -42,6 +83,15 @@
     flex-direction: row;
   }
   .metricsContainer {
+    width: 40vw;
+  }
+  .activityStats {
     width: 60vw;
+  }
+  .activityPrimary {
+    grid-template-rows: 1fr;
+    grid-template-columns: repeat(4, 1fr);
+    max-width: 700px;
+    padding-left: 5px;
   }
 }

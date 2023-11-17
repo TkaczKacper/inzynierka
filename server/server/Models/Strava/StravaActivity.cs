@@ -8,6 +8,8 @@ namespace server.Models.Strava
         public long ID { get; set; }
         public long StravaActivityID { get; set; }
         public string? Title { get; set; }
+        public string? Type { get; set; }
+        public string? SportType { get; set; }
         public float TotalDistance { get; set; }
         public int MovingTime { get; set; }
         public int ElapsedTime { get; set; }

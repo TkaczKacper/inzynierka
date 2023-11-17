@@ -11,13 +11,7 @@ import "leaflet/dist/leaflet.css";
 import styles from "./activitypage.module.css";
 import MapController from "@/maps/MapController";
 import ChartController from "@/charts/ChartController";
-import HrZoneChart from "@/charts/HrZoneChart";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
-import PowerZoneChart from "@/charts/PowerZoneChart";
-import {
-  parseDurationExact,
-  parseDurationNumeric,
-} from "@/utils/parseDuration";
+import { parseDurationNumeric } from "@/utils/parseDuration";
 import ActivityTimeInZones from "@/app/activities/[id]/activityTimeInZones";
 
 const page = () => {
@@ -39,11 +33,28 @@ const page = () => {
   return (
     <>
       {!loading ? (
-        <div>
+        <>
           {activity ? (
             <div className={styles.activityContainer}>
-              <div className={styles.activityInformations}>
-                <h1>{activity.title}</h1>
+              <div className={styles.activityInformation}>
+                <div className={styles.activityHeader}>
+                  <h1>{activity.title}</h1>
+                  <p>
+                    {activity.type} on{" "}
+                    {new Date(activity.startDate).toLocaleDateString("en-PL", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
+                  <a
+                    href={`https://www.strava.com/activities/${activity.stravaActivityID}`}
+                    target={"_blank"}
+                  >
+                    Check activity on Strava.
+                  </a>
+                </div>
                 <div className={styles.activityPrimary}>
                   <div>
                     <h2>{(activity.totalDistance / 1000).toFixed(2)}km</h2>
@@ -85,16 +96,16 @@ const page = () => {
                   </div>
                 ) : null}
                 <div className={styles.activitySecondary}>
-                  <div>
-                    <table>
-                      <thead>
+                  <div className={styles.activityStats}>
+                    <table className={styles.activityStatsTable}>
+                      <thead className={styles.activityStatsHeader}>
                         <tr>
                           <th></th>
-                          <th>avg</th>
-                          <th>max</th>
+                          <th>average</th>
+                          <th>maximum</th>
                         </tr>
                       </thead>
-                      <tbody>
+                      <tbody className={styles.activityStatsBody}>
                         <tr>
                           <td>Speed</td>
                           <td>{(activity.avgSpeed * 3.6).toFixed(2)} km/h</td>
@@ -103,7 +114,7 @@ const page = () => {
                         {activity.hasPowerMeter ? (
                           <tr>
                             <td>Power</td>
-                            <td>{activity.avgWatts} W</td>
+                            <td>{activity.avgWatts.toFixed(0)} W</td>
                             <td>{activity.maxWatts} W</td>
                           </tr>
                         ) : null}
@@ -139,9 +150,9 @@ const page = () => {
                         </tr>
                       </tbody>
                     </table>
-                    <div className={styles.gearInfo}>
-                      <div>{activity.deviceName}</div>
-                      <div>{activity.gear}</div>
+                    <div className={styles.activityStatsFoot}>
+                      <p>{activity.deviceName}</p>
+                      <p>{activity.gear}</p>
                     </div>
                   </div>
                   <div>
@@ -155,19 +166,21 @@ const page = () => {
                   </div>
                 </div>
               </div>
-              <div className={styles.activityMap}>
-                <MapContainer center={[42, 22]} scrollWheelZoom={false}>
-                  <MapController
-                    polyline={activity.detailedPolyline}
-                    startLatLng={activity.startLatLng}
-                    endLatLng={activity.endLatLng}
-                  />
-                  <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  />
-                </MapContainer>
-              </div>
+              {activity.detailedPolyline ? (
+                <div className={styles.activityMap}>
+                  <MapContainer center={[42, 22]} scrollWheelZoom={false}>
+                    <MapController
+                      polyline={activity.detailedPolyline}
+                      startLatLng={activity.startLatLng}
+                      endLatLng={activity.endLatLng}
+                    />
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                  </MapContainer>
+                </div>
+              ) : null}
               <ChartController data={activity.powerCurve} />
             </div>
           ) : (
@@ -176,7 +189,7 @@ const page = () => {
               <Link href={`/profile/${userId}`}>Back to the profile page.</Link>
             </>
           )}
-        </div>
+        </>
       ) : (
         <Loading />
       )}

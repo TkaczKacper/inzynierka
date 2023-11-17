@@ -7,6 +7,8 @@ namespace server.Responses.Strava
         public long Id { get; set; }
         public string? Name { get; set; }
         public float Distance { get; set; }
+        public string? Type { get; set; }
+        public string? Sport_type { get; set; }
         public int Moving_time { get; set; }
         public int Elapsed_time { get; set; }
         public float Total_elevation_gain { get; set; }
