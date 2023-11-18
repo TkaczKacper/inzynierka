@@ -13,6 +13,7 @@ import MapController from "@/maps/MapController";
 import ChartController from "@/charts/ChartController";
 import { parseDurationNumeric } from "@/utils/parseDuration";
 import ActivityTimeInZones from "@/app/activities/[id]/activityTimeInZones";
+import PrevActivities from "@/app/activities/[id]/prevActivities";
 
 const page = () => {
   const [activity, setActivity] = useState<Activity>();
@@ -82,80 +83,82 @@ const page = () => {
                       normalized power
                     </div>
                     <div>
-                      <h2>{activity.tss.toFixed(0)}</h2>
-                      training load
-                    </div>
-                    <div>
                       <h2>{(activity.intensityFactor * 100).toFixed(0)}%</h2>
                       intensity
                     </div>
                     <div>
                       <h2>{activity.variabilityIndex.toFixed(2)}</h2>
                       variability
+                    </div>{" "}
+                    <div>
+                      <h2>{activity.tss.toFixed(0)}</h2>
+                      training load
                     </div>
                   </div>
                 ) : null}
-                <div className={styles.activitySecondary}>
-                  <div className={styles.activityStats}>
-                    <table className={styles.activityStatsTable}>
-                      <thead className={styles.activityStatsHeader}>
-                        <tr>
-                          <th></th>
-                          <th>average</th>
-                          <th>maximum</th>
-                        </tr>
-                      </thead>
-                      <tbody className={styles.activityStatsBody}>
-                        <tr>
-                          <td>Speed</td>
-                          <td>{(activity.avgSpeed * 3.6).toFixed(2)} km/h</td>
-                          <td>{(activity.maxSpeed * 3.6).toFixed(2)} km/h</td>
-                        </tr>
-                        {activity.hasPowerMeter ? (
+                <div className={styles.activityStatsContainer}>
+                  <div className={styles.activitySecondary}>
+                    <div className={styles.activityStats}>
+                      <table className={styles.activityStatsTable}>
+                        <thead className={styles.activityStatsHeader}>
                           <tr>
-                            <td>Power</td>
-                            <td>{activity.avgWatts.toFixed(0)} W</td>
-                            <td>{activity.maxWatts} W</td>
+                            <th></th>
+                            <th>average</th>
+                            <th>maximum</th>
                           </tr>
-                        ) : null}
-                        {activity.avgCadence > 0 ? (
+                        </thead>
+                        <tbody className={styles.activityStatsBody}>
                           <tr>
-                            <td>Cadence</td>
-                            <td>{activity.avgCadence.toFixed(0)} rpm</td>
-                            <td>{activity.maxCadence} rpm</td>
+                            <td>Speed</td>
+                            <td>{(activity.avgSpeed * 3.6).toFixed(2)} km/h</td>
+                            <td>{(activity.maxSpeed * 3.6).toFixed(2)} km/h</td>
                           </tr>
-                        ) : null}
-                        {activity.avgHeartRate > 0 ? (
+                          {activity.hasPowerMeter ? (
+                            <tr>
+                              <td>Power</td>
+                              <td>{activity.avgWatts.toFixed(0)} W</td>
+                              <td>{activity.maxWatts} W</td>
+                            </tr>
+                          ) : null}
+                          {activity.avgCadence > 0 ? (
+                            <tr>
+                              <td>Cadence</td>
+                              <td>{activity.avgCadence.toFixed(0)} rpm</td>
+                              <td>{activity.maxCadence} rpm</td>
+                            </tr>
+                          ) : null}
+                          {activity.avgHeartRate > 0 ? (
+                            <tr>
+                              <td>HeartRate</td>
+                              <td>{activity.avgHeartRate.toFixed(0)} bpm</td>
+                              <td>{activity.maxHeartRate} bpm</td>
+                            </tr>
+                          ) : null}
                           <tr>
-                            <td>HeartRate</td>
-                            <td>{activity.avgHeartRate.toFixed(0)} bpm</td>
-                            <td>{activity.maxHeartRate} bpm</td>
+                            <td>Calories</td>
+                            <td>{activity.calories}</td>
                           </tr>
-                        ) : null}
-                        <tr>
-                          <td>Calories</td>
-                          <td>{activity.calories}</td>
-                        </tr>
-                        {activity.avgTemp > 0 ? (
+                          {activity.avgTemp > 0 ? (
+                            <tr>
+                              <td>Temperature</td>
+                              <td>
+                                {activity.avgTemp} {"\u00B0"}C
+                              </td>
+                            </tr>
+                          ) : null}
                           <tr>
-                            <td>Temperature</td>
+                            <td>Elapsed Time</td>
                             <td>
-                              {activity.avgTemp} {"\u00B0"}C
+                              {parseDurationNumeric(activity.elapsedTime)}
                             </td>
                           </tr>
-                        ) : null}
-                        <tr>
-                          <td>Elapsed Time</td>
-                          <td>{parseDurationNumeric(activity.elapsedTime)}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <div className={styles.activityStatsFoot}>
-                      <p>{activity.deviceName}</p>
-                      <p>{activity.gear}</p>
+                        </tbody>
+                      </table>
+                      <div className={styles.activityStatsFoot}>
+                        <p>{activity.deviceName}</p>
+                        <p>{activity.gear}</p>
+                      </div>
                     </div>
-                  </div>
-                  <div>
                     <ActivityTimeInZones
                       hrTimeInZone={activity.hrTimeInZone}
                       powerTimeInZone={activity.powerTimeInZone}
@@ -164,24 +167,29 @@ const page = () => {
                       tss={activity.tss}
                     />
                   </div>
+                  {activity.detailedPolyline ? (
+                    <div className={styles.activityMap}>
+                      <MapContainer center={[42, 22]} scrollWheelZoom={false}>
+                        <MapController
+                          polyline={activity.detailedPolyline}
+                          startLatLng={activity.startLatLng}
+                          endLatLng={activity.endLatLng}
+                        />
+                        <TileLayer
+                          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                      </MapContainer>
+                    </div>
+                  ) : null}
                 </div>
               </div>
-              {activity.detailedPolyline ? (
-                <div className={styles.activityMap}>
-                  <MapContainer center={[42, 22]} scrollWheelZoom={false}>
-                    <MapController
-                      polyline={activity.detailedPolyline}
-                      startLatLng={activity.startLatLng}
-                      endLatLng={activity.endLatLng}
-                    />
-                    <TileLayer
-                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
-                  </MapContainer>
+              {activity.powerCurve.length > 0 ? (
+                <div className={styles.powerCurveChart}>
+                  <ChartController data={activity.powerCurve} />
                 </div>
               ) : null}
-              <ChartController data={activity.powerCurve} />
+              <PrevActivities date={activity.startDate} />
             </div>
           ) : (
             <>

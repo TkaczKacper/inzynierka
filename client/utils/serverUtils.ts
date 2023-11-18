@@ -39,9 +39,16 @@ export const updateProfileInfo = async (
   }
 };
 
-export const getAthleteActivities = async () => {
+export const getAthleteActivities = async (
+  lastActivity: Date | string,
+  perPage: number,
+) => {
   try {
-    const response = await axios.get(`${backend_url}/profile/get-activities`, {
+    let requestUrl = `${backend_url}/profile/get-activities`;
+    if (lastActivity && perPage) {
+      requestUrl = `${backend_url}/profile/get-activities?lastActivityDate=${lastActivity}&perPage=${perPage}`;
+    }
+    const response = await axios.get(requestUrl, {
       withCredentials: true,
       headers: {
         Authorization: getCookie("jwtToken"),

@@ -43,74 +43,76 @@ const navbar = () => {
 
   return (
     <nav className={styles.navbar}>
-      {!userId ? (
-        <>
-          <div className={black_ops_one.variable}>
-            <Link href={"/login"} className={styles.logo}>
-              Training Analytics
-            </Link>
-          </div>
-          <div className={styles.navRight}>
-            <Link href={"/login"} className={styles.navBlock}>
-              Login
-            </Link>
-            <Link href={"/register"} className={styles.navBlock}>
-              Register
-            </Link>
-          </div>
-        </>
-      ) : (
-        <>
-          <div className={black_ops_one.variable}>
-            <Link href={`/profile/${userId}`} className={styles.logo}>
-              Training Analytics
-            </Link>
-          </div>
-          <div className={styles.navRight}>
-            <Link href={"/"} className={styles.navBlock}>
-              Activities
-            </Link>
-            <div className={`${styles.analysisDropdown} ${styles.navBlock}`}>
-              <span>Analysis</span>
-              <div
-                className={styles.dropdownContent}
-                id={styles.analysisDropdownContent}
-              >
-                <Link href={"/profile/training-load"}>Training load</Link>
+      <div className={styles.navWrapper}>
+        {!userId ? (
+          <>
+            <div className={black_ops_one.variable}>
+              <Link href={"/login"} className={styles.logo}>
+                Training Analytics
+              </Link>
+            </div>
+            <div className={styles.navRight}>
+              <Link href={"/login"} className={styles.navBlock}>
+                Login
+              </Link>
+              <Link href={"/register"} className={styles.navBlock}>
+                Register
+              </Link>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className={black_ops_one.variable}>
+              <Link href={`/profile/${userId}`} className={styles.logo}>
+                Training Analytics
+              </Link>
+            </div>
+            <div className={styles.navRight}>
+              <Link href={"/"} className={styles.navBlock}>
+                Activities
+              </Link>
+              <div className={`${styles.analysisDropdown} ${styles.navBlock}`}>
+                <span>Analysis</span>
+                <div
+                  className={styles.dropdownContent}
+                  id={styles.analysisDropdownContent}
+                >
+                  <Link href={"/profile/training-load"}>Training load</Link>
+                </div>
+              </div>
+              <div className={`${styles.profileDropdown} ${styles.navBlock}`}>
+                <span>Profile</span>
+                <div
+                  className={styles.dropdownContent}
+                  id={styles.profileDropdownContent}
+                >
+                  <Link href={"/profile/power-management"}>Power</Link>
+                  <Link href={"/profile/heartrate-management"}>Hr</Link>
+                  <Link href={"/profile/connections"}>Connections</Link>
+                </div>
+              </div>
+              <div className={`${styles.userDropdown} ${styles.navBlock}`}>
+                <span>
+                  <FaUserTie />
+                </span>
+                <div
+                  className={styles.dropdownContent}
+                  id={styles.userDropdownContent}
+                >
+                  <Link href={"#"}>User information</Link>
+                  <Link href={"#"}>Settings</Link>
+                  <Link href={"#"}>Password</Link>
+                  <Link href={`/profile/${userId}`}>Profile</Link>
+                  <hr style={{ borderColor: "black" }} />
+                  <a className={styles.link} onClick={logoutHandler}>
+                    Logout
+                  </a>
+                </div>
               </div>
             </div>
-            <div className={`${styles.profileDropdown} ${styles.navBlock}`}>
-              <span>Profile</span>
-              <div
-                className={styles.dropdownContent}
-                id={styles.profileDropdownContent}
-              >
-                <Link href={"/profile/power-management"}>Power</Link>
-                <Link href={"/profile/heartrate-management"}>Hr</Link>
-                <Link href={"/profile/connections"}>Connections</Link>
-              </div>
-            </div>
-            <div className={`${styles.userDropdown} ${styles.navBlock}`}>
-              <span>
-                <FaUserTie />
-              </span>
-              <div
-                className={styles.dropdownContent}
-                id={styles.userDropdownContent}
-              >
-                <Link href={"#"}>User information</Link>
-                <Link href={"#"}>Settings</Link>
-                <Link href={"#"}>Password</Link>
-                <Link href={`/profile/${userId}`}>Profile</Link>
-                <hr style={{ borderColor: "black" }} />
-                <a className={styles.link} onClick={logoutHandler}>
-                  Logout
-                </a>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </div>
     </nav>
   );
 };

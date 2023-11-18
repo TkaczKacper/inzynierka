@@ -1,0 +1,19 @@
+﻿.otherActivity {
+  padding-top: 20px;
+}
+
+.otherActivityContainer {
+  padding-top: 5px;
+  display: grid;
+  grid-template-columns: 110px 65px 1fr;
+  max-width: 550px;
+}
+
+.otherActivityColumn > * {
+  padding: 5px;
+}
+.otherActivityTitle {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

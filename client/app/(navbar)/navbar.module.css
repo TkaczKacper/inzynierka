@@ -1,82 +1,87 @@
 .navbar {
-   display: flex;
-    overflow: hidden;
-    align-items: center;
-    text-align: center;
-    justify-content: center; 
-    background-color: #333333;
-    height: 40px;
-    padding: 0 20px;
+  background-color: #333333;
+  height: 40px;
+}
+
+.navWrapper {
+  max-width: 1920px;
+  margin: auto;
+  display: flex;
+  overflow: hidden;
+  align-items: center;
+  text-align: center;
+  justify-content: space-between;
 }
 
 .logo {
-    display: none;
-    font-family: var(--font-black-ops-one);
-    font-size: xx-large;
-    letter-spacing: -1px;
-    text-wrap: nowrap;
+  display: none;
+  font-family: var(--font-black-ops-one);
+  font-size: xx-large;
+  letter-spacing: -1px;
+  text-wrap: nowrap;
 }
 
 .navRight {
-    display: flex;
-    height: 40px;
+  display: flex;
+  height: 40px;
 }
 
 .navBlock {
-    display: flex; 
-    height: 40px;
-    min-width: 120px;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  height: 40px;
+  min-width: 120px;
+  align-items: center;
+  justify-content: center;
 }
 .navBlock:hover {
-    background-color: #777777;
+  background-color: #777777;
 }
 
 .link {
-   cursor: pointer;
+  cursor: pointer;
 }
 
-.userDropdown, .profileDropdown, .analysisDropdown {
-   float: left;
-   overflow: hidden;
+.userDropdown,
+.profileDropdown,
+.analysisDropdown {
+  float: left;
+  overflow: hidden;
 }
 
 .dropdownContent {
-   display: none;
-   position: absolute;
-    width: 120px;
-    top: 40px;
-   background-color: #484848;
-    z-index: 1;
+  display: none;
+  position: absolute;
+  width: 120px;
+  top: 40px;
+  background-color: #484848;
+  z-index: 1;
 }
 
 .dropdownContent > a {
-    float: none;
-    padding: 10px 10px;
-    display: block;
-    text-align: left; 
+  float: none;
+  padding: 10px 10px;
+  display: block;
+  text-align: left;
 }
 
-.userDropdown:hover #userDropdownContent
- {
-   display: block;
+.userDropdown:hover #userDropdownContent {
+  display: block;
 }
 .profileDropdown:hover #profileDropdownContent {
-    display: block;
+  display: block;
 }
 .analysisDropdown:hover #analysisDropdownContent {
-    display: block;
+  display: block;
 }
 .dropdownContent > *:hover {
-   background-color: #777777; 
+  background-color: #777777;
 }
 
 @media screen and (min-width: 700px) {
-    .logo {
-        display: block;
-    }
-    .navbar {
-        justify-content: space-between;
-    }
+  .logo {
+    display: block;
+  }
+  .navbar {
+    justify-content: space-between;
+  }
 }

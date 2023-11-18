@@ -79,10 +79,10 @@ public class ProfileController : ControllerBase
     }
     
     [HttpGet("get-activities")]
-    public IActionResult GetUserActivities()
+    public IActionResult GetUserActivities(DateTime? lastActivityDate, int? perPage)
     {
         Guid? userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
-        var response = _stravaService.GetAthleteActivities(userId, null,null);
+        var response = _stravaService.GetAthleteActivities(userId, lastActivityDate, perPage);
                 
         return Ok(response);
     }

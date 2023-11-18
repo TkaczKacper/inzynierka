@@ -7,6 +7,7 @@ export const ProfileActivities = () => {
   const [activities, setActivities] = useState<Activity[]>();
   useEffect(() => {
     const userActivities = async () => {
+      //@ts-ignore
       const res = await getAthleteActivities();
       setActivities(res?.data);
     };

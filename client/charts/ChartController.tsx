@@ -68,9 +68,11 @@ class ChartController extends Component<ChartProps> {
     });
     const stripLines = axisXstripLines();
     const options = {
+      backgroundColor: "rgba(255,255,255,0.1)",
       scales: {},
       title: {
         text: "Power curve",
+        fontColor: "#ffffff",
       },
       toolTip: {
         shared: true,
@@ -90,29 +92,30 @@ class ChartController extends Component<ChartProps> {
         },
         stripLines: stripLines,
         logarithmic: true,
+        labelFontColor: "#ffffff",
         interval: 1110,
         labelFormatter: function (e: any) {
           return parseDurationExact(e.value);
         },
       },
       axisY: {
+        labelFontColor: "#ffffff",
         suffix: "W",
       },
       data: [
         {
           type: "line",
+          color: "rgb(46,111,234)",
           dataPoints: dataPoints,
         },
       ],
     };
 
     return (
-      <div>
-        <CanvasJSChart
-          options={options}
-          /* onRef = {ref => this.chart = ref} */
-        />
-      </div>
+      <CanvasJSChart
+        options={options}
+        /* onRef = {ref => this.chart = ref} */
+      />
     );
   }
 }
@@ -143,7 +146,7 @@ const axisXstripLines = () => {
       thickness: 1,
       label: parseDurationExact(value),
       labelPlacement: "outside",
-      labelFontColor: "black",
+      labelFontColor: "#ffffff",
       labelBackgroundColor: "transparent",
       labelWrap: false,
       labelMaxWidth: 100,

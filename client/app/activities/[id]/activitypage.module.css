@@ -1,4 +1,7 @@
 ﻿.activityContainer {
+  max-width: 1920px;
+  margin: auto;
+  padding: 10px;
 }
 
 .activityInformation {
@@ -6,16 +9,12 @@
 
 .activityHeader {
   min-height: 120px;
-  padding: 10px;
-  margin-bottom: 10px;
 }
 
 .activityMap {
   width: 100%;
   min-width: 300px;
-  padding: 10px;
-  height: 500px;
-  margin-bottom: 20px;
+  height: 550px;
 }
 
 .activityPrimary {
@@ -38,14 +37,18 @@
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
-  flex-wrap: wrap;
   width: 100%;
-  align-items: center;
+}
+
+.activityStatsContainer {
+  padding-top: 30px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 100%;
 }
 
 .activityStats {
   width: 100%;
-  max-width: 440px;
 }
 
 .activityStatsTable {
@@ -70,7 +73,6 @@
   width: 100vw;
   height: 350px;
   margin-top: 20px;
-  padding: 20px;
 }
 
 .metricsHeader {
@@ -78,20 +80,36 @@
   justify-content: space-evenly;
 }
 
+.powerCurveChart {
+  padding: 20px 10px;
+}
+
 @media screen and (min-width: 700px) {
   .activitySecondary {
     flex-direction: row;
   }
   .metricsContainer {
-    width: 40vw;
+    width: 100%;
   }
   .activityStats {
-    width: 60vw;
+    width: 100%;
   }
   .activityPrimary {
     grid-template-rows: 1fr;
     grid-template-columns: repeat(4, 1fr);
     max-width: 700px;
-    padding-left: 5px;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .activityStatsContainer {
+    grid-template-columns: 40% 60%;
+  }
+  .activitySecondary {
+    flex-direction: column;
+  }
+  .activityMap {
+    height: 535px;
+    padding-left: 15px;
   }
 }
