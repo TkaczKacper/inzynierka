@@ -17,6 +17,7 @@ namespace server.Services
         IEnumerable<User> GetAll();
         User GetById(Guid id);
         AuthResponse RenewAccessToken(string token);
+        string ChangePassword(Guid? userId, ChangePassword password);
     }
     public class UserService : IUserService
     {
@@ -59,6 +60,23 @@ namespace server.Services
             return new AuthResponse(user, jwtToken, refreshToken.Token, stravaRefreshToken);
         }
 
+        public string ChangePassword(Guid? userId, ChangePassword model)
+        {
+            var user = _context.Users.SingleOrDefault(x => x.ID == userId);
+            
+            if (user == null || !_passwordHasher.Verify(user.Password, model.OldPassword).Result)
+                throw new AppException("Provided password does not match with current password.");
+
+            var passwordHashed = _passwordHasher.Hash(model.NewPassword).Result;
+
+            user.Password = passwordHashed;
+
+            _context.Update(user);
+            _context.SaveChanges();
+            
+            return "Password updated.";
+        }
+        
         public AuthResponse Register(RegisterRequest model, string ipAddress)
         {
             var possibleUser = _context.Users.SingleOrDefault(x => x.Username == model.Username || x.Email == model.Email);
@@ -88,6 +106,7 @@ namespace server.Services
 
             return new AuthResponse(userRegister, jwtToken, refreshToken.Token, "");
         }
+
         public AuthResponse RefreshToken(string token, string ipAddress)
         {
             var user = getUserByRefreshToken(token);

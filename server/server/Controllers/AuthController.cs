@@ -11,10 +11,12 @@ namespace server.Controllers
     public class AuthController : ControllerBase
     {
         private IUserService _userService;
+        private IJwtUtils _jwtUtils;
 
-        public AuthController(IUserService userService)
+        public AuthController(IUserService userService, IJwtUtils jwtUtils)
         {
             _userService = userService;
+            _jwtUtils = jwtUtils;
         }
 
 
@@ -36,7 +38,16 @@ namespace server.Controllers
             
             return Ok(response);
         }
-        
+
+        [HttpPut("change-password")]
+        public IActionResult ChangePassword([FromBody] ChangePassword changePassword)
+        {
+            var userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
+            
+            var response = _userService.ChangePassword(userId, changePassword);
+
+            return Ok(response);
+        }
 
         [AllowAnonymous]
         [HttpPost("register")]
