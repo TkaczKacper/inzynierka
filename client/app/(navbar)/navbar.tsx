@@ -101,7 +101,7 @@ const navbar = () => {
                 >
                   <Link href={"#"}>User information</Link>
                   <Link href={"#"}>Settings</Link>
-                  <Link href={"#"}>Password</Link>
+                  <Link href={"/account/password"}>Password</Link>
                   <Link href={`/profile/${userId}`}>Profile</Link>
                   <hr style={{ borderColor: "black" }} />
                   <a className={styles.link} onClick={logoutHandler}>
