@@ -103,7 +103,8 @@ public class ProfileController : ControllerBase
     {
         Guid? userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
         var response =  _stravaService.GetProfileData(userId);
-            
+        response.MonthlySummaries = _stravaService.GetMonthlyStats(userId);
+        
         return Ok(response);
     }
     

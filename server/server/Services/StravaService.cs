@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using server.Helpers;
 using server.Models;
 using server.Models.Profile;
+using server.Models.Profile.Summary;
 using server.Models.Strava;
 using server.Responses;
 
@@ -18,6 +19,7 @@ namespace server.Services
         ProfilePower ProfilePowerUpdate(ProfilePower profilePower, Guid userId);
         string ProfilePowerDelete(long entryId, Guid? userId);
         AthleteData GetProfileData(Guid? userId);
+        List<ProfileMonthlySummary> GetMonthlyStats(Guid? userId);
         IEnumerable<StravaActivity> GetAthleteActivities(Guid? userId, DateTime? lastActivityDate, int? perPage);
         List<long> GetSyncedActivitiesId(Guid? userId);
         DateTime GetLatestActivity(Guid? userId);
@@ -198,6 +200,17 @@ namespace server.Services
             
             return response;
         }
+
+        public List<ProfileMonthlySummary> GetMonthlyStats(Guid? userId)
+        {
+            List<ProfileMonthlySummary> monthlySummaries = _context.ProfileMonthlySummary
+                .Where(summ => summ.UserId == userId && summ.Year == DateTime.Today.Year)
+                .OrderBy(summ => summ.Month)
+                .ToList();
+            
+            return monthlySummaries;
+        }
+        
         public IEnumerable<StravaActivity> GetAthleteActivities(Guid? userId, DateTime? lastActivityDate, int? perPage)
         {
             perPage ??= 10;

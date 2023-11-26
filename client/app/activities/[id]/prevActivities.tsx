@@ -24,18 +24,18 @@ const prevActivities = (props: props) => {
         <h2>Your recent activities</h2>
         {recentActivities?.map((value, index) => {
           return (
-            <div className={styles.otherActivityContainer}>
-              <td>
+            <div className={styles.otherActivityContainer} key={index}>
+              <div>
                 {new Date(value.startDate).toLocaleDateString("en-PL", {
                   year: "numeric",
                   month: "short",
                   day: "numeric",
                 })}
-              </td>
-              <td>{(value.totalDistance / 1000).toFixed(0)}km</td>
-              <td className={styles.otherActivityTitle}>
+              </div>
+              <div>{(value.totalDistance / 1000).toFixed(0)}km</div>
+              <div className={styles.otherActivityTitle}>
                 <Link href={`${value.id}`}>{value.title}</Link>
-              </td>
+              </div>
             </div>
           );
         })}
