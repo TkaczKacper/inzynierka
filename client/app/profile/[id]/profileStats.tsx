@@ -1,36 +1,62 @@
 ﻿import React, { useEffect, useState } from "react";
 import { getAthleteStats } from "@/utils/serverUtils";
-import { AthleteInfo, AthleteStats } from "@/app/profile/[id]/types";
+import {
+  AthleteInfo,
+  AthleteStats,
+  MonthlySummary,
+} from "@/app/profile/[id]/types";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import styles from "./profileStats.module.css";
+import {
+  parseDurationExact,
+  parseDurationNumeric,
+} from "@/utils/parseDuration";
 
-export const ProfileStats = () => {
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+interface props {
+  setMonth: any;
+}
+export const ProfileStats = (setMonth: props) => {
   const [athleteStats, setAthleteStats] = useState<AthleteStats>();
   const [athleteInfo, setAthleteInfo] = useState<AthleteInfo>();
+  const [monthlySum, setMonthlySum] = useState<MonthlySummary[]>();
+  const [currMonth, setCurrMonth] = useState<MonthlySummary>();
+  const [max, setMax] = useState<number>(0);
 
   const [userPowerZones, setUserPowerZones] = useLocalStorage("powerZones", {});
   const [userHrZones, setUserHrZones] = useLocalStorage("hrZones", {});
 
-  console.log(userPowerZones);
-  console.log(userHrZones);
   useEffect(() => {
     const stats = async () => {
       const res = await getAthleteStats();
+      const sum: MonthlySummary[] = res?.data.monthlySummaries;
       setAthleteStats(res?.data.athleteStats);
       setAthleteInfo(res?.data.stravaProfileInfo);
       setUserHrZones(res?.data.hrZones);
       setUserPowerZones(res?.data.powerZones);
+      setMonthlySum(sum);
+      if (sum) {
+        setMax(Math.max(...sum.map((val) => val.totalDistance)));
+        setCurrMonth(
+          res?.data.monthlySummaries[res?.data.monthlySummaries.length - 1],
+        );
+      }
     };
     stats();
   }, []);
-  console.log(athleteStats);
-  const parseDuration = (time: number) => {
-    const hours = Math.floor(time / 3600);
-    const minutes = Math.floor((time - hours * 3600) / 60);
-    const seconds = Math.floor(time - hours * 3600 - minutes * 60);
-    return `${hours > 0 ? hours + "h" : null} ${
-      time > 60 ? minutes + "m" : null
-    } ${seconds + "s"}`;
-  };
 
   return (
     <div>
@@ -54,58 +80,69 @@ export const ProfileStats = () => {
           connect.
         </>
       )}
-      <h2>Stats</h2>
-      {athleteStats ? (
-        <div>
-          <div>
-            <h3>Last 4 weeks</h3>
-            <div>
-              Activities / Week:{" "}
-              {(athleteStats.recentRideTotals.count / 4).toFixed()}
-            </div>
-            <div>
-              Avg Distance / Week:{" "}
-              {(athleteStats.recentRideTotals.distance / 4000).toFixed(2)}
-              km
-            </div>
-            <div>
-              Elev Gain / Week:{" "}
-              {(athleteStats.recentRideTotals.elevationGain / 4).toFixed(1)}m
-            </div>
-            <div>
-              Avg Time / Week:{" "}
-              {parseDuration(athleteStats.recentRideTotals.elapsedTime / 4)}
-            </div>
+
+      {currMonth && monthlySum ? (
+        <div className={styles.monthlySummaryContainer}>
+          <div className={styles.summaryInfo}>
+            <h2>Activities in {months[currMonth.month - 1]}</h2>
+            <ul className={styles.infoTotals}>
+              <li>
+                {parseDurationExact(currMonth.totalMovingTime)}
+                <p className={styles.infoTotalsDescription}>Time</p>
+              </li>
+              <li>
+                {(currMonth.totalDistance / 1000).toFixed(2)} km
+                <p className={styles.infoTotalsDescription}>Distance</p>
+              </li>
+              <li>
+                {currMonth.totalElevationGain.toFixed(0)} m
+                <p className={styles.infoTotalsDescription}>Ascending</p>
+              </li>
+              <li>
+                {currMonth.totalCalories}
+                <p className={styles.infoTotalsDescription}>Calories</p>
+              </li>
+            </ul>
           </div>
-          <div>
-            <h3>This year</h3>
-            <div>Activities: {athleteStats.ytdRideTotals.count}</div>
-            <div>
-              Distance:{" "}
-              {(athleteStats.ytdRideTotals.distance / 1000).toFixed(2)}km
-            </div>
-            <div>Elev Gain: {athleteStats.ytdRideTotals.elevationGain}m</div>
-            <div>
-              Time: {parseDuration(athleteStats.ytdRideTotals.elapsedTime)}
-            </div>
-          </div>
-          <div>
-            <h3>All-Time</h3>
-            <div>Activities: {athleteStats.allTimeRideTotals.count}</div>
-            <div>
-              Distance:{" "}
-              {(athleteStats.allTimeRideTotals.distance / 1000).toFixed(2)}km
-            </div>
-            <div>
-              Elev Gain: {athleteStats.allTimeRideTotals.elevationGain}m
-            </div>
-            <div>
-              Time: {parseDuration(athleteStats.allTimeRideTotals.elapsedTime)}
-            </div>
-            <div>
-              Longest Ride: {(athleteStats.longestRide / 1000).toFixed(2)}km
-            </div>
-            <div>Biggest Climb: {athleteStats.biggestClimb.toFixed()}m</div>
+          <div className={styles.summaryChart}>
+            <ul className={styles.yAxis}>
+              <li>{(max / 1000).toFixed(0)} km</li>
+              <li>{((max / 1000) * 0.75).toFixed(0)} km</li>
+              <li>{((max / 1000) * 0.5).toFixed(0)} km</li>
+              <li>{((max / 1000) * 0.25).toFixed(0)} km</li>
+              <li>0km</li>
+            </ul>
+            <ul className={styles.months}>
+              {months.map((value, index) => {
+                return (
+                  <li key={index} className={styles.month}>
+                    {monthlySum[index] ? (
+                      <div
+                        className={styles.bar}
+                        onClick={() => {
+                          setCurrMonth(monthlySum[index]);
+                          setMonth.setMonth(monthlySum[index].month);
+                        }}
+                      >
+                        <div
+                          className={`${styles.fill} ${
+                            index == currMonth.month - 1 ? styles.active : ""
+                          }`}
+                          style={{
+                            height: `${(
+                              (monthlySum[index].totalDistance / max) *
+                              100
+                            ).toFixed(0)}px`,
+                          }}
+                        ></div>
+                      </div>
+                    ) : (
+                      <div></div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         </div>
       ) : null}

@@ -35,6 +35,18 @@ export type AthleteStats = {
   ytdRideTotals: RideTotals;
 };
 
+export type MonthlySummary = {
+  month: number;
+  totalCalories: number;
+  totalDistance: number;
+  totalElapsedTime: number;
+  totalElevationGain: number;
+  totalMovingTime: number;
+  trainingLoad: number;
+  year: number;
+  fillHeight: number;
+};
+
 export type ActivityLap = {
   avgCadence: number;
   avgHeartRate: number;

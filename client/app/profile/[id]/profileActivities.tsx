@@ -3,7 +3,11 @@ import { getAthleteActivities } from "@/utils/serverUtils";
 import { Activity } from "@/app/profile/[id]/types";
 import Link from "next/link";
 
-export const ProfileActivities = () => {
+interface props {
+  month: number;
+}
+
+export const ProfileActivities = (month: props) => {
   const [activities, setActivities] = useState<Activity[]>();
   useEffect(() => {
     const userActivities = async () => {
