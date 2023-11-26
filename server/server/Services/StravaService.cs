@@ -21,6 +21,7 @@ namespace server.Services
         AthleteData GetProfileData(Guid? userId);
         List<ProfileMonthlySummary> GetMonthlyStats(Guid? userId);
         IEnumerable<StravaActivity> GetAthleteActivities(Guid? userId, DateTime? lastActivityDate, int? perPage);
+        IEnumerable<StravaActivity> GetAthletePeriodActivities(Guid? userId, int? month);
         List<long> GetSyncedActivitiesId(Guid? userId);
         DateTime GetLatestActivity(Guid? userId);
     }
@@ -220,6 +221,22 @@ namespace server.Services
             return activities;
         }
 
+        public IEnumerable<StravaActivity> GetAthletePeriodActivities(Guid? userId, int? month)
+        {
+            month ??= DateTime.UtcNow.Month;
+            DateTime first = new DateTime(DateTime.UtcNow.Year, (int)month, 1).ToUniversalTime();
+            DateTime last = first.AddMonths(1).AddSeconds(-1).ToUniversalTime();
+            
+            
+            var activities = _context.StravaActivity
+                .Where(a => a.UserId == userId && a.StartDate > first && a.StartDate < last) 
+                .Include(a=> a.Laps)
+                .OrderByDescending(a=> a.StartDate)
+                .ToList();
+
+            return activities;
+        }
+        
         public DateTime GetLatestActivity(Guid? userId)
         {
             var date = _context.StravaActivity

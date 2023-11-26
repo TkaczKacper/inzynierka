@@ -60,6 +60,23 @@ export const getAthleteActivities = async (
     console.log(err);
   }
 };
+
+export const getAthleteActivitiesPeriod = async (month: number) => {
+  try {
+    return await axios.get(
+      `${backend_url}/profile/get-activities-period?month=${month}`,
+      {
+        withCredentials: true,
+        headers: {
+          Authorization: getCookie("jwtToken"),
+        },
+      },
+    );
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 export const getActivitiesDetails = async (activitiesId: number[]) => {
   try {
     const response = await axios.post(

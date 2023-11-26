@@ -1,5 +1,8 @@
 ﻿import { useEffect, useState } from "react";
-import { getAthleteActivities } from "@/utils/serverUtils";
+import {
+  getAthleteActivities,
+  getAthleteActivitiesPeriod,
+} from "@/utils/serverUtils";
 import { Activity } from "@/app/profile/[id]/types";
 import Link from "next/link";
 
@@ -12,17 +15,16 @@ export const ProfileActivities = (month: props) => {
   useEffect(() => {
     const userActivities = async () => {
       //@ts-ignore
-      const res = await getAthleteActivities();
+      const res = await getAthleteActivitiesPeriod(month.month);
       setActivities(res?.data);
     };
     userActivities();
-  }, []);
+  }, [month]);
 
   console.log(activities);
 
   return (
     <div>
-      <h1>Activities</h1>
       {activities?.map((activity: Activity, index) => {
         return (
           <div key={index}>

@@ -86,6 +86,15 @@ public class ProfileController : ControllerBase
                 
         return Ok(response);
     }
+
+    [HttpGet("get-activities-period")]
+    public IActionResult GetUserPeriodActivities(int? month)
+    {
+        Guid? userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
+        var response = _stravaService.GetAthletePeriodActivities(userId, month);
+
+        return Ok(response);
+    }
     
     
     [HttpGet("get-user-training-load")]
