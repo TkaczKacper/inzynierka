@@ -1,80 +1,85 @@
 ﻿.monthlySummaryContainer {
-    display: flex;
-    flex-direction: column;
-    margin: 25px 0;
+  display: flex;
+  flex-direction: column;
+  margin: 25px 0;
 }
 
 .summaryInfo {
-    display: flex;
-    flex-direction: column;
-    width: 80%;
-    margin: auto;
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  margin: auto;
 }
 
 .infoTotals {
-    display: flex;
-    list-style: none;
-    font-size: 20px;
-    justify-content: center;
+  display: flex;
+  list-style: none;
+  font-size: 20px;
+  justify-content: center;
 }
 
 .infoTotals > li {
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    margin: 0 25px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  margin: 0 25px;
 }
 
 .infoTotalsDescription {
-    font-size: 10px;
+  font-size: 10px;
 }
 
 .summaryChart {
-    display: flex;
-    width: 96%;
-    margin: auto;
-    height: 120px;
-    align-items: end;
+  display: flex;
+  width: 96%;
+  margin: auto;
+  height: 120px;
+  align-items: end;
 }
 
 .yAxis {
-    width: 10%;    
-    height: 115px;
-    list-style: none;
-    text-align: right;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    font-size: 12px;
-    padding-right: 8px;
+  width: 10%;
+  height: 115px;
+  list-style: none;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 12px;
+  padding-right: 8px;
 }
 
 .months {
-    width: 90%;
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    margin-bottom: 4px;
+  width: 90%;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  margin-bottom: 4px;
+  padding-right: 5vw;
 }
 
 .month {
-   height: 102px; 
-   display: flex;
-   flex-direction: column; 
+  height: 102px;
+  display: flex;
+  flex-direction: column;
 }
 
 .bar {
-    border: black 1px solid;
-    height: 100px;
-    display: flex;
-    flex-direction: column-reverse;
-    cursor: pointer;
+  border: black 1px solid;
+  height: 100px;
+  display: flex;
+  flex-direction: column-reverse;
+  cursor: pointer;
 }
 
 .fill {
-   background-color: dodgerblue; 
+  background-color: dodgerblue;
 }
 
 .active {
-    background: linear-gradient(0deg, rgba(12,74,140,1) 24%, rgba(26,102,177,1) 57%, rgba(27,129,228,1) 88%);
-
+  background: linear-gradient(
+    0deg,
+    rgba(12, 74, 140, 1) 24%,
+    rgba(26, 102, 177, 1) 57%,
+    rgba(27, 129, 228, 1) 88%
+  );
 }

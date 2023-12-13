@@ -44,10 +44,10 @@ namespace server.Models.Strava
         
         
         public double? Trimp { get; set; }
-        public double? NormalizedPower { get; set; }
-        public double? IntensityFactor { get; set; }
+        public double? EffectivePower { get; set; }
+        public double? Intensity { get; set; }
         public double? VariabilityIndex { get; set; }
-        public double? Tss { get; set; }
+        public double? TrainingLoad { get; set; }
         
         public StravaActivityStreams ActivityStreams { get; set; }
         public List<int>? PowerCurve { get; set; }

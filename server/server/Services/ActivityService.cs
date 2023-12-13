@@ -12,7 +12,7 @@ namespace server.Services
     {
         Task<string> GetActivityDetails(string accessToken, Guid? userId);
         StravaActivity GetActivityById(long activityId);
-        List<TrainingLoad> GetUserTrainingLoad(Guid? userId);
+        List<TrainingLoads> GetUserTrainingLoad(Guid? userId);
     }
 
     public class ActivityService : IActivityService
@@ -67,11 +67,11 @@ namespace server.Services
             List<ProfileMonthlySummary> monthlySummariesToAdd = new List<ProfileMonthlySummary>();
             List<int[]> existingMonthlySummaryToAdd = new List<int[]>();
 
-            List<TrainingLoad>? trainingLoads = _context.TrainingLoad
+            List<TrainingLoads>? trainingLoads = _context.TrainingLoads
                 .Where(tl => tl.UserId == userId)
                 .ToList();
 
-            List<TrainingLoad>? trainingLoadsToAdd = new List<TrainingLoad>();
+            List<TrainingLoads>? trainingLoadsToAdd = new List<TrainingLoads>();
 
 
             List<long> ids = user.ActivitiesToFetch;
@@ -190,7 +190,7 @@ namespace server.Services
                         activity.MaxCadence = streams.Cadence.Max();
                     }
                     
-                    double trainingLoad = 0;
+                    double activityTrainingLoad = 0;
                     if (details.Average_heartrate > 0 && HrMax is not null && HrRest is not null &&
                         streams.HeartRate?.Count > 0)
                     {
@@ -205,7 +205,7 @@ namespace server.Services
                             * Math.Exp(multiplier * (details.Average_heartrate - (int)HrRest) /
                                        ((int)HrMax - (int)HrRest));
                         activity.Trimp = trimp;
-                        trainingLoad = trimp;
+                        activityTrainingLoad = trimp;
                     }
 
                     if (details.Device_watts && streams.Watts?.Count > 0)
@@ -217,17 +217,17 @@ namespace server.Services
                         List<double> avg = Enumerable.Range(0, streams.Watts
                             .Count - 29).Select(i => Math.Pow(streams.Watts.Skip(i).Take(30).Average(), 4)).ToList();
 
-                        double NormalizedPower = Math.Pow(avg.Average(), 0.25);
-                        double IntensityFactor = NormalizedPower / FTP;
-                        double VariabilityIndex = NormalizedPower / details.Average_watts;
-                        double Tss = (details.Moving_time * NormalizedPower * IntensityFactor) / (329 * 36);
+                        double EffectivePower = Math.Pow(avg.Average(), 0.25);
+                        double Intensity = EffectivePower / FTP;
+                        double VariabilityIndex = EffectivePower / details.Average_watts;
+                        double TrainingLoad = (details.Moving_time * EffectivePower * Intensity) / (FTP * 36);
 
 
-                        activity.NormalizedPower = NormalizedPower;
-                        activity.IntensityFactor = IntensityFactor;
+                        activity.EffectivePower = EffectivePower;
+                        activity.Intensity = Intensity;
                         activity.VariabilityIndex = VariabilityIndex;
-                        activity.Tss = Tss;
-                        trainingLoad = Tss;
+                        activity.TrainingLoad = TrainingLoad;
+                        activityTrainingLoad = TrainingLoad;
                     }
 
                     //weekly summary
@@ -246,7 +246,7 @@ namespace server.Services
                         weeklySummary[weeklySummaryId].TotalCalories += activity.Calories;
                         weeklySummary[weeklySummaryId].TotalMovingTime += activity.MovingTime;
                         weeklySummary[weeklySummaryId].TotalElapsedTime += activity.ElapsedTime;
-                        weeklySummary[weeklySummaryId].TrainingLoad += trainingLoad;
+                        weeklySummary[weeklySummaryId].TrainingLoad += activityTrainingLoad;
                     }
                     else
                     {
@@ -264,7 +264,7 @@ namespace server.Services
                             weeklySummariesToAdd[weeklySummaryToAddId].TotalCalories += activity.Calories;
                             weeklySummariesToAdd[weeklySummaryToAddId].TotalMovingTime += activity.MovingTime;
                             weeklySummariesToAdd[weeklySummaryToAddId].TotalElapsedTime += activity.ElapsedTime;
-                            weeklySummariesToAdd[weeklySummaryToAddId].TrainingLoad += trainingLoad;
+                            weeklySummariesToAdd[weeklySummaryToAddId].TrainingLoad += activityTrainingLoad;
                         }
                         else
                         {
@@ -292,7 +292,7 @@ namespace server.Services
                                 TotalCalories = activity.Calories,
                                 TotalMovingTime = activity.MovingTime,
                                 TotalElapsedTime = activity.ElapsedTime,
-                                TrainingLoad = trainingLoad,
+                                TrainingLoad = activityTrainingLoad,
                                 UserId = (Guid)userId
                             };
 
@@ -313,7 +313,7 @@ namespace server.Services
                         monthlySummary[monthlySummaryId].TotalCalories += activity.Calories;
                         monthlySummary[monthlySummaryId].TotalMovingTime += activity.MovingTime;
                         monthlySummary[monthlySummaryId].TotalElapsedTime += activity.ElapsedTime;
-                        monthlySummary[monthlySummaryId].TrainingLoad += trainingLoad;
+                        monthlySummary[monthlySummaryId].TrainingLoad += activityTrainingLoad;
                     }
                     else
                     {
@@ -328,7 +328,7 @@ namespace server.Services
                             monthlySummariesToAdd[monthlySummaryToAddId].TotalCalories += activity.Calories;
                             monthlySummariesToAdd[monthlySummaryToAddId].TotalMovingTime += activity.MovingTime;
                             monthlySummariesToAdd[monthlySummaryToAddId].TotalElapsedTime += activity.ElapsedTime;
-                            monthlySummariesToAdd[monthlySummaryToAddId].TrainingLoad += trainingLoad;
+                            monthlySummariesToAdd[monthlySummaryToAddId].TrainingLoad += activityTrainingLoad;
                         }
                         else
                         {
@@ -340,7 +340,7 @@ namespace server.Services
                                 TotalElevationGain = activity.TotalElevationGain,
                                 TotalMovingTime = activity.MovingTime,
                                 TotalElapsedTime = activity.ElapsedTime,
-                                TrainingLoad = trainingLoad,
+                                TrainingLoad = activityTrainingLoad,
                                 TotalCalories = activity.Calories,
                                 UserId = (Guid)userId
                             };
@@ -361,21 +361,21 @@ namespace server.Services
                     if (tlIndex >= 0)
                     {
                         trainingLoads[tlIndex].TrainingImpulse += activity.Trimp > 0 ? (int)activity.Trimp : 0;
-                        trainingLoads[tlIndex].TrainingStressScore += activity.Tss > 0 ? (int)activity.Tss : 0;
+                        trainingLoads[tlIndex].TrainingLoad += activity.TrainingLoad > 0 ? (int)activity.TrainingLoad : 0;
                     }
                     else if (tlToAddIndex >= 0)
                     {
                         trainingLoadsToAdd[tlToAddIndex].TrainingImpulse +=
                             activity.Trimp > 0 ? (int)activity.Trimp : 0;
-                        trainingLoadsToAdd[tlToAddIndex].TrainingStressScore +=
-                            activity.Tss > 0 ? (int)activity.Tss : 0;
+                        trainingLoadsToAdd[tlToAddIndex].TrainingLoad +=
+                            activity.TrainingLoad > 0 ? (int)activity.TrainingLoad : 0;
                     }
                     else
                     {
-                        trainingLoadsToAdd.Add(new TrainingLoad
+                        trainingLoadsToAdd.Add(new TrainingLoads
                         {
                             Date = DateOnly.FromDateTime(activity.StartDate),
-                            TrainingStressScore = activity.Tss > 0 ? (int)activity.Tss : 0,
+                            TrainingLoad = activity.TrainingLoad > 0 ? (int)activity.TrainingLoad : 0,
                             TrainingImpulse = activity.Trimp > 0 ? (int)activity.Trimp : 0,
                             UserId = (Guid)userId
                         });
@@ -392,10 +392,10 @@ namespace server.Services
 
             foreach (var trainingLoad in trainingLoads)
             {
-                _context.TrainingLoad.Update(trainingLoad);
+                _context.TrainingLoads.Update(trainingLoad);
             }
 
-            _context.TrainingLoad.AddRange(trainingLoadsToAdd);
+            _context.TrainingLoads.AddRange(trainingLoadsToAdd);
             _context.StravaActivity.AddRange(activities);
             _context.ProfileWeeklySummary.AddRange(weeklySummariesToAdd);
             _context.ProfileMonthlySummary.AddRange(monthlySummariesToAdd);
@@ -420,9 +420,9 @@ namespace server.Services
             return activity == null ? throw new KeyNotFoundException("Activity not found.") : activity;
         }
 
-        public List<TrainingLoad> GetUserTrainingLoad(Guid? userId)
+        public List<TrainingLoads> GetUserTrainingLoad(Guid? userId)
         {
-            List<TrainingLoad> trainingLoads = _context.TrainingLoad
+            List<TrainingLoads> trainingLoads = _context.TrainingLoads
                 .Where(tl => tl.UserId == userId)
                 .OrderBy(tl => tl.Date)
                 .ToList();
@@ -536,12 +536,12 @@ namespace server.Services
 
         private async Task<string> UpdateTrainingLoad(Guid? userId)
         {
-            List<TrainingLoad>? trainingLoads = _context.TrainingLoad
+            List<TrainingLoads>? trainingLoads = _context.TrainingLoads
                 .Where(tl => tl.UserId == userId)
                 .OrderBy(tl => tl.Date)
                 .ToList();
 
-            List<TrainingLoad>? trainingLoadsToAdd = new List<TrainingLoad>();
+            List<TrainingLoads>? trainingLoadsToAdd = new List<TrainingLoads>();
 
             float alfa_lts = (float)2 / 43;
             float alfa_sts = (float)2 / 8;
@@ -556,16 +556,16 @@ namespace server.Services
             trainingLoads[0].LongTermStress = prev_lts;
             trainingLoads[0].ShortTermStress = prev_sts;
 
-            if (trainingLoads[0].TrainingStressScore > 0)
+            if (trainingLoads[0].TrainingLoad > 0)
             {
-                prev_lts = alfa_lts * trainingLoads[0].TrainingStressScore;
-                prev_sts = alfa_sts * trainingLoads[0].TrainingStressScore;
+                prev_lts = alfa_lts * trainingLoads[0].TrainingLoad;
+                prev_sts = alfa_sts * trainingLoads[0].TrainingLoad;
                 trainingLoads[0].LongTermStress = prev_lts;
                 trainingLoads[0].ShortTermStress = prev_sts;
             }
 
-            float prev_lts_p = alfa_lts * trainingLoads[0].TrainingStressScore;
-            float prev_sts_p = alfa_sts * trainingLoads[0].TrainingStressScore;
+            float prev_lts_p = alfa_lts * trainingLoads[0].TrainingLoad;
+            float prev_sts_p = alfa_sts * trainingLoads[0].TrainingLoad;
             trainingLoads[0].LongTermStressPower = prev_lts_p;
             trainingLoads[0].ShortTermStressPower = prev_sts_p;
 
@@ -586,7 +586,7 @@ namespace server.Services
                         float curr_lts_hr = (1 - alfa_lts) * prev_lts_hr;
                         float curr_sts_hr = (1 - alfa_sts) * prev_sts_hr;
 
-                        trainingLoadsToAdd.Add(new TrainingLoad
+                        trainingLoadsToAdd.Add(new TrainingLoads
                         {
                             Date = prev_date,
 
@@ -629,20 +629,20 @@ namespace server.Services
                 trainingLoads[i].StressBalanceHr =
                     trainingLoads[i].LongTermStressHr - trainingLoads[i].ShortTermStressHr;
 
-                if (trainingLoads[i].TrainingStressScore > 0)
+                if (trainingLoads[i].TrainingLoad > 0)
                 {
                     trainingLoads[i].LongTermStress = 
-                        alfa_lts * trainingLoads[i].TrainingStressScore + (1 - alfa_lts) * prev_lts;
+                        alfa_lts * trainingLoads[i].TrainingLoad + (1 - alfa_lts) * prev_lts;
                     trainingLoads[i].ShortTermStress = 
-                        alfa_sts * trainingLoads[i].TrainingStressScore + (1 - alfa_sts) * prev_sts;
+                        alfa_sts * trainingLoads[i].TrainingLoad + (1 - alfa_sts) * prev_sts;
                 }
 
                 trainingLoads[i].StressBalance = trainingLoads[i].LongTermStress - trainingLoads[i].ShortTermStress;
 
                 trainingLoads[i].LongTermStressPower =
-                    alfa_lts * trainingLoads[i].TrainingStressScore + (1 - alfa_lts) * prev_lts_p;
+                    alfa_lts * trainingLoads[i].TrainingLoad + (1 - alfa_lts) * prev_lts_p;
                 trainingLoads[i].ShortTermStressPower = 
-                    alfa_sts * trainingLoads[i].TrainingStressScore + (1 - alfa_sts) * prev_sts_p;
+                    alfa_sts * trainingLoads[i].TrainingLoad + (1 - alfa_sts) * prev_sts_p;
                 trainingLoads[i].StressBalancePower =
                     trainingLoads[i].LongTermStressPower - trainingLoads[i].ShortTermStressPower;
 
@@ -658,18 +658,18 @@ namespace server.Services
 
             foreach (var trainingLoad in trainingLoads)
             {
-                _context.TrainingLoad.Update(trainingLoad);
+                _context.TrainingLoads.Update(trainingLoad);
             }
 
-            _context.TrainingLoad.AddRange(trainingLoadsToAdd);
+            _context.TrainingLoads.AddRange(trainingLoadsToAdd);
             _context.SaveChanges();
 
             return "updated";
         }
 
-        private List<TrainingLoad> CalculateTrainingLoadToday(Guid? userId, List<TrainingLoad> trainingLoads)
+        private List<TrainingLoads> CalculateTrainingLoadToday(Guid? userId, List<TrainingLoads> trainingLoads)
         {
-            List<TrainingLoad>? trainingLoadsToAdd = new List<TrainingLoad>();
+            List<TrainingLoads>? trainingLoadsToAdd = new List<TrainingLoads>();
 
             float alfa_lts = (float)2 / 43;
             float alfa_sts = (float)2 / 8;
@@ -699,11 +699,11 @@ namespace server.Services
                 float curr_sts_pwr = (1 - alfa_sts) * prev_sts_pwr;
                 float curr_sb_pwr = curr_lts_pwr - curr_sts_pwr;
                 
-                trainingLoadsToAdd.Add(new TrainingLoad{
+                trainingLoadsToAdd.Add(new TrainingLoads {
                     UserId = (Guid)userId,
                     Date = date,
                     TrainingImpulse = 0,
-                    TrainingStressScore = 0,
+                    TrainingLoad = 0,
                     LongTermStress = curr_lts,
                     ShortTermStress = curr_sts,
                     StressBalance = curr_sb,
@@ -727,10 +727,10 @@ namespace server.Services
                 date = date.AddDays(1);
             }
             
-            _context.TrainingLoad.AddRange(trainingLoadsToAdd);
+            _context.TrainingLoads.AddRange(trainingLoadsToAdd);
             _context.SaveChanges();
             
-            List<TrainingLoad>? res = _context.TrainingLoad
+            List<TrainingLoads>? res = _context.TrainingLoads
                 .Where(tl => tl.UserId == userId)
                 .OrderBy(tl => tl.Date)
                 .ToList();

@@ -28,7 +28,7 @@ namespace server.Models
         
         public List<ProfileWeeklySummary>? ProfileWeeklySummaries { get; set; }
         public List<ProfileMonthlySummary>? ProfileMonthlySummaries { get; set; }
-        public List<TrainingLoad>? TrainingLoads { get; set; }
+        public List<TrainingLoads>? TrainingLoads { get; set; }
         
         [JsonIgnore]
         public List<long>? ActivitiesToFetch { get; set; }

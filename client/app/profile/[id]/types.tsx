@@ -104,7 +104,7 @@ export type Activity = {
   gradeSmooth: number[];
   hasPowerMeter: boolean;
   heartRate: number[];
-  intensityFactor: number;
+  intensity: number;
   laps: ActivityLap[];
   lat: number[];
   lng: number[];
@@ -115,7 +115,7 @@ export type Activity = {
   maxWatts: number;
   moving: boolean[];
   movingTime: number;
-  normalizedPower: number;
+  effectivePower: number;
   startDate: Date;
   startLatLng: LatLngLiteral;
   stravaActivityID: number;
@@ -125,7 +125,7 @@ export type Activity = {
   totalDistance: number;
   totalElevationGain: number;
   trainer: boolean;
-  tss: number;
+  trainingLoad: number;
   trimp: number;
   type: string;
   sportType: string;

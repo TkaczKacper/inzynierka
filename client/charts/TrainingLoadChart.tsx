@@ -20,6 +20,13 @@ class TrainingLoadChart extends Component<Props> {
     const TLDataSet = chartDataTL(this.props.dataType, this.props.data);
     const options = {
       exportEnabled: true,
+      legend: {
+        fontSize: 13,
+        dockInsidePlotArea: true,
+        verticalAlign: "top",
+        horizontalAlign: "left",
+        maxWidth: 50,
+      },
       toolTip: {
         shared: true,
         contentFormatter: function (e: any) {
@@ -78,16 +85,22 @@ class TrainingLoadChart extends Component<Props> {
       data: [
         {
           type: "line",
+          showInLegend: true,
+          legendText: "LTS",
           color: "rgb(46,111,234)",
           dataPoints: LTSDataSet,
         },
         {
           type: "line",
+          showInLegend: true,
+          legendText: "STS",
           color: "rgb(236,143,77)",
           dataPoints: STSDataSet,
         },
         {
           type: "area",
+          showInLegend: true,
+          legendText: "SB",
           color: "rgba(167,167,167)",
           fillOpacity: "0.15",
           lineThickness: "1.5",
@@ -208,9 +221,7 @@ const chartDataTL = (dataType: number, data: TrainingLoadResponseType[]) => {
         chartData.push({
           x: index,
           y:
-            value.trainingStressScore > 0
-              ? value.trainingStressScore
-              : value.trainingImpulse,
+            value.trainingLoad > 0 ? value.trainingLoad : value.trainingImpulse,
         });
       });
       break;
@@ -218,7 +229,7 @@ const chartDataTL = (dataType: number, data: TrainingLoadResponseType[]) => {
       data.map((value, index) => {
         chartData.push({
           x: index,
-          y: value.trainingStressScore,
+          y: value.trainingLoad,
         });
       });
       break;

@@ -79,11 +79,11 @@ const page = () => {
                 {activity.hasPowerMeter ? (
                   <div className={styles.activityPrimary}>
                     <div>
-                      <h2>{activity.normalizedPower.toFixed(0)}</h2>
-                      normalized power
+                      <h2>{activity.effectivePower.toFixed(0)}</h2>
+                      effective power
                     </div>
                     <div>
-                      <h2>{(activity.intensityFactor * 100).toFixed(0)}%</h2>
+                      <h2>{(activity.intensity * 100).toFixed(0)}%</h2>
                       intensity
                     </div>
                     <div>
@@ -91,7 +91,7 @@ const page = () => {
                       variability
                     </div>{" "}
                     <div>
-                      <h2>{activity.tss.toFixed(0)}</h2>
+                      <h2>{activity.trainingLoad.toFixed(0)}</h2>
                       training load
                     </div>
                   </div>
@@ -164,7 +164,7 @@ const page = () => {
                       powerTimeInZone={activity.powerTimeInZone}
                       powerCurve={activity.powerCurve}
                       trimp={activity.trimp}
-                      tss={activity.tss}
+                      tss={activity.trainingLoad}
                     />
                   </div>
                   {activity.detailedPolyline ? (

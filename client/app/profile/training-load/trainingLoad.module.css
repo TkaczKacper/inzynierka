@@ -1,0 +1,15 @@
+﻿.TLContainer {
+  padding: 20px;
+}
+
+.source {
+  display: flex;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.sourceButton {
+  font-size: 14px;
+  padding: 3px;
+  margin: 0 3px;
+}

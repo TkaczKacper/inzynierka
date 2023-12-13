@@ -3,12 +3,12 @@ using System.Text.Json.Serialization;
 
 namespace server.Models.Profile;
 
-public class TrainingLoad
+public class TrainingLoads
 {
     [JsonIgnore]
     public long Id { get; set; }
     public DateOnly Date { get; set; }
-    public int TrainingStressScore { get; set; }
+    public int TrainingLoad { get; set; }
     public int TrainingImpulse { get; set; }
     
     // power & hr data mixed

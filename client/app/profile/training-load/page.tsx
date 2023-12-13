@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { getUserTrainingLoad } from "@/utils/serverUtils";
 import TrainingLoadChart from "@/charts/TrainingLoadChart";
 import Loading from "@/app/loading";
+import styles from "./trainingLoad.module.css";
 
 export type TrainingLoadResponseType = {
   date: string;
   trainingImpulse: number;
-  trainingStressScore: number;
+  trainingLoad: number;
   longTermStress: number;
   longTermStressHr: number;
   longTermStressPower: number;
@@ -46,12 +47,30 @@ const page = () => {
   return (
     <>
       {!loading ? (
-        <div>
-          <div>
+        <div className={styles.TLContainer}>
+          <div className={styles.source}>
             Source:
-            <div onClick={() => setDataType(0)}>Both</div>
-            <div onClick={() => setDataType(1)}>Power</div>
-            <div onClick={() => setDataType(2)}>HeartRate</div>
+            <button
+              className={styles.sourceButton}
+              onClick={() => setDataType(0)}
+              disabled={dataType == 0}
+            >
+              Mixed
+            </button>
+            <button
+              className={styles.sourceButton}
+              onClick={() => setDataType(1)}
+              disabled={dataType == 1}
+            >
+              Power
+            </button>
+            <button
+              className={styles.sourceButton}
+              onClick={() => setDataType(2)}
+              disabled={dataType == 2}
+            >
+              HeartRate
+            </button>
           </div>
           {trainingLoad ? (
             <TrainingLoadChart data={trainingLoad} dataType={dataType} />
