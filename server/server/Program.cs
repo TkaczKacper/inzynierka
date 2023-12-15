@@ -65,7 +65,4 @@ if (app.Environment.IsDevelopment())
 
 app.MapControllers();
 
-app.MapGet("/", () => "test");
-
-
 app.Run();

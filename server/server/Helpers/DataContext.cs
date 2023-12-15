@@ -27,6 +27,7 @@ namespace server.Helpers
         public DbSet<ProfilePower> ProfilePower { get; set; }
         public DbSet<ProfileWeeklySummary> ProfileWeeklySummary { get; set; }
         public DbSet<ProfileMonthlySummary> ProfileMonthlySummary { get; set; }
+        public DbSet<ProfileYearlySummary> ProfileYearlySummary { get; set; }
         public DbSet<TrainingLoads> TrainingLoads { get; set; }
     }
 }

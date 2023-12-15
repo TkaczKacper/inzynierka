@@ -67,7 +67,19 @@ namespace server.Services
 
             List<ProfileMonthlySummary> monthlySummariesToAdd = new List<ProfileMonthlySummary>();
             List<int[]> existingMonthlySummaryToAdd = new List<int[]>();
+            
+            List<ProfileYearlySummary>? yearlySummary = _context.ProfileYearlySummary
+                .Where(sum => sum.UserId == userId)
+                .ToList();
+            List<int[]> existingYearlySummary = new List<int[]>();
+            foreach (var obj in yearlySummary)
+            {
+                existingYearlySummary.Add(new[] { obj.Year });
+            }
 
+            List<ProfileYearlySummary> yearlySummariesToAdd = new List<ProfileYearlySummary>();
+            List<int[]> existingYearlySummaryToAdd = new List<int[]>();
+            
             List<TrainingLoads>? trainingLoads = _context.TrainingLoads
                 .Where(tl => tl.UserId == userId)
                 .ToList();
@@ -350,6 +362,54 @@ namespace server.Services
                                 { activity.StartDate.Year, activity.StartDate.Month });
                         }
                     }
+                    
+                    //monthly summary
+                    int yearlySummaryId = existingYearlySummary.IndexOf(
+                        existingYearlySummary.Find(arr =>
+                            arr.SequenceEqual(new[] { activity.StartDate.Year })));
+
+                    if (yearlySummaryId >= 0)
+                    {
+                        yearlySummary[yearlySummaryId].TotalDistance += activity.TotalDistance;
+                        yearlySummary[yearlySummaryId].TotalElevationGain += activity.TotalElevationGain;
+                        yearlySummary[yearlySummaryId].TotalCalories += activity.Calories;
+                        yearlySummary[yearlySummaryId].TotalMovingTime += activity.MovingTime; 
+                        yearlySummary[yearlySummaryId].TotalElapsedTime += activity.ElapsedTime;
+                        yearlySummary[yearlySummaryId].TrainingLoad += activityTrainingLoad;
+                    }
+                    else
+                    {
+                        int yearlySummaryToAddId = existingYearlySummaryToAdd.IndexOf(
+                            existingYearlySummaryToAdd.Find(arr =>
+                                arr.SequenceEqual(new[] { activity.StartDate.Year })));
+                        if (yearlySummaryToAddId >= 0)
+                        {
+                            yearlySummariesToAdd[yearlySummaryToAddId].TotalDistance += activity.TotalDistance;
+                            yearlySummariesToAdd[yearlySummaryToAddId].TotalElevationGain +=
+                                activity.TotalElevationGain;
+                            yearlySummariesToAdd[yearlySummaryToAddId].TotalCalories += activity.Calories;
+                            yearlySummariesToAdd[yearlySummaryToAddId].TotalMovingTime += activity.MovingTime;
+                            yearlySummariesToAdd[yearlySummaryToAddId].TotalElapsedTime += activity.ElapsedTime;
+                            yearlySummariesToAdd[yearlySummaryToAddId].TrainingLoad += activityTrainingLoad;
+                        }
+                        else
+                        {
+                            ProfileYearlySummary newYearlySummary = new ProfileYearlySummary 
+                            {
+                                Year = activity.StartDate.Year,
+                                TotalDistance = activity.TotalDistance,
+                                TotalElevationGain = activity.TotalElevationGain,
+                                TotalMovingTime = activity.MovingTime,
+                                TotalElapsedTime = activity.ElapsedTime,
+                                TrainingLoad = activityTrainingLoad,
+                                TotalCalories = activity.Calories,
+                                UserId = (Guid)userId
+                            };
+                            yearlySummariesToAdd.Add(newYearlySummary);
+                            existingYearlySummaryToAdd.Add(new[]
+                                { activity.StartDate.Year });
+                        }
+                    }
 
                     // training load
                     int tlIndex = trainingLoads.IndexOf(trainingLoads
@@ -400,6 +460,7 @@ namespace server.Services
             _context.StravaActivity.AddRange(activities);
             _context.ProfileWeeklySummary.AddRange(weeklySummariesToAdd);
             _context.ProfileMonthlySummary.AddRange(monthlySummariesToAdd);
+            _context.ProfileYearlySummary.AddRange(yearlySummariesToAdd);
             _context.SaveChanges();
 
             List<long> remainingActivities = ids.Where(id => !activitiesAdded.Contains(id)).ToList();
