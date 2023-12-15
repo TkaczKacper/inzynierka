@@ -1,4 +1,6 @@
-﻿namespace server.Models.Strava
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace server.Models.Strava
 {
     public class StravaActivityLap
     {
@@ -17,5 +19,10 @@
         public float AvgCadence { get; set; }
         public float AvgHeartRate { get; set; }
         public float MaxHeartRate { get; set; }
+        
+        
+        //foreign key property
+        [ForeignKey("StravaActivity")]
+        public virtual long StravaActivityId { get; set; }
     }
 }

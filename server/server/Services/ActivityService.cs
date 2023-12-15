@@ -12,6 +12,7 @@ namespace server.Services
     {
         Task<string> GetActivityDetails(string accessToken, Guid? userId);
         StravaActivity GetActivityById(long activityId);
+        string  DeleteActivityById(long activityId, Guid? userId);
         List<TrainingLoads> GetUserTrainingLoad(Guid? userId);
     }
 
@@ -420,6 +421,19 @@ namespace server.Services
             return activity == null ? throw new KeyNotFoundException("Activity not found.") : activity;
         }
 
+        public string DeleteActivityById(long activityId, Guid? userId)
+        {
+            var activity = GetActivityById(activityId);
+            _context.Remove(_context.StravaActivityLap.Where(lap => lap.StravaActivityId == activityId));
+            _context.Remove(activity);
+            _context.SaveChanges();
+
+            UpdateTrainingLoad(userId);
+            
+            return "Deleted";
+        }
+        
+        
         public List<TrainingLoads> GetUserTrainingLoad(Guid? userId)
         {
             List<TrainingLoads> trainingLoads = _context.TrainingLoads

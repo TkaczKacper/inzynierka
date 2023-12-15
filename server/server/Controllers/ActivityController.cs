@@ -27,4 +27,15 @@ public class ActivityController : ControllerBase
     
         return Ok(response);
     }
+
+    [HttpDelete("delete-activity-by-id/{activityId:long}")]
+    public IActionResult DeleteActivityById(long activityId)
+    {
+        var userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
+
+        var response = _activityService.DeleteActivityById(activityId, userId);
+
+        return Ok(response);
+    }
+    
 }
