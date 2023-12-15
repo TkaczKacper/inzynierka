@@ -1,7 +1,7 @@
 using server.Models.Profile;
 using System.Text.Json.Serialization;
 using server.Models.Profile.Summary;
-using server.Models.Strava;
+using server.Models.Activity;
 
 namespace server.Models
 {
@@ -24,7 +24,7 @@ namespace server.Models
         public List<ProfilePower>? UserPower { get; set; }
         
         [JsonIgnore]
-        public virtual List<StravaActivity>? Activities { get; set; }
+        public virtual List<Activity.Activity>? Activities { get; set; }
         
         public List<ProfileWeeklySummary>? ProfileWeeklySummaries { get; set; }
         public List<ProfileMonthlySummary>? ProfileMonthlySummaries { get; set; }

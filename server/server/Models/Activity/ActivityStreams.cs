@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace server.Models.Strava;
+namespace server.Models.Activity;
 
-public class StravaActivityStreams
+public class ActivityStreams
 {
     public long Id { get; set; }
     public List<int>? TimeStream { get; set; }
@@ -19,6 +19,6 @@ public class StravaActivityStreams
     public List<double>? Lng { get; set; }
     
     //foreign key property
-    [ForeignKey("StravaActivity")]
-    public virtual long StravaActivityId { get; set; }
+    [ForeignKey("Activity")]
+    public virtual long ActivityId { get; set; }
 }

@@ -5,7 +5,7 @@ using server.Helpers;
 using server.Models;
 using server.Models.Profile;
 using server.Models.Profile.Summary;
-using server.Models.Strava;
+using server.Models.Activity;
 using server.Responses;
 
 namespace server.Services
@@ -20,8 +20,8 @@ namespace server.Services
         string ProfilePowerDelete(long entryId, Guid? userId);
         AthleteData GetProfileData(Guid? userId);
         List<ProfileMonthlySummary> GetMonthlyStats(Guid? userId);
-        IEnumerable<StravaActivity> GetAthleteActivities(Guid? userId, DateTime? lastActivityDate, int? perPage);
-        IEnumerable<StravaActivity> GetAthletePeriodActivities(Guid? userId, int? month);
+        IEnumerable<Activity> GetAthleteActivities(Guid? userId, DateTime? lastActivityDate, int? perPage);
+        IEnumerable<Activity> GetAthletePeriodActivities(Guid? userId, int? month);
         List<long> GetSyncedActivitiesId(Guid? userId);
         DateTime GetLatestActivity(Guid? userId);
     }
@@ -212,7 +212,7 @@ namespace server.Services
             return monthlySummaries;
         }
         
-        public IEnumerable<StravaActivity> GetAthleteActivities(Guid? userId, DateTime? lastActivityDate, int? perPage)
+        public IEnumerable<Activity> GetAthleteActivities(Guid? userId, DateTime? lastActivityDate, int? perPage)
         {
             perPage ??= 10;
             lastActivityDate ??= DateTime.UtcNow;
@@ -221,14 +221,14 @@ namespace server.Services
             return activities;
         }
 
-        public IEnumerable<StravaActivity> GetAthletePeriodActivities(Guid? userId, int? month)
+        public IEnumerable<Activity> GetAthletePeriodActivities(Guid? userId, int? month)
         {
             month ??= DateTime.UtcNow.Month;
             DateTime first = new DateTime(DateTime.UtcNow.Year, (int)month, 1).ToUniversalTime();
             DateTime last = first.AddMonths(1).AddSeconds(-1).ToUniversalTime();
             
             
-            var activities = _context.StravaActivity
+            var activities = _context.Activity
                 .Where(a => a.UserId == userId && a.StartDate > first && a.StartDate < last) 
                 .Include(a=> a.Laps)
                 .OrderByDescending(a=> a.StartDate)
@@ -239,7 +239,7 @@ namespace server.Services
         
         public DateTime GetLatestActivity(Guid? userId)
         {
-            var date = _context.StravaActivity
+            var date = _context.Activity
                 .Where(sa => sa.UserId == userId)
                 .OrderByDescending(sa => sa.StartDate)
                 .Select(sa => sa.StartDate)
@@ -270,7 +270,7 @@ namespace server.Services
         public List<long> GetSyncedActivitiesId(Guid? id)
         {
 
-            List<long>? userActivitiesId = _context.StravaActivity
+            List<long>? userActivitiesId = _context.Activity
                 .Where(sa => sa.UserId == id)
                 .Select(sa => sa.StravaActivityID)
                 .ToList();
@@ -278,9 +278,9 @@ namespace server.Services
             return userActivitiesId;
         }
 
-        public List<StravaActivity> GetSyncedActivities(Guid userId, DateTime date, int perPage)
+        public List<Activity> GetSyncedActivities(Guid userId, DateTime date, int perPage)
         {
-            var activities = _context.StravaActivity
+            var activities = _context.Activity
                 .Where(a => a.UserId == userId && a.StartDate < date) 
                 .Include(a=> a.Laps)
                 .OrderByDescending(a=> a.StartDate)

@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace server.Models.Strava
+namespace server.Models.Activity
 {
-    public class StravaActivityLap
+    public class ActivityLap
     {
         public long ID { get; set; }
         public int ElapsedTime { get; set; }
@@ -22,7 +22,7 @@ namespace server.Models.Strava
         
         
         //foreign key property
-        [ForeignKey("StravaActivity")]
-        public virtual long StravaActivityId { get; set; }
+        [ForeignKey("Activity")]
+        public virtual long ActivityId { get; set; }
     }
 }

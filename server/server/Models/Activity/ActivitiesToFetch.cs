@@ -1,6 +1,6 @@
-﻿namespace server.Models.Strava
+﻿namespace server.Models.Activity
 {
-    public class StravaActivitiesToFetch
+    public class ActivitiesToFetch
     {
         public long ID { get; set; }
         public List<long>? ActivityIds { get; set; }

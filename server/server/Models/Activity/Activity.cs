@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using server.Models.Profile;
 
-namespace server.Models.Strava
+namespace server.Models.Activity
 {
-    public class StravaActivity
+    public class Activity
     {
         public long ID { get; set; }
         public long StravaActivityID { get; set; }
@@ -35,7 +35,7 @@ namespace server.Models.Strava
         public int MaxTemp { get; set; }
         public float ElevationHigh { get; set; }
         public float ElevationLow { get; set; }
-        public List<StravaActivityLap>? Laps { get; set; }
+        public List<ActivityLap>? Laps { get; set; }
         public string? Gear { get; set; }
         public string? DeviceName { get; set; }
         public string? SummaryPolyline { get; set; }
@@ -49,7 +49,7 @@ namespace server.Models.Strava
         public double? VariabilityIndex { get; set; }
         public double? TrainingLoad { get; set; }
         
-        public StravaActivityStreams ActivityStreams { get; set; }
+        public ActivityStreams ActivityStreams { get; set; }
         public List<int>? PowerCurve { get; set; }
         
         public TimeInHrZone? HrTimeInZone { get; set; }

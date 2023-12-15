@@ -2,14 +2,14 @@
 using server.Responses.Strava.ActivityStreams;
 using server.Responses.Strava;
 using server.Responses.Strava.AthleteStats;
-using server.Models.Strava;
+using server.Models.Activity;
 
 namespace server.Services
 {
     public interface IStravaApiService
     {
         Task<ActivityDetailsResponse> GetDetailsById(long id, HttpClient httpClient);
-        Task<StravaActivityStreams> GetStreamsById(long id, HttpClient httpClient);
+        Task<ActivityStreams> GetStreamsById(long id, HttpClient httpClient);
         Task<StravaProfileStats> GetAthleteStats(long profileId, HttpClient httpClient);
     }
 
@@ -33,7 +33,7 @@ namespace server.Services
             return null;
         }
 
-        public async Task<StravaActivityStreams> GetStreamsById(long id, HttpClient stravaClient)
+        public async Task<ActivityStreams> GetStreamsById(long id, HttpClient stravaClient)
         {
             try
             {
@@ -113,7 +113,7 @@ namespace server.Services
                     }
                 }
 
-                StravaActivityStreams streamsToProcess = new StravaActivityStreams
+                ActivityStreams streamsToProcess = new ActivityStreams
                 {
                     TimeStream = time,
                     Distance = distance,
@@ -192,7 +192,7 @@ namespace server.Services
             return null;
         }
 
-        public StravaActivityStreams ProcessStreams(StravaActivityStreams streams)
+        public ActivityStreams ProcessStreams(ActivityStreams streams)
         {
             List<int> time_processed = new List<int>();
             List<float> distance_processed = new List<float>();
@@ -385,7 +385,7 @@ namespace server.Services
             if (temp.Count > 0)
                 temp_processed.Add(temp[lastIdx]);
 
-            StravaActivityStreams streamsProcessed = new StravaActivityStreams
+            ActivityStreams streamsProcessed = new ActivityStreams
             {
                 TimeStream = time_processed,
                 Distance = distance_processed,

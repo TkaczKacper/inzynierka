@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using server.Helpers;
 using server.Models;
-using server.Models.Strava;
+using server.Models.Activity;
 using System.Globalization;
 using server.Models.Profile;
 using server.Models.Profile.Summary;
@@ -11,7 +11,7 @@ namespace server.Services
     public interface IActivityService
     {
         Task<string> GetActivityDetails(string accessToken, Guid? userId);
-        StravaActivity GetActivityById(long activityId);
+        Activity GetActivityById(long activityId);
         string  DeleteActivityById(long activityId, Guid? userId);
         List<TrainingLoads> GetUserTrainingLoad(Guid? userId);
     }
@@ -90,7 +90,7 @@ namespace server.Services
             List<long> ids = user.ActivitiesToFetch;
             List<long> activitiesAdded = new List<long>();
 
-            List<StravaActivity> activities = new List<StravaActivity>();
+            List<Activity> activities = new List<Activity>();
             Console.WriteLine(stravaClient.DefaultRequestHeaders);
             if (!stravaClient.DefaultRequestHeaders.Contains("Authorization"))
             {
@@ -116,13 +116,13 @@ namespace server.Services
 
                 ;
 
-                StravaActivityStreams streams = await _stravaApi.GetStreamsById(id, stravaClient);
+                ActivityStreams streams = await _stravaApi.GetStreamsById(id, stravaClient);
 
                 if (details is null || streams is null) break;
 
                 Console.WriteLine($"creating activity {id}");
 
-                List<StravaActivityLap> activityLaps = new List<StravaActivityLap>();
+                List<ActivityLap> activityLaps = new List<ActivityLap>();
 
                 List<int> activityPowerCurve = new List<int>();
                 if (streams.Watts.Count > 0)
@@ -135,7 +135,7 @@ namespace server.Services
 
                 foreach (var lap in details.Laps)
                 {
-                    StravaActivityLap activityLap = new StravaActivityLap()
+                    ActivityLap activityLap = new ActivityLap()
                     {
                         ElapsedTime = lap.elapsed_time,
                         MovingTime = lap.moving_time,
@@ -157,7 +157,7 @@ namespace server.Services
 
                 try
                 {
-                    StravaActivity activity = new StravaActivity
+                    Activity activity = new Activity
                     {
                         StravaActivityID = details.Id,
                         Title = details.Name,
@@ -363,7 +363,7 @@ namespace server.Services
                         }
                     }
                     
-                    //monthly summary
+                    //yearly summary
                     int yearlySummaryId = existingYearlySummary.IndexOf(
                         existingYearlySummary.Find(arr =>
                             arr.SequenceEqual(new[] { activity.StartDate.Year })));
@@ -457,7 +457,7 @@ namespace server.Services
             }
 
             _context.TrainingLoads.AddRange(trainingLoadsToAdd);
-            _context.StravaActivity.AddRange(activities);
+            _context.Activity.AddRange(activities);
             _context.ProfileWeeklySummary.AddRange(weeklySummariesToAdd);
             _context.ProfileMonthlySummary.AddRange(monthlySummariesToAdd);
             _context.ProfileYearlySummary.AddRange(yearlySummariesToAdd);
@@ -472,9 +472,9 @@ namespace server.Services
             return $"{activities.Count} synced.";
         }
 
-        public StravaActivity GetActivityById(long activityId)
+        public Activity GetActivityById(long activityId)
         {
-            var activity = _context.StravaActivity
+            var activity = _context.Activity
                 .Include(sa => sa.HrTimeInZone)
                 .Include(sa => sa.PowerTimeInZone)
                 .FirstOrDefault(sa => sa.ID == activityId);
@@ -485,7 +485,7 @@ namespace server.Services
         public string DeleteActivityById(long activityId, Guid? userId)
         {
             var activity = GetActivityById(activityId);
-            _context.Remove(_context.StravaActivityLap.Where(lap => lap.StravaActivityId == activityId));
+            _context.Remove(_context.ActivityLap.Where(lap => lap.ActivityId == activityId));
             _context.Remove(activity);
             _context.SaveChanges();
 
