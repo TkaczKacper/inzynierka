@@ -1,8 +1,7 @@
 "use client";
 
-import { HrUpdateForm } from "./updateHr";
 import React, { useEffect, useState } from "react";
-import { deleteHrEntry } from "@/utils/serverUtils";
+import { deleteHrEntry, updateHr } from "@/utils/serverUtils";
 import HeartRateZones from "@/app/profile/heartrate-management/heartRateZones";
 import styles from "../management.module.css";
 
@@ -20,6 +19,10 @@ export type hrZonesType = {
 
 const page = () => {
   const [data, setData] = useState<hrZonesType[]>([]);
+  const [newHrRest, setNewHrRest] = useState(0);
+  const [newHrMax, setNewHrMax] = useState(0);
+  const [isSubmiting, setIsSubmiting] = useState(false);
+  const [addNewDisplay, setAddNewDisplay] = useState("none");
 
   useEffect(() => {
     const userHrZones = localStorage.getItem("hrZones");
@@ -34,11 +37,25 @@ const page = () => {
       setData(data.filter((elem, idx) => idx != index));
     }
   };
-  console.log(data);
+  const submitHandler = async () => {
+    const response = await updateHr(newHrRest, newHrMax);
+    console.log(response);
+    if (response?.data) {
+      setData([...data, response.data]);
+      setIsSubmiting(false);
+      setAddNewDisplay("none");
+    }
+    return response;
+  };
+
   return (
     <div className={styles.management}>
-      <HrUpdateForm data={data} setData={setData} />
-
+      <a
+        className={styles.managementAddNew}
+        onClick={() => setAddNewDisplay("table-row")}
+      >
+        Add new measurement
+      </a>
       {data.length > 0 ? (
         <>
           <table className={styles.managementTable}>
@@ -51,6 +68,35 @@ const page = () => {
               </tr>
             </thead>
             <tbody>
+              <tr className={styles.newMeasurment}>
+                <td>{new Date().toISOString().split("T")[0]}</td>
+                <td>
+                  <input
+                    className={styles.managementInput}
+                    value={newHrRest}
+                    onChange={(e) => setNewHrRest(Number(e.target.value))}
+                  />
+                </td>
+                <td>
+                  <input
+                    className={styles.managementInput}
+                    value={newHrMax}
+                    onChange={(e) => setNewHrMax(Number(e.target.value))}
+                  />
+                </td>
+                <td>
+                  <button
+                    disabled={isSubmiting}
+                    onClick={() => {
+                      setIsSubmiting(true);
+                      submitHandler();
+                    }}
+                  >
+                    Save
+                  </button>
+                  <button></button>
+                </td>
+              </tr>
               {data.map((value: hrZonesType, index: number) => {
                 return (
                   <tr key={value.id}>
@@ -60,6 +106,12 @@ const page = () => {
                     <td>
                       <button onClick={() => deleteEntry(value.id, index)}>
                         Delete
+                      </button>
+                      <button
+                        id={styles.buttonCancel}
+                        onClick={() => setAddNewDisplay("none")}
+                      >
+                        Cancel
                       </button>
                     </td>
                   </tr>

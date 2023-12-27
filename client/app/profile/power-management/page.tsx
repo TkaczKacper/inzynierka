@@ -2,7 +2,7 @@
 
 import { FtpUpdateForm } from "./updateFtp";
 import React, { useEffect, useState } from "react";
-import { deletePowerEntry } from "@/utils/serverUtils";
+import { deletePowerEntry, updateFtp } from "@/utils/serverUtils";
 import PowerZones from "@/app/profile/power-management/powerZones";
 import styles from "../management.module.css";
 
@@ -21,6 +21,9 @@ export type powerZonesType = {
 
 const page = () => {
   const [data, setData] = useState<powerZonesType[]>([]);
+  const [newFTP, setNewFTP] = useState(0);
+  const [isSubmiting, setIsSubmiting] = useState(false);
+  const [addNewDisplay, setAddNewDisplay] = useState("none");
 
   useEffect(() => {
     const powerZones = localStorage.getItem("powerZones");
@@ -36,9 +39,25 @@ const page = () => {
     }
   };
 
+  const submitHandler = async () => {
+    const response = await updateFtp(newFTP);
+    console.log(response);
+    if (response?.data) {
+      setData([...data, response.data]);
+      setIsSubmiting(false);
+      setAddNewDisplay("none");
+    }
+    return response;
+  };
+
   return (
     <div className={styles.management}>
-      <FtpUpdateForm data={data} setData={setData} />
+      <a
+        className={styles.managementAddNew}
+        onClick={() => setAddNewDisplay("table-row")}
+      >
+        Add new measurement
+      </a>
       {data.length > 0 ? (
         <>
           <table className={styles.managementTable}>
@@ -50,11 +69,43 @@ const page = () => {
               </tr>
             </thead>
             <tbody>
+              <tr
+                className={styles.newMeasurment}
+                style={{ display: addNewDisplay }}
+              >
+                <td>{new Date().toISOString().split("T")[0]}</td>
+                <td>
+                  <input
+                    className={styles.managementInput}
+                    value={newFTP}
+                    onChange={(e) => setNewFTP(Number(e.target.value))}
+                  />{" "}
+                  W
+                </td>
+                <td>
+                  <button
+                    className={styles.buttonAdd}
+                    disabled={isSubmiting}
+                    onClick={() => {
+                      setIsSubmiting(true);
+                      submitHandler();
+                    }}
+                  >
+                    Save
+                  </button>
+                  <button
+                    id={styles.buttonCancel}
+                    onClick={() => setAddNewDisplay("none")}
+                  >
+                    Cancel
+                  </button>
+                </td>
+              </tr>
               {data.map((value: powerZonesType, index: number) => {
                 return (
                   <tr key={value.id}>
                     <td>{value.dateAdded}</td>
-                    <td>{value.ftp}</td>
+                    <td>{value.ftp} W</td>
                     <td>
                       <button onClick={() => deleteEntry(value.id, index)}>
                         Delete
