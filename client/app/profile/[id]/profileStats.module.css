@@ -1,4 +1,9 @@
-﻿.monthlySummaryContainer {
+﻿.athleteInfo {
+  width: 80%;
+  margin: 20px auto;
+}
+
+.monthlySummaryContainer {
   display: flex;
   flex-direction: column;
   margin: 25px 0;
@@ -61,10 +66,11 @@
   height: 102px;
   display: flex;
   flex-direction: column;
+  border-bottom: #333333 1px solid;
+  border-left: white 1px solid;
 }
 
 .bar {
-  border: black 1px solid;
   height: 100px;
   display: flex;
   flex-direction: column-reverse;

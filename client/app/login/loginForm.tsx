@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { useUserContext } from "@/contexts/UserContextProvider";
 import axios, { Axios } from "axios";
 import jwtDecode from "jwt-decode";
+import styles from "../register/authForm.module.css";
 
 interface FormValues {
   username: string;
@@ -60,28 +61,40 @@ export const LoginForm = () => {
   }, []);
 
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={LoginSchema}
-      onSubmit={(values, actions) => {
-        console.log(values);
-        actions.setSubmitting(false);
-        submitHandler(values);
-      }}
-    >
-      {({ errors, touched }: any) => (
-        <Form>
-          <Field name="username" />
-          {errors.username && touched.username ? (
-            <div>{errors.username}</div>
-          ) : null}
-          <Field name="password" type="password" />
-          {errors.password && touched.password ? (
-            <div>{errors.password}</div>
-          ) : null}
-          <button type="submit">Login</button>
-        </Form>
-      )}
-    </Formik>
+    <div className={styles.formBox}>
+      <h1>Log In</h1>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={LoginSchema}
+        onSubmit={(values, actions) => {
+          console.log(values);
+          actions.setSubmitting(false);
+          submitHandler(values);
+        }}
+      >
+        {({ errors, touched }: any) => (
+          <Form className={styles.authForm}>
+            <Field
+              className={styles.authInput}
+              placeholder={"username"}
+              name="username"
+            />
+            {errors.username && touched.username ? (
+              <div className={styles.authFormError}>{errors.username}</div>
+            ) : null}
+            <Field
+              className={styles.authInput}
+              placeholder={"password"}
+              name="password"
+              type="password"
+            />
+            {errors.password && touched.password ? (
+              <div className={styles.authFormError}>{errors.password}</div>
+            ) : null}
+            <button type="submit">Login</button>
+          </Form>
+        )}
+      </Formik>
+    </div>
   );
 };

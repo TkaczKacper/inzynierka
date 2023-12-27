@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 import { useUserContext } from "@/contexts/UserContextProvider";
+import styles from "./authForm.module.css";
 
 interface FormValues {
   username: string;
@@ -57,7 +58,8 @@ export const RegisterForm: React.FC<{}> = () => {
     router.push(`profile/${decoded.id}`);
   };
   return (
-    <div>
+    <div className={styles.formBox}>
+      <h1>Sign Up</h1>
       <Formik
         initialValues={initialValues}
         validationSchema={RegisterSchema}
@@ -68,20 +70,28 @@ export const RegisterForm: React.FC<{}> = () => {
         }}
       >
         {({ errors, touched }: any) => (
-          <Form>
-            <Field name="username" />
+          <Form className={styles.authForm}>
+            <Field name="username" placeholder={"username"} />
             {errors.username && touched.username ? (
-              <div>{errors.username}</div>
+              <div className={styles.authFormError}>{errors.username}</div>
             ) : null}
-            <Field name="email" />
-            {errors.email && touched.email ? <div>{errors.email}</div> : null}
-            <Field name="password" type="password" />
+            <Field name="email" placeholder={"email"} />
+            {errors.email && touched.email ? (
+              <div className={styles.authFormError}>{errors.email}</div>
+            ) : null}
+            <Field name="password" type="password" placeholder={"password"} />
             {errors.password && touched.password ? (
-              <div>{errors.password}</div>
+              <div className={styles.authFormError}>{errors.password}</div>
             ) : null}
-            <Field name="RepeatPassword" type="password" />
+            <Field
+              name="RepeatPassword"
+              type="password"
+              placeholder={"password"}
+            />
             {errors.RepeatPassword && touched.RepeatPassword ? (
-              <div>{errors.RepeatPassword}</div>
+              <div className={styles.authFormError}>
+                {errors.RepeatPassword}
+              </div>
             ) : null}
             <button type="submit">Register</button>
           </Form>

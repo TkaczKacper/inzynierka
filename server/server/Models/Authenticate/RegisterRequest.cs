@@ -21,5 +21,9 @@ namespace server.Models.Authenticate
         [Required(ErrorMessage = "Password required.")]
         [Compare(nameof(Password), ErrorMessage = "Password doesn't match.")]
         public string RepeatPassword { get; set; } = null!;
+        
+        public int? FTP { get; set; }
+        public int? HrRest { get; set; }
+        public int? HrMax { get; set; }
     }
 }

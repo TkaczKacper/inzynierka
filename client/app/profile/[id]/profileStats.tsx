@@ -61,16 +61,13 @@ export const ProfileStats = (setMonth: props) => {
   return (
     <div>
       {athleteInfo ? (
-        <div>
+        <div className={styles.athleteInfo}>
           {/*<img src={athleteInfo.profileAvatar} alt={"profile photo"} />*/}
+          <h1>
+            {athleteInfo.firstName} {athleteInfo.lastName}
+          </h1>
           <div>
-            <h1>
-              {athleteInfo.firstName} {athleteInfo.lastName}
-            </h1>
-            <div>
-              {athleteInfo.city}, {athleteInfo.state}, {athleteInfo.country}
-            </div>
-            <div>{athleteInfo.bio}</div>
+            {athleteInfo.city}, {athleteInfo.state}, {athleteInfo.country}
           </div>
         </div>
       ) : (
