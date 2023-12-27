@@ -1,0 +1,16 @@
+﻿.zoneContainer {
+  width: 400px;
+  margin: 10px 40px;
+}
+
+.zoneInfo {
+  margin: 7px 0;
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr;
+}
+
+.zoneContainer button {
+  padding: 3px;
+  border-radius: 5px;
+  border: black 1px solid;
+}

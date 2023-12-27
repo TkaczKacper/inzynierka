@@ -1,5 +1,6 @@
 ﻿import { hrZonesType } from "@/app/profile/heartrate-management/page";
-import { useState } from "react";
+import React, { useState } from "react";
+import styles from "../zones.module.css";
 
 const heartRateZones = ({ data, setData }: any) => {
   const curr: hrZonesType = data[data.length - 1];
@@ -22,47 +23,47 @@ const heartRateZones = ({ data, setData }: any) => {
 
   return (
     <div>
-      <h2>{curr.dateAdded}</h2>
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <div>
+      <div className={styles.zoneContainer}>
+        <h2>Heart rate zones</h2>
+        <div className={styles.zoneInfo}>
           Zone 1
           <input
             value={zone1}
             onChange={(e) => setZone1(Number(e.target.value))}
           />
-          to {zone2 - 1}
+          to {zone2 - 1} BPM
         </div>
-        <div>
+        <div className={styles.zoneInfo}>
           Zone 2
           <input
             value={zone2}
             onChange={(e) => setZone2(Number(e.target.value))}
           />
-          to {zone3 - 1}
+          to {zone3 - 1} BPM
         </div>
-        <div>
+        <div className={styles.zoneInfo}>
           Zone 3
           <input
             value={zone3}
             onChange={(e) => setZone3(Number(e.target.value))}
           />
-          to {zone4 - 1}
+          to {zone4 - 1} BPM
         </div>
-        <div>
+        <div className={styles.zoneInfo}>
           Zone 4
           <input
             value={zone4}
             onChange={(e) => setZone4(Number(e.target.value))}
           />
-          to {zone5 - 1}
+          to {zone5 - 1} BPM
         </div>
-        <div>
+        <div className={styles.zoneInfo}>
           Zone 5
           <input
             value={zone5}
             onChange={(e) => setZone5(Number(e.target.value))}
           />
-          to {curr.hrMax}
+          to {curr.hrMax} BPM
         </div>
         <button onClick={saveChanges}>Save changes</button>
       </div>

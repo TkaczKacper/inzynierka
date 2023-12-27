@@ -4,6 +4,7 @@ import { FtpUpdateForm } from "./updateFtp";
 import React, { useEffect, useState } from "react";
 import { deletePowerEntry } from "@/utils/serverUtils";
 import PowerZones from "@/app/profile/power-management/powerZones";
+import styles from "../management.module.css";
 
 export type powerZonesType = {
   id: number;
@@ -36,15 +37,16 @@ const page = () => {
   };
 
   return (
-    <>
+    <div className={styles.management}>
       <FtpUpdateForm data={data} setData={setData} />
       {data.length > 0 ? (
         <>
-          <table>
+          <table className={styles.managementTable}>
             <thead>
               <tr>
                 <th>Date</th>
                 <th>Ftp</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -67,7 +69,7 @@ const page = () => {
           <PowerZones data={data} setData={setData} />
         </>
       ) : null}
-    </>
+    </div>
   );
 };
 

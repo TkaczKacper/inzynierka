@@ -36,8 +36,14 @@ export const HrUpdateForm = ({ data, setData }: any) => {
       >
         {({ isSubmitting }) => (
           <Form>
-            <Field name="hrRest" />
-            <Field name="hrMax" />
+            <div>
+              <span>HrRest: </span>
+              <Field name="hrRest" />
+            </div>
+            <div>
+              <span>HrMax: </span>
+              <Field name="hrMax" />
+            </div>
             <button type="submit" disabled={isSubmitting}>
               Update
             </button>

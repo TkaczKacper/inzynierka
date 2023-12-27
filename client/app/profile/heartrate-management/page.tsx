@@ -4,6 +4,7 @@ import { HrUpdateForm } from "./updateHr";
 import React, { useEffect, useState } from "react";
 import { deleteHrEntry } from "@/utils/serverUtils";
 import HeartRateZones from "@/app/profile/heartrate-management/heartRateZones";
+import styles from "../management.module.css";
 
 export type hrZonesType = {
   id: number;
@@ -35,17 +36,18 @@ const page = () => {
   };
   console.log(data);
   return (
-    <>
+    <div className={styles.management}>
       <HrUpdateForm data={data} setData={setData} />
 
       {data.length > 0 ? (
         <>
-          <table>
+          <table className={styles.managementTable}>
             <thead>
               <tr>
                 <th>Date</th>
-                <th>RestingHr</th>
-                <th>MaxHr</th>
+                <th>Resting Hr</th>
+                <th>Max Hr</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -53,8 +55,8 @@ const page = () => {
                 return (
                   <tr key={value.id}>
                     <td>{value.dateAdded}</td>
-                    <td>{value.hrRest}</td>
-                    <td>{value.hrMax}</td>
+                    <td>{value.hrRest} BPM</td>
+                    <td>{value.hrMax} BPM</td>
                     <td>
                       <button onClick={() => deleteEntry(value.id, index)}>
                         Delete
@@ -65,13 +67,12 @@ const page = () => {
               })}
             </tbody>
           </table>
-          <h1>Heart rate zones</h1>
           <HeartRateZones data={data} setData={setData} />
         </>
       ) : (
         <h1>No entries</h1>
       )}
-    </>
+    </div>
   );
 };
 
