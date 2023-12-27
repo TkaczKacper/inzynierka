@@ -19,6 +19,6 @@ public class ActivityStreams
     public List<double>? Lng { get; set; }
     
     //foreign key property
-    [ForeignKey("Activity")]
-    public virtual long ActivityId { get; set; }
+    public long ActivityId { get; set; }
+    public Activity Activity { get; set; } = null!;
 }

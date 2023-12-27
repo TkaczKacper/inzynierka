@@ -7,6 +7,7 @@ import { Activity } from "@/app/profile/connections/page";
 import { getUserActivities } from "@/utils/stravaUtils";
 import { getActivitiesDetails } from "@/utils/serverUtils";
 import { Field, Form, Formik } from "formik";
+import { parseDurationNumeric } from "@/utils/parseDuration";
 
 const page = () => {
   const [latestActivity, setLatestActivity] = useLocalStorage(
@@ -86,29 +87,73 @@ const page = () => {
                     <Form>
                       <div
                         role={"group"}
-                        style={{ display: "flex", flexDirection: "column" }}
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          marginTop: "50px",
+                        }}
                       >
-                        {activities.map((activity: Activity, index: number) => {
-                          const [checked, setChecked] = useState(true);
-                          return (
-                            <label key={index}>
-                              <Field
-                                type={"checkbox"}
-                                name={"activityId"}
-                                value={activity.id}
-                                checked={checked}
-                                onChange={() => {
-                                  values.activityId.has(activity.id)
-                                    ? values.activityId.delete(activity.id)
-                                    : values.activityId.add(activity.id);
-                                  setChecked(!checked);
-                                }}
-                              />
-                              {index + 1}. id: {activity.id}, title:{" "}
-                              {activity.title}
-                            </label>
-                          );
-                        })}
+                        <table>
+                          <thead>
+                            <tr>
+                              <th></th>
+                              <th>Date</th>
+                              <th>Title</th>
+                              <th>Duration</th>
+                              <th>Distance</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {activities.map(
+                              (activity: Activity, index: number) => {
+                                const [checked, setChecked] = useState(true);
+                                return (
+                                  <tr>
+                                    <td>
+                                      <label key={index}>
+                                        <Field
+                                          type={"checkbox"}
+                                          name={"activityId"}
+                                          value={activity.id}
+                                          checked={checked}
+                                          onChange={() => {
+                                            values.activityId.has(activity.id)
+                                              ? values.activityId.delete(
+                                                  activity.id,
+                                                )
+                                              : values.activityId.add(
+                                                  activity.id,
+                                                );
+                                            setChecked(!checked);
+                                          }}
+                                        />
+                                      </label>
+                                    </td>
+                                    <td>
+                                      {activity.date.toLocaleDateString(
+                                        "en-GB",
+                                      ) + " "}
+                                      {" " +
+                                        activity.date.toLocaleTimeString(
+                                          "en-GB",
+                                        )}
+                                    </td>
+                                    <td>{activity.title}</td>
+                                    <td>
+                                      {parseDurationNumeric(
+                                        Number(activity.duration),
+                                      )}
+                                    </td>
+                                    <td>
+                                      {(activity.distance / 1000).toFixed(1) +
+                                        " km"}
+                                    </td>
+                                  </tr>
+                                );
+                              },
+                            )}
+                          </tbody>
+                        </table>
                       </div>
                       <button type={"submit"}>Import</button>
                     </Form>

@@ -1,0 +1,24 @@
+﻿.activity {
+  width: 80vw;
+  margin: 20px auto;
+  display: flex;
+}
+
+.activityMap {
+  width: 250px;
+  height: 160px;
+}
+
+.activitySummary {
+  margin: 0 10px;
+}
+
+.activityAverages {
+  display: flex;
+  margin: 5px 0;
+}
+.activityAverageCenter {
+}
+.dot {
+  margin: 0 7px;
+}

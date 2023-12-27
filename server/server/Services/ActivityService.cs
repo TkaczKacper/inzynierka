@@ -475,10 +475,10 @@ namespace server.Services
         public Activity GetActivityById(long activityId)
         {
             var activity = _context.Activity
-                .Include(sa => sa.HrTimeInZone)
-                .Include(sa => sa.PowerTimeInZone)
-                .FirstOrDefault(sa => sa.ID == activityId);
-
+                .Include(a => a.HrTimeInZone)
+                .Include(a => a.PowerTimeInZone)
+                .SingleOrDefault(sa => sa.ID == activityId);
+            
             return activity == null ? throw new KeyNotFoundException("Activity not found.") : activity;
         }
 

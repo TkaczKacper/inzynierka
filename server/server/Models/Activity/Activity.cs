@@ -49,7 +49,7 @@ namespace server.Models.Activity
         public double? VariabilityIndex { get; set; }
         public double? TrainingLoad { get; set; }
         
-        public ActivityStreams ActivityStreams { get; set; }
+        public ActivityStreams? ActivityStreams { get; set; }
         public List<int>? PowerCurve { get; set; }
         
         public TimeInHrZone? HrTimeInZone { get; set; }
