@@ -72,7 +72,7 @@ class ChartController extends Component<ChartProps> {
       scales: {},
       title: {
         text: "Power curve",
-        fontColor: "#ffffff",
+        //fontColor: "#ffffff",
       },
       toolTip: {
         shared: true,
@@ -86,20 +86,22 @@ class ChartController extends Component<ChartProps> {
       },
       axisX: {
         labelAutoFit: false,
+        title: "time",
         crosshair: {
           enabled: true,
           label: "",
         },
         stripLines: stripLines,
         logarithmic: true,
-        labelFontColor: "#ffffff",
+        //labelFontColor: "#ffffff",
         interval: 1110,
         labelFormatter: function (e: any) {
           return parseDurationExact(e.value);
         },
       },
       axisY: {
-        labelFontColor: "#ffffff",
+        title: "power",
+        //labelFontColor: "#ffffff",
         suffix: "W",
       },
       data: [
@@ -146,7 +148,7 @@ const axisXstripLines = () => {
       thickness: 1,
       label: parseDurationExact(value),
       labelPlacement: "outside",
-      labelFontColor: "#ffffff",
+      labelFontColor: "black",
       labelBackgroundColor: "transparent",
       labelWrap: false,
       labelMaxWidth: 100,

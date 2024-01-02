@@ -40,8 +40,8 @@ export const updateProfileInfo = async (
 };
 
 export const getAthleteActivities = async (
-  lastActivity: Date | string,
-  perPage: number,
+  lastActivity: Date | string | null,
+  perPage: number | null,
 ) => {
   try {
     let requestUrl = `${backend_url}/profile/get-activities`;

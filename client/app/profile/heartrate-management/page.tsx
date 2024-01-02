@@ -68,7 +68,10 @@ const page = () => {
               </tr>
             </thead>
             <tbody>
-              <tr className={styles.newMeasurment}>
+              <tr
+                className={styles.newMeasurment}
+                style={{ display: addNewDisplay }}
+              >
                 <td>{new Date().toISOString().split("T")[0]}</td>
                 <td>
                   <input
@@ -94,7 +97,12 @@ const page = () => {
                   >
                     Save
                   </button>
-                  <button></button>
+                  <button
+                    id={styles.buttonCancel}
+                    onClick={() => setAddNewDisplay("none")}
+                  >
+                    Cancel
+                  </button>
                 </td>
               </tr>
               {data.map((value: hrZonesType, index: number) => {
@@ -106,12 +114,6 @@ const page = () => {
                     <td>
                       <button onClick={() => deleteEntry(value.id, index)}>
                         Delete
-                      </button>
-                      <button
-                        id={styles.buttonCancel}
-                        onClick={() => setAddNewDisplay("none")}
-                      >
-                        Cancel
                       </button>
                     </td>
                   </tr>

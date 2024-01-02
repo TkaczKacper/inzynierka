@@ -73,15 +73,26 @@ export const ProfileStats = (setMonth: props) => {
       ) : (
         <>
           <h1>Strava profile is not connected.</h1>
-          Go to <a href={"/profile/connections"}>connections</a> page to
-          connect.
+          Go to{" "}
+          <a
+            style={{
+              textDecoration: "underline",
+              fontWeight: 600,
+            }}
+            href={"/profile/connections"}
+          >
+            connections
+          </a>{" "}
+          page to connect.
         </>
       )}
 
       {currMonth && monthlySum ? (
         <div className={styles.monthlySummaryContainer}>
           <div className={styles.summaryInfo}>
-            <h2>Activities in {months[currMonth.month - 1]}</h2>
+            <h2>
+              Activities in {months[currMonth.month - 1]} {currMonth.year}
+            </h2>
             <ul className={styles.infoTotals}>
               <li>
                 {parseDurationExact(currMonth.totalMovingTime)}
@@ -102,6 +113,7 @@ export const ProfileStats = (setMonth: props) => {
             </ul>
           </div>
           <div className={styles.summaryChart}>
+            <a className={styles.yAxisTitle}>Total distance</a>
             <ul className={styles.yAxis}>
               <li>{(max / 1000).toFixed(0)} km</li>
               <li>{((max / 1000) * 0.75).toFixed(0)} km</li>
@@ -139,6 +151,20 @@ export const ProfileStats = (setMonth: props) => {
                   </li>
                 );
               })}
+            </ul>
+            <ul className={styles.monthsTitle}>
+              <li>Jan</li>
+              <li>Feb</li>
+              <li>Mar</li>
+              <li>Apr</li>
+              <li>May</li>
+              <li>Jun</li>
+              <li>Jul</li>
+              <li>Aug</li>
+              <li>Sep</li>
+              <li>Oct</li>
+              <li>Nov</li>
+              <li>Dec</li>
             </ul>
           </div>
         </div>

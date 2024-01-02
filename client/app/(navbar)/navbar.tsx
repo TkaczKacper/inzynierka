@@ -68,7 +68,7 @@ const navbar = () => {
               </Link>
             </div>
             <div className={styles.navRight}>
-              <Link href={"/"} className={styles.navBlock}>
+              <Link href={"/activities"} className={styles.navBlock}>
                 Activities
               </Link>
               <div className={`${styles.analysisDropdown} ${styles.navBlock}`}>

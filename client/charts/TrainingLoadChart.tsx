@@ -75,6 +75,10 @@ class TrainingLoadChart extends Component<Props> {
           return label;
         },
       },
+      axisY: {
+        title: "LTS, STS, SB values",
+        titleFontSize: 18,
+      },
       zoomEnabled: true,
       rangeSelector: {
         inputFields: {

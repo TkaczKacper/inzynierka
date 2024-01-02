@@ -1,4 +1,6 @@
-﻿import { MapContainer, Polyline, TileLayer, useMap } from "react-leaflet";
+﻿"use client";
+
+import { MapContainer, Polyline, TileLayer, useMap } from "react-leaflet";
 import React, { useEffect, useState } from "react";
 import { polylineDecoder } from "@/maps/PolylineDecoder";
 import L, { LatLngLiteral, Map } from "leaflet";
@@ -35,7 +37,13 @@ const MapController: React.FC<MapProps> = ({
   }
 
   const bounds = pol.getBounds();
-  map.fitBounds(bounds);
+  console.log(bounds);
+  try {
+    map.fitBounds(bounds);
+  } catch (error) {
+    console.log(error);
+  }
+
   return <></>;
 };
 

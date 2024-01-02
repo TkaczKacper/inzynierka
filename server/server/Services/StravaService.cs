@@ -205,7 +205,7 @@ namespace server.Services
         public List<ProfileMonthlySummary> GetMonthlyStats(Guid? userId)
         {
             List<ProfileMonthlySummary> monthlySummaries = _context.ProfileMonthlySummary
-                .Where(summ => summ.UserId == userId && summ.Year == DateTime.Today.Year)
+                .Where(summ => summ.UserId == userId && summ.Year == DateTime.Today.AddYears(-1).Year)
                 .OrderBy(summ => summ.Month)
                 .ToList();
             
@@ -215,7 +215,6 @@ namespace server.Services
         public IEnumerable<Activity> GetAthleteActivities(Guid? userId, DateTime? lastActivityDate, int? perPage)
         {
             perPage ??= 10;
-            lastActivityDate ??= DateTime.UtcNow;
             var activities = GetSyncedActivities((Guid)userId, (DateTime)lastActivityDate, (int)perPage);
 
             return activities;
@@ -224,9 +223,8 @@ namespace server.Services
         public IEnumerable<Activity> GetAthletePeriodActivities(Guid? userId, int? month)
         {
             month ??= DateTime.UtcNow.Month;
-            DateTime first = new DateTime(DateTime.UtcNow.Year, (int)month, 1).ToUniversalTime();
+            DateTime first = new DateTime(DateTime.UtcNow.Year, (int)month, 1).AddYears(-1).ToUniversalTime();
             DateTime last = first.AddMonths(1).AddSeconds(-1).ToUniversalTime();
-            
             
             var activities = _context.Activity
                 .Where(a => a.UserId == userId && a.StartDate > first && a.StartDate < last) 

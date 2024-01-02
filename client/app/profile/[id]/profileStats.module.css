@@ -35,15 +35,16 @@
 }
 
 .summaryChart {
-  display: flex;
-  width: 96%;
+  display: grid;
+  grid-template-columns: 10px 70px 1fr;
+  width: 80%;
   margin: auto;
   height: 120px;
   align-items: end;
 }
 
 .yAxis {
-  width: 10%;
+  width: 70px;
   height: 115px;
   list-style: none;
   text-align: right;
@@ -54,12 +55,31 @@
   padding-right: 8px;
 }
 
+.yAxisTitle {
+  height: 115px;
+  text-align: center;
+  font-size: 13px;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
 .months {
-  width: 90%;
+  width: 100%;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   margin-bottom: 4px;
   padding-right: 5vw;
+}
+
+.monthsTitle {
+  grid-column-start: 3;
+  grid-column-end: 3;
+  width: 100%;
+  padding-right: 5vw;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  list-style: none;
+  text-align: center;
 }
 
 .month {
