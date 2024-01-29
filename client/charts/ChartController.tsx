@@ -9,7 +9,7 @@ var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 interface ChartProps {
   data: number[];
 }
-
+//TODO zmiana nazwy
 class ChartController extends Component<ChartProps> {
   render() {
     const dataPoints: { x: number; y: number }[] = [];
@@ -123,23 +123,23 @@ class ChartController extends Component<ChartProps> {
 }
 export default ChartController;
 
-type stipLines = {
-  value: number;
-  color: string;
-  thickness: number;
-  label: string;
-  labelPlacement: string;
-  labelFontColor: string;
-  labelBackgroundColor: string;
-  labelWrap: boolean;
-  labelMaxWidth: number;
-  opacity: number;
+export type stripLines = {
+  value?: number;
+  color?: string;
+  thickness?: number;
+  label?: string;
+  labelPlacement?: string;
+  labelFontColor?: string;
+  labelBackgroundColor?: string;
+  labelWrap?: boolean;
+  labelMaxWidth?: number;
+  opacity?: number;
 };
 
 const axisXstripLines = () => {
   const index = [2, 5, 10, 30, 60, 180, 300, 600, 1200, 3600, 7200, 18000];
 
-  const stripLines: stipLines[] = [];
+  const stripLines: stripLines[] = [];
 
   index.map((value, index) => {
     stripLines.push({

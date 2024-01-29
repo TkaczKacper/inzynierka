@@ -17,6 +17,7 @@ interface props {
   month: number;
 }
 
+//TODO dodac obsluge zmiany roku
 const ProfileActivities = (month: props) => {
   const [activities, setActivities] = useState<Activity[]>();
   useEffect(() => {

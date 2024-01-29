@@ -29,6 +29,7 @@ const months = [
 interface props {
   setMonth: any;
 }
+//TODO dodac obsluge zmiany lat
 export const ProfileStats = (setMonth: props) => {
   const [athleteStats, setAthleteStats] = useState<AthleteStats>();
   const [athleteInfo, setAthleteInfo] = useState<AthleteInfo>();

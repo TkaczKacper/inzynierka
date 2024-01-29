@@ -16,6 +16,7 @@ namespace server.Services
         List<TrainingLoads> GetUserTrainingLoad(Guid? userId);
     }
 
+    //TODO rozdzielic na osobne pliki
     public class ActivityService : IActivityService
     {
         private readonly DataContext _context;
@@ -36,6 +37,7 @@ namespace server.Services
 
         public async Task<string> GetActivityDetails(string accesstoken, Guid? userId)
         {
+            //TODO usprawnic dzialanie + rozdzielic funkcje
             User user = await GetUserByIdAsync(userId);
 
             ProfilePower? powerZones = _context.ProfilePower
@@ -472,6 +474,7 @@ namespace server.Services
             return $"{activities.Count} synced.";
         }
 
+        //TODO przeniesc do innego pliku
         public Activity GetActivityById(long activityId)
         {
             var activity = _context.Activity
@@ -482,6 +485,7 @@ namespace server.Services
             return activity == null ? throw new KeyNotFoundException("Activity not found.") : activity;
         }
 
+        //TODO przeniesc do innego pliku
         public string DeleteActivityById(long activityId, Guid? userId)
         {
             var activity = GetActivityById(activityId);
@@ -495,6 +499,7 @@ namespace server.Services
         }
         
         
+        //TODO przeniesc do innego pliku
         public List<TrainingLoads> GetUserTrainingLoad(Guid? userId)
         {
             List<TrainingLoads> trainingLoads = _context.TrainingLoads

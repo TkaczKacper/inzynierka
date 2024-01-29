@@ -32,6 +32,7 @@ const changePasswordSchema = Yup.object().shape({
     .required("Field required."),
 });
 
+//TODO calosc z walidacja itp
 export const ChangePasswordForm: React.FC<{}> = () => {
   const initialValues: FormValues = {
     oldPassword: "",

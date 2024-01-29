@@ -1,6 +1,4 @@
-﻿import { Numeric } from "type-fest/source/numeric";
-import { LatLngLiteral } from "leaflet";
-
+﻿//TODO zmienic miejsce tego pliku + rozdzielic na podpliki (?)
 export type AthleteInfo = {
   bio: string;
   city: string;

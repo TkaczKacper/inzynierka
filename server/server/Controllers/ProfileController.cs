@@ -94,10 +94,11 @@ public class ProfileController : ControllerBase
     }
 
     [HttpGet("get-activities-period")]
+    //TODO zmiana roku + domyslnie ostatnie 12mies
     public IActionResult GetUserPeriodActivities(int? month)
     {
         Guid? userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
-        var response = _stravaService.GetAthletePeriodActivities(userId, month);
+        var response = _stravaService.GetAthletePeriodActivities(userId, month, 0);
 
         return Ok(response);
     }
@@ -114,11 +115,12 @@ public class ProfileController : ControllerBase
     
     
     [HttpGet("get-athlete-stats")]
+    //TODO obsluga lat
     public IActionResult GetUserStats()
     {
         Guid? userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
         var response =  _stravaService.GetProfileData(userId);
-        response.MonthlySummaries = _stravaService.GetMonthlyStats(userId);
+        response.MonthlySummaries = _stravaService.GetMonthlyStats(userId, 0);
         
         return Ok(response);
     }

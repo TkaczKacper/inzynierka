@@ -2,7 +2,6 @@
 // @ts-ignore
 import CanvasJSReact from "@canvasjs/react-charts";
 import { TrainingLoadResponseType } from "@/app/profile/training-load/page";
-import { parseDurationExact } from "@/utils/parseDuration";
 
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
@@ -13,7 +12,12 @@ interface Props {
 }
 class TrainingLoadChart extends Component<Props> {
   render() {
-    const dates = this.props.data.map((x) => x.date);
+    let stripIdx = 0;
+    const today = CanvasJS.formatDate(new Date(), "YYYY-MM-DD");
+    const dates = this.props.data.map((x, index) => {
+      if (x.date == today) stripIdx = index;
+      return x.date;
+    });
     const LTSDataSet = chartDataLts(this.props.dataType, this.props.data);
     const STSDataSet = chartDataSts(this.props.dataType, this.props.data);
     const SBDataSet = chartDataSb(this.props.dataType, this.props.data);
@@ -74,6 +78,13 @@ class TrainingLoadChart extends Component<Props> {
 
           return label;
         },
+        stripLines: [
+          {
+            value: stripIdx,
+            color: "#black",
+            opacity: 0.3,
+          },
+        ],
       },
       axisY: {
         title: "LTS, STS, SB values",

@@ -9,6 +9,9 @@ import styles from "./prevActivities.module.css";
 interface props {
   date: Date;
 }
+
+//TODO dodac obsluge wczytywania wiekszej ilosci aktywnosci (on scroll)
+
 const prevActivities = (props: props) => {
   const [recentActivities, setRecentActivities] = useState<Activity[]>();
   useEffect(() => {

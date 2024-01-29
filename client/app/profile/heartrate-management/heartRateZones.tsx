@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import styles from "../zones.module.css";
 
+//TODO dodac obsluge LTHR
 const heartRateZones = ({ data, setData }: any) => {
   const curr: hrZonesType = data[data.length - 1];
   const [zone1, setZone1] = useState(curr.zone1);

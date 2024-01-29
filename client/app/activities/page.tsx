@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { getAthleteActivities } from "@/utils/serverUtils";
 
+//TODO ogarnac to
 const page = () => {
   useEffect(() => {
     async function get() {

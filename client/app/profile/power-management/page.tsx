@@ -1,6 +1,5 @@
 "use client";
 
-import { FtpUpdateForm } from "./updateFtp";
 import React, { useEffect, useState } from "react";
 import { deletePowerEntry, updateFtp } from "@/utils/serverUtils";
 import PowerZones from "@/app/profile/power-management/powerZones";

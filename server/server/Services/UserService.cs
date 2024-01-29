@@ -18,6 +18,7 @@ namespace server.Services
         User GetById(Guid id);
         AuthResponse RenewAccessToken(string token);
         string ChangePassword(Guid? userId, ChangePassword password);
+        //TODO usuwanie konta
     }
     public class UserService : IUserService
     {

@@ -91,6 +91,8 @@ namespace server.Controllers
             
         }
         
+        //TODO dodac usuwanie konta
+        
 
         // helper methods
         private void setTokenCookie(string token)

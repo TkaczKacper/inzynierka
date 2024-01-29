@@ -14,6 +14,8 @@ import { getCookie } from "cookies-next";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import Link from "next/link";
 
+//TODO zwykly i quick korzysta z tego samego wysweitlania w tabelce - zmienic na jeden komponent bo jest 2x to samo napisane
+
 const client_id = process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID;
 const redirect_uri = "http://localhost:3000/profile/connections";
 const scope = "read,activity:read_all";

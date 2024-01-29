@@ -4,6 +4,7 @@ import { ProfileStats } from "@/app/profile/[id]/profileStats";
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
 
+//TODO to chyba mozna usunac
 const ProfileActivities = dynamic(
   () => import("@/app/profile/[id]/profileActivities"),
   {

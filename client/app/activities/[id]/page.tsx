@@ -15,6 +15,7 @@ import { parseDurationNumeric } from "@/utils/parseDuration";
 import ActivityTimeInZones from "@/app/activities/[id]/activityTimeInZones";
 import PrevActivities from "@/app/activities/[id]/prevActivities";
 
+//TODO rozdzielic na pliki (o ile mozliwe)
 const page = () => {
   const [activity, setActivity] = useState<Activity>();
   const [loading, setLoading] = useState(true);

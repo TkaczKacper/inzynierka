@@ -10,18 +10,22 @@ using server.Responses;
 
 namespace server.Services
 {
+        //TODO zmiana nazwy pliku bo nie obsluguje tego co wynika z nazwy
     public interface IStravaService
     {
+        //TODO przeniesc do innego pliku 5 kolejnych
         Task<StravaProfile> ProfileUpdate(StravaProfile profileInfo, Guid? userId, string? accesstoken, string? refreshtoken);
-        Task<string> SaveActivitiesToFetch(List<long> activityIds, Guid? userId);
         ProfileHeartRate ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId);
         string ProfileHeartRateDelete(long entryId, Guid? userId);
         ProfilePower ProfilePowerUpdate(ProfilePower profilePower, Guid userId);
         string ProfilePowerDelete(long entryId, Guid? userId);
         AthleteData GetProfileData(Guid? userId);
-        List<ProfileMonthlySummary> GetMonthlyStats(Guid? userId);
+        
+        //TODO dodac serwis do obslugi danych uzytkownika
+        Task<string> SaveActivitiesToFetch(List<long> activityIds, Guid? userId);
+        List<ProfileMonthlySummary> GetMonthlyStats(Guid? userId, int yearOffset);
         IEnumerable<Activity> GetAthleteActivities(Guid? userId, DateTime? lastActivityDate, int? perPage);
-        IEnumerable<Activity> GetAthletePeriodActivities(Guid? userId, int? month);
+        IEnumerable<Activity> GetAthletePeriodActivities(Guid? userId, int? month, int yearOffset);
         List<long> GetSyncedActivitiesId(Guid? userId);
         DateTime GetLatestActivity(Guid? userId);
     }
@@ -80,6 +84,7 @@ namespace server.Services
             return profile;
         }
 
+        //TODO poprawic funkcje
         public async Task<string> SaveActivitiesToFetch(List<long> activities, Guid? userId)
         {
             Console.WriteLine("Saving...");
@@ -98,6 +103,7 @@ namespace server.Services
             return $"Remaining activities to be fetch: {activitiesToSync.Count}";
         }
 
+        //TODO zmienic na async + dodac obsluge LTHR
         public ProfileHeartRate ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId)
         {
             int hrMax = (int)profileHeartRate.HrMax;
@@ -122,6 +128,7 @@ namespace server.Services
             return userHr;
         }
 
+        //TODO zmienic na async
         public string ProfileHeartRateDelete(long entryId, Guid? userId)
         {
             ProfileHeartRate? hrEntry = _context.ProfileHeartRate
@@ -138,6 +145,7 @@ namespace server.Services
             return "Deleted";
         } 
         
+        //TODO zmienic na async
         public ProfilePower ProfilePowerUpdate(ProfilePower profilePower, Guid userId)
         {
             int ftp = (int)profilePower.FTP;
@@ -161,6 +169,7 @@ namespace server.Services
             return power;
         }
         
+        //TODO zmienic na async
         public string ProfilePowerDelete(long entryId, Guid? userId)
         {
             ProfilePower? powerEntry = _context.ProfilePower
@@ -177,6 +186,7 @@ namespace server.Services
             return "Deleted";
         } 
 
+        //TODO poprawic
         public AthleteData GetProfileData(Guid? userId)
         {
             StravaProfile? profile = GetUserById(userId).StravaProfile;
@@ -202,16 +212,18 @@ namespace server.Services
             return response;
         }
 
-        public List<ProfileMonthlySummary> GetMonthlyStats(Guid? userId)
+        //TODO zmienic na async + dodac obsluge zmiany roku
+        public List<ProfileMonthlySummary> GetMonthlyStats(Guid? userId, int yearOffset)
         {
             List<ProfileMonthlySummary> monthlySummaries = _context.ProfileMonthlySummary
-                .Where(summ => summ.UserId == userId && summ.Year == DateTime.Today.AddYears(-1).Year)
+                .Where(summ => summ.UserId == userId && summ.Year == DateTime.Today.AddYears(yearOffset).Year)
                 .OrderBy(summ => summ.Month)
                 .ToList();
             
             return monthlySummaries;
         }
         
+        //TODO zmienic na async
         public IEnumerable<Activity> GetAthleteActivities(Guid? userId, DateTime? lastActivityDate, int? perPage)
         {
             perPage ??= 10;
@@ -220,11 +232,13 @@ namespace server.Services
             return activities;
         }
 
-        public IEnumerable<Activity> GetAthletePeriodActivities(Guid? userId, int? month)
+        //TODO dodac obsluge roznych lat
+        public IEnumerable<Activity> GetAthletePeriodActivities(Guid? userId, int? month, int yearOffset)
         {
             month ??= DateTime.UtcNow.Month;
-            DateTime first = new DateTime(DateTime.UtcNow.Year, (int)month, 1).AddYears(-1).ToUniversalTime();
+            DateTime first = new DateTime(DateTime.UtcNow.Year, (int)month, 1).AddYears(yearOffset).ToUniversalTime();
             DateTime last = first.AddMonths(1).AddSeconds(-1).ToUniversalTime();
+            Console.WriteLine(first);
             
             var activities = _context.Activity
                 .Where(a => a.UserId == userId && a.StartDate > first && a.StartDate < last) 
@@ -246,6 +260,7 @@ namespace server.Services
         }
         
         // helpers 
+        //TODO poprawic to bo kilka razy jest ta sama funkcja w roznych plikach
         public User GetUserById(Guid? id)
         {
             User? user = _context.Users
