@@ -8,15 +8,16 @@ import {
 import { Activity } from "@/app/profile/[id]/types";
 import Link from "next/link";
 import styles from "./profileActivities.module.css";
-import { MapContainer, TileLayer } from "react-leaflet";
-import MapController from "@/maps/MapController";
+import { MapContainer, Marker, TileLayer } from "react-leaflet";
 import { parseDurationNumeric } from "@/utils/parseDuration";
+import MapController from "@/maps/MapController";
+import dynamic from "next/dynamic";
 
 interface props {
   month: number;
 }
 
-export const ProfileActivities = (month: props) => {
+const ProfileActivities = (month: props) => {
   const [activities, setActivities] = useState<Activity[]>();
   useEffect(() => {
     const userActivities = async () => {
@@ -35,17 +36,24 @@ export const ProfileActivities = (month: props) => {
         return (
           <div className={styles.activity} key={index}>
             <div className={styles.activityMap}>
-              <MapContainer center={[42, 22]} scrollWheelZoom={false}>
-                <MapController
-                  polyline={activity.summaryPolyline}
-                  startLatLng={activity.startLatLng}
-                  endLatLng={activity.endLatLng}
-                />
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-              </MapContainer>
+              {activity.startLatLng[0] ? (
+                <MapContainer
+                  center={[42, 22]}
+                  zoom={13}
+                  scrollWheelZoom={false}
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <MapController
+                    polyline={activity.summaryPolyline}
+                    startLatLng={activity.startLatLng}
+                    endLatLng={activity.endLatLng}
+                    key={activity.id}
+                  />
+                </MapContainer>
+              ) : null}
             </div>
             <div className={styles.activitySummary}>
               <h2>
@@ -107,3 +115,5 @@ export const ProfileActivities = (month: props) => {
     </div>
   );
 };
+
+export default ProfileActivities;

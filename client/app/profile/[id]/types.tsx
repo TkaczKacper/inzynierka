@@ -99,7 +99,7 @@ export type Activity = {
   elapsedTime: number;
   elevationHigh: number;
   elevationLow: number;
-  endLatLng: LatLngLiteral;
+  endLatLng: number[];
   gear: string;
   gradeSmooth: number[];
   hasPowerMeter: boolean;
@@ -117,7 +117,7 @@ export type Activity = {
   movingTime: number;
   effectivePower: number;
   startDate: Date;
-  startLatLng: LatLngLiteral;
+  startLatLng: number[];
   stravaActivityID: number;
   summaryPolyline: string;
   timeStream: number[];
