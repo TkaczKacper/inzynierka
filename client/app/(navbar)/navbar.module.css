@@ -7,13 +7,11 @@
 }
 
 .navWrapper {
-  max-width: 1920px;
+  max-width: 1440px;
   margin: auto;
   display: flex;
   overflow: hidden;
-  align-items: center;
-  text-align: center;
-  justify-content: center;
+  justify-content: space-between;
 }
 
 .logo {

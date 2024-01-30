@@ -9,6 +9,7 @@ import axios from "axios";
 import jwtDecode from "jwt-decode";
 import { useUserContext } from "@/contexts/UserContextProvider";
 import styles from "./authForm.module.css";
+import { useState } from "react";
 
 interface FormValues {
   username: string;
@@ -46,17 +47,25 @@ export const RegisterForm: React.FC<{}> = () => {
   };
   const router = useRouter();
   const { userId, setUserId } = useUserContext();
+  const [resError, setResError] = useState("");
 
   const submitHandler = async (values: FormValues) => {
-    const res = await axios.post(`${backend_url}/api/auth/register`, values, {
-      withCredentials: true,
-    });
-    var decoded: jwtdecoded = jwtDecode(res.data.jwtToken);
-    var ttl = new Date(decoded.exp * 1000);
-    setCookie("jwtToken", res.data.jwtToken, { path: "/", expires: ttl });
-    setUserId(decoded.id);
-    router.push(`profile/${decoded.id}`);
+    const res = await axios
+      .post(`${backend_url}/api/auth/register`, values, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        var decoded: jwtdecoded = jwtDecode(res.data.jwtToken);
+        var ttl = new Date(decoded.exp * 1000);
+        setCookie("jwtToken", res.data.jwtToken, { path: "/", expires: ttl });
+        setUserId(decoded.id);
+        router.push(`profile/${decoded.id}`);
+      })
+      .catch((err) => {
+        setResError(err.response.data.message);
+      });
   };
+
   return (
     <div className={styles.formBox}>
       <h1>Sign Up</h1>
@@ -64,7 +73,7 @@ export const RegisterForm: React.FC<{}> = () => {
         initialValues={initialValues}
         validationSchema={RegisterSchema}
         onSubmit={(values, actions) => {
-          console.log(values);
+          setResError("");
           actions.setSubmitting(false);
           submitHandler(values);
         }}
@@ -97,6 +106,11 @@ export const RegisterForm: React.FC<{}> = () => {
           </Form>
         )}
       </Formik>
+      {resError ? (
+        <div className={styles.responseError}>
+          <a>{resError}</a>
+        </div>
+      ) : null}
     </div>
   );
 };

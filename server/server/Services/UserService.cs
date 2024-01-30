@@ -45,7 +45,7 @@ namespace server.Services
 
             // validate
             if (user == null || !_passwordHasher.Verify(user.Password, model.Password).Result)
-                throw new AppException("Username or password is incorrect");
+                throw new AppException("Username or password are incorrect.");
 
             // auth success, generate jwt and refresh tokens
             var jwtToken = _jwtUtils.GetJwtToken(user);

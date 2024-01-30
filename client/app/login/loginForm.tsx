@@ -5,7 +5,7 @@ import * as Yup from "yup";
 
 import { useRouter } from "next/navigation";
 import { getCookie, setCookie } from "cookies-next";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useUserContext } from "@/contexts/UserContextProvider";
 import axios, { Axios } from "axios";
 import jwtDecode from "jwt-decode";
@@ -43,17 +43,27 @@ const LoginSchema = Yup.object().shape({
 export const LoginForm = () => {
   const router = useRouter();
   const { userId, setUserId } = useUserContext();
+  const [resError, setResError] = useState("");
   const initialValues: FormValues = { username: "", password: "" };
+
   const submitHandler = async (values: FormValues) => {
-    const res = await axios.post(`${backend_url}/api/auth/login`, values, {
-      withCredentials: true,
-    });
-    console.log(res.data);
-    var decoded: jwtdecoded = jwtDecode(res.data.jwtToken);
-    var ttl = new Date(decoded.exp * 1000);
-    setCookie("jwtToken", res.data.jwtToken, { path: "/", expires: ttl });
-    setUserId(decoded.id);
-    router.push(`/profile/${decoded.id}`);
+    const res = await axios
+      .post(`${backend_url}/api/auth/login`, values, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        if (res.status !== 200) {
+        } else {
+          var decoded: jwtdecoded = jwtDecode(res.data.jwtToken);
+          var ttl = new Date(decoded.exp * 1000);
+          setCookie("jwtToken", res.data.jwtToken, { path: "/", expires: ttl });
+          setUserId(decoded.id);
+          router.push(`/profile/${decoded.id}`);
+        }
+      })
+      .catch((err) => {
+        setResError(err.response.data.message);
+      });
   };
 
   useEffect(() => {
@@ -67,7 +77,7 @@ export const LoginForm = () => {
         initialValues={initialValues}
         validationSchema={LoginSchema}
         onSubmit={(values, actions) => {
-          console.log(values);
+          setResError("");
           actions.setSubmitting(false);
           submitHandler(values);
         }}
@@ -95,6 +105,11 @@ export const LoginForm = () => {
           </Form>
         )}
       </Formik>
+      {resError ? (
+        <div className={styles.responseError}>
+          <a>{resError}</a>
+        </div>
+      ) : null}
     </div>
   );
 };
