@@ -52,6 +52,7 @@ namespace server.Services
                 List<double> lat = new List<double>();
                 List<double> lng = new List<double>();
                 
+                //TODO zmienic stream processing bo sie ranodmowo w jednej aktywnosci na stravie pierwszy odczyt jednego streamu to null zamiast 0 XDDDDDDDDDDD
                 for (int j = 0; j < streamsResponse[0].data?.Length; j++)
                 {
                     foreach (var stream in streamsResponse)

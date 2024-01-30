@@ -28,27 +28,56 @@ const months = [
 ];
 interface props {
   setMonth: any;
+  setYearOffset: any;
+  yearOffset: number;
 }
 //TODO dodac obsluge zmiany lat
-export const ProfileStats = (setMonth: props) => {
-  const [athleteStats, setAthleteStats] = useState<AthleteStats>();
+export const ProfileStats = ({
+  setMonth,
+  yearOffset,
+  setYearOffset,
+}: props) => {
   const [athleteInfo, setAthleteInfo] = useState<AthleteInfo>();
-  const [monthlySum, setMonthlySum] = useState<MonthlySummary[]>();
-  const [currMonth, setCurrMonth] = useState<MonthlySummary>();
-  const [max, setMax] = useState<number>(0);
-
   const [userPowerZones, setUserPowerZones] = useLocalStorage("powerZones", {});
   const [userHrZones, setUserHrZones] = useLocalStorage("hrZones", {});
+  const [yearsAvailable, setYearsAvailable] = useState<number[]>([]);
+
+  const [monthlySum, setMonthlySum] = useState<MonthlySummary[]>();
+  const [max, setMax] = useState<number>(0);
+  const [currMonth, setCurrMonth] = useState<MonthlySummary>();
+
+  const [yearDropdown, setYearDropdown] = useState("none");
 
   useEffect(() => {
     const stats = async () => {
-      const res = await getAthleteStats();
+      const res = await getAthleteStats(yearOffset);
       const sum: MonthlySummary[] = res?.data.monthlySummaries;
-      setAthleteStats(res?.data.athleteStats);
+
+      const summaries: MonthlySummary[] = [];
+
+      for (let i = 1, j = 0; i <= 12; i++) {
+        if (sum[j] && sum[j].month == i) {
+          summaries.push(sum[j]);
+          j++;
+        } else {
+          summaries.push({
+            month: i,
+            year: new Date().getFullYear() - yearOffset,
+            totalCalories: 0,
+            totalDistance: 0,
+            totalElapsedTime: 0,
+            totalElevationGain: 0,
+            totalMovingTime: 0,
+            trainingLoad: 0,
+          });
+        }
+      }
+
       setAthleteInfo(res?.data.stravaProfileInfo);
       setUserHrZones(res?.data.hrZones);
       setUserPowerZones(res?.data.powerZones);
-      setMonthlySum(sum);
+      setYearsAvailable(res?.data.yearsAvailable);
+      setMonthlySum(summaries);
       if (sum) {
         setMax(Math.max(...sum.map((val) => val.totalDistance)));
         setCurrMonth(
@@ -57,13 +86,12 @@ export const ProfileStats = (setMonth: props) => {
       }
     };
     stats();
-  }, []);
+  }, [yearOffset]);
 
   return (
     <div>
       {athleteInfo ? (
         <div className={styles.athleteInfo}>
-          {/*<img src={athleteInfo.profileAvatar} alt={"profile photo"} />*/}
           <h1>
             {athleteInfo.firstName} {athleteInfo.lastName}
           </h1>
@@ -92,8 +120,40 @@ export const ProfileStats = (setMonth: props) => {
         <div className={styles.monthlySummaryContainer}>
           <div className={styles.summaryInfo}>
             <h2>
-              Activities in {months[currMonth.month - 1]} {currMonth.year}
+              Activities in {months[currMonth.month - 1]} {currMonth.year}{" "}
+              <button
+                onClick={() => {
+                  yearDropdown === "none"
+                    ? setYearDropdown("block")
+                    : setYearDropdown("none");
+                }}
+              >
+                xd
+              </button>
             </h2>
+
+            <div
+              className={styles.yearManagement}
+              style={{ display: `${yearDropdown}` }}
+            >
+              <ul>
+                {yearsAvailable.map((value, index) => {
+                  return (
+                    <li key={index}>
+                      <div
+                        onClick={() => {
+                          setYearDropdown("none");
+                          setYearOffset(index);
+                        }}
+                      >
+                        {value}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+
             <ul className={styles.infoTotals}>
               <li>
                 {parseDurationExact(currMonth.totalMovingTime)}
@@ -131,7 +191,7 @@ export const ProfileStats = (setMonth: props) => {
                         className={styles.bar}
                         onClick={() => {
                           setCurrMonth(monthlySum[index]);
-                          setMonth.setMonth(monthlySum[index].month);
+                          setMonth(monthlySum[index].month);
                         }}
                       >
                         <div

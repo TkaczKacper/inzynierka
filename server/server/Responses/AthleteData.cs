@@ -12,4 +12,5 @@ public class AthleteData
     public List<ProfileHeartRate>? HrZones { get; set; }
     public List<ProfilePower>? PowerZones { get; set; }
     public List<ProfileMonthlySummary>? MonthlySummaries { get; set; }
+    public List<int>? YearsAvailable { get; set; }
 }

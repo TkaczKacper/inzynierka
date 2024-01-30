@@ -14,10 +14,16 @@ const ProfileActivities = dynamic(
 );
 const page = () => {
   const [month, setMonth] = useState<number>(new Date().getMonth() + 1);
+  const [yearOffset, setYearOffset] = useState<number>(0);
+
   return (
     <div>
-      <ProfileStats setMonth={setMonth} />
-      <ProfileActivities month={month} />
+      <ProfileStats
+        setMonth={setMonth}
+        setYearOffset={setYearOffset}
+        yearOffset={yearOffset}
+      />
+      <ProfileActivities month={month} yearOffset={yearOffset} />
     </div>
   );
 };

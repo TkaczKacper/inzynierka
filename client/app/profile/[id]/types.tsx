@@ -42,7 +42,6 @@ export type MonthlySummary = {
   totalMovingTime: number;
   trainingLoad: number;
   year: number;
-  fillHeight: number;
 };
 
 export type ActivityLap = {

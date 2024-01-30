@@ -61,10 +61,13 @@ export const getAthleteActivities = async (
   }
 };
 
-export const getAthleteActivitiesPeriod = async (month: number) => {
+export const getAthleteActivitiesPeriod = async (
+  month: number,
+  yearOffset: number,
+) => {
   try {
     return await axios.get(
-      `${backend_url}/profile/get-activities-period?month=${month}`,
+      `${backend_url}/profile/get-activities-period?month=${month}&yearOffset=${yearOffset}`,
       {
         withCredentials: true,
         headers: {
@@ -144,14 +147,17 @@ export const updateHr = async (hrRest: number, hrMax: number) => {
   }
 };
 
-export const getAthleteStats = async () => {
+export const getAthleteStats = async (yearOffset: number) => {
   try {
-    const res = await axios.get(`${backend_url}/profile/get-athlete-stats`, {
-      withCredentials: true,
-      headers: {
-        Authorization: getCookie("jwtToken"),
+    const res = await axios.get(
+      `${backend_url}/profile/get-athlete-stats?yearOffset=${yearOffset}`,
+      {
+        withCredentials: true,
+        headers: {
+          Authorization: getCookie("jwtToken"),
+        },
       },
-    });
+    );
     console.log(res);
     return res;
   } catch (error) {

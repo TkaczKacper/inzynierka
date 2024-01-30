@@ -25,7 +25,7 @@ namespace server.Services
         Task<string> SaveActivitiesToFetch(List<long> activityIds, Guid? userId);
         List<ProfileMonthlySummary> GetMonthlyStats(Guid? userId, int yearOffset);
         IEnumerable<Activity> GetAthleteActivities(Guid? userId, DateTime? lastActivityDate, int? perPage);
-        IEnumerable<Activity> GetAthletePeriodActivities(Guid? userId, int? month, int yearOffset);
+        IEnumerable<Activity> GetAthletePeriodActivities(Guid? userId, int? month, int? yearOffset);
         List<long> GetSyncedActivitiesId(Guid? userId);
         DateTime GetLatestActivity(Guid? userId);
     }
@@ -200,23 +200,29 @@ namespace server.Services
             List<ProfilePower>? power = _context.ProfilePower
                 .Where(pp => pp.UserID == userId)
                 .ToList();
+
+            List<int>? years = _context.ProfileYearlySummary
+                .OrderByDescending(y => y.Year)
+                .Select(y => y.Year)
+                .ToList();
             
             AthleteData response = new AthleteData
             {
                 AthleteStats = stats,
                 StravaProfileInfo = profile,
                 HrZones = heartRate,
-                PowerZones = power
+                PowerZones = power,
+                YearsAvailable = years
             };
             
             return response;
         }
 
-        //TODO zmienic na async + dodac obsluge zmiany roku
+        //TODO zmienic na async
         public List<ProfileMonthlySummary> GetMonthlyStats(Guid? userId, int yearOffset)
         {
             List<ProfileMonthlySummary> monthlySummaries = _context.ProfileMonthlySummary
-                .Where(summ => summ.UserId == userId && summ.Year == DateTime.Today.AddYears(yearOffset).Year)
+                .Where(summ => summ.UserId == userId && summ.Year == DateTime.Today.AddYears(-yearOffset).Year)
                 .OrderBy(summ => summ.Month)
                 .ToList();
             
@@ -232,11 +238,12 @@ namespace server.Services
             return activities;
         }
 
-        //TODO dodac obsluge roznych lat
-        public IEnumerable<Activity> GetAthletePeriodActivities(Guid? userId, int? month, int yearOffset)
+        public IEnumerable<Activity> GetAthletePeriodActivities(Guid? userId, int? month, int? yearOffset)
         {
             month ??= DateTime.UtcNow.Month;
-            DateTime first = new DateTime(DateTime.UtcNow.Year, (int)month, 1).AddYears(yearOffset).ToUniversalTime();
+            yearOffset ??= 0;
+            
+            DateTime first = new DateTime(DateTime.UtcNow.Year, (int)month, 1).AddYears(-(int)yearOffset).ToUniversalTime();
             DateTime last = first.AddMonths(1).AddSeconds(-1).ToUniversalTime();
             Console.WriteLine(first);
             

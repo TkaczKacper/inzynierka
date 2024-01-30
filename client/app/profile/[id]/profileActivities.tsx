@@ -15,15 +15,16 @@ import dynamic from "next/dynamic";
 
 interface props {
   month: number;
+  yearOffset: number;
 }
 
 //TODO dodac obsluge zmiany roku
-const ProfileActivities = (month: props) => {
+const ProfileActivities = ({ month, yearOffset }: props) => {
   const [activities, setActivities] = useState<Activity[]>();
   useEffect(() => {
     const userActivities = async () => {
       //@ts-ignore
-      const res = await getAthleteActivitiesPeriod(month.month);
+      const res = await getAthleteActivitiesPeriod(month, yearOffset);
       setActivities(res?.data);
     };
     userActivities();
