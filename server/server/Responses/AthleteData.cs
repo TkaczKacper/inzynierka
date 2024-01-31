@@ -6,7 +6,6 @@ namespace server.Responses;
 
 public class AthleteData
 {
-    public StravaProfileStats AthleteStats { get; set; }
     public StravaProfile StravaProfileInfo { get; set; }
     
     public List<ProfileHeartRate>? HrZones { get; set; }

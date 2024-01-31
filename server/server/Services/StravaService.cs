@@ -14,7 +14,7 @@ namespace server.Services
     public interface IStravaService
     {
         //TODO przeniesc do innego pliku 5 kolejnych
-        Task<StravaProfile> ProfileUpdate(StravaProfile profileInfo, Guid? userId, string? accesstoken, string? refreshtoken);
+        Task<StravaProfile> ProfileUpdate(StravaProfile profileInfo, Guid? userId, string? refreshToken);
         ProfileHeartRate ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId);
         string ProfileHeartRateDelete(long entryId, Guid? userId);
         ProfilePower ProfilePowerUpdate(ProfilePower profilePower, Guid userId);
@@ -45,23 +45,15 @@ namespace server.Services
             _context = context;
             _stravaApi = stravaApi;
         }
-        private static HttpClient stravaClient = new()
-        {
-            BaseAddress = new Uri("https://www.strava.com/api/v3/"),
-        };
 
-        public async Task<StravaProfile> ProfileUpdate(StravaProfile profile, Guid? id, string? accesstoken, string? refreshtoken)
+        public async Task<StravaProfile> ProfileUpdate(StravaProfile profile, Guid? id, string? refreshToken)
         {
             Console.WriteLine("profile update");
             User? user = GetUserById(id);
-            stravaClient.DefaultRequestHeaders.Clear();
-            stravaClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accesstoken}");
-
-            var athleteStats = await _stravaApi.GetAthleteStats(profile.ProfileID, stravaClient);           
             
             StravaProfile profileDetails = new StravaProfile
             {
-                StravaRefreshToken = refreshtoken, 
+                StravaRefreshToken = refreshToken, 
                 ProfileID = profile.ProfileID,
                 Username = profile.Username,
                 FirstName = profile.FirstName,
@@ -74,12 +66,11 @@ namespace server.Services
                 City = profile.City,
                 Weight = profile.Weight,
                 ProfileCreatedAt = profile.ProfileCreatedAt,
-                NeedUpdate = false,
             };
             user.StravaProfile = profileDetails;
-            user.StravaProfile.AthleteStats = athleteStats;
+            
             _context.Update(user);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return profile;
         }
@@ -191,7 +182,6 @@ namespace server.Services
         {
             StravaProfile? profile = GetUserById(userId).StravaProfile;
             if (profile is null) return null;
-            StravaProfileStats? stats = GetAthleteStats(profile.AthleteStatsId);
 
             List<ProfileHeartRate>? heartRate = _context.ProfileHeartRate
                 .Where(phr => phr.UserID == userId)
@@ -208,7 +198,6 @@ namespace server.Services
             
             AthleteData response = new AthleteData
             {
-                AthleteStats = stats,
                 StravaProfileInfo = profile,
                 HrZones = heartRate,
                 PowerZones = power,
@@ -276,17 +265,6 @@ namespace server.Services
             return user == null ? throw new KeyNotFoundException("User not found.") : user;
         }
 
-        public StravaProfileStats? GetAthleteStats(long id)
-        {
-            StravaProfileStats? profile = _context.StravaProfileStats
-                .Include(stats => stats.RecentRideTotals)
-                .Include(stats => stats.YtdRideTotals)
-                .Include(stats => stats.AllTimeRideTotals)
-                .FirstOrDefault(s => s.Id == id);
-            
-            return profile == null ? throw new KeyNotFoundException("User not found.") : profile;
-        }
-        
         public List<long> GetSyncedActivitiesId(Guid? id)
         {
 

@@ -20,7 +20,6 @@ namespace server.Helpers
         
         public DbSet<User> Users { get; set; }
         public DbSet<StravaProfile> StravaProfile { get; set; }
-        public DbSet<StravaProfileStats> StravaProfileStats { get; set; }
         public DbSet<Activity> Activity { get; set; }
         public DbSet<ActivityLap> ActivityLap { get; set; }
         public DbSet<ProfileHeartRate> ProfileHeartRate { get; set; }

@@ -1,7 +1,5 @@
-﻿using server.Models.Profile;
-using server.Responses.Strava.ActivityStreams;
+﻿using server.Responses.Strava.ActivityStreams;
 using server.Responses.Strava;
-using server.Responses.Strava.AthleteStats;
 using server.Models.Activity;
 
 namespace server.Services
@@ -10,7 +8,6 @@ namespace server.Services
     {
         Task<ActivityDetailsResponse> GetDetailsById(long id, HttpClient httpClient);
         Task<ActivityStreams> GetStreamsById(long id, HttpClient httpClient);
-        Task<StravaProfileStats> GetAthleteStats(long profileId, HttpClient httpClient);
     }
 
     public class StravaApiService : IStravaApiService
@@ -136,60 +133,6 @@ namespace server.Services
                 Console.WriteLine($"error: {ex.Message}");
                 Console.WriteLine("Strava API limit reached. Try again later."); 
             }
-            return null;
-        }
-
-        public async Task<StravaProfileStats> GetAthleteStats(long profileId, HttpClient stravaClient)
-        {
-            try
-            {
-                using HttpResponseMessage response = await stravaClient.GetAsync($"athletes/{profileId}/stats");
-                var stats = await response.Content.ReadFromJsonAsync<AthleteStats>();
-
-                RideTotals recent = new RideTotals
-                {
-                    Count = stats.recent_ride_totals.count,
-                    Distance = stats.recent_ride_totals.distance,
-                    ElevationGain = stats.recent_ride_totals.elevation_gain,
-                    ElapsedTime = stats.recent_ride_totals.elapsed_time,
-                    MovingTime = stats.recent_ride_totals.moving_time,
-                    AchievementCount = stats.recent_ride_totals.achievement_count
-                };
-                
-                RideTotals ytd = new RideTotals
-                {
-                    Count = stats.ytd_ride_totals.count,
-                    Distance = stats.ytd_ride_totals.distance,
-                    ElevationGain = stats.ytd_ride_totals.elevation_gain,
-                    ElapsedTime = stats.ytd_ride_totals.elapsed_time,
-                    MovingTime = stats.ytd_ride_totals.moving_time,
-                    AchievementCount = stats.ytd_ride_totals.achievement_count
-                };
-                
-                RideTotals total = new RideTotals
-                {
-                    Count = stats.all_ride_totals.count,
-                    Distance = stats.all_ride_totals.distance,
-                    ElevationGain = stats.all_ride_totals.elevation_gain,
-                    ElapsedTime = stats.all_ride_totals.elapsed_time,
-                    MovingTime = stats.all_ride_totals.moving_time,
-                    AchievementCount = stats.all_ride_totals.achievement_count
-                };
-                StravaProfileStats athleteStats = new StravaProfileStats
-                {
-                    BiggestClimb = stats.biggest_climb_elevation_gain,
-                    LongestRide = stats.biggest_ride_distance,
-                    RecentRideTotals = recent,
-                    YtdRideTotals = ytd,
-                    AllTimeRideTotals = total
-                };
-                return athleteStats;
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine($"error: {ex.Message}");
-            }
-
             return null;
         }
 

@@ -30,10 +30,9 @@ public class ProfileController : ControllerBase
     public async Task<IActionResult> ProfileUpdate([FromBody] StravaProfile stravaProfile)
     {
         var userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
-        string? stravaAccessToken = Request.Cookies["strava_access_token"];
         string? stravaRefreshToken = Request.Cookies["strava_refresh_token"];
         
-        var response = await _stravaService.ProfileUpdate(stravaProfile, userId, stravaAccessToken, stravaRefreshToken);
+        var response = await _stravaService.ProfileUpdate(stravaProfile, userId, stravaRefreshToken);
             
         return Ok(response);
     }
@@ -94,7 +93,7 @@ public class ProfileController : ControllerBase
     }
 
     [HttpGet("get-activities-period")]
-    //TODO zmiana roku + domyslnie ostatnie 12mies
+    //TODO domyslnie ostatnie 12mies
     public IActionResult GetUserPeriodActivities(int? month, int? yearOffset)
     {
         Guid? userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);

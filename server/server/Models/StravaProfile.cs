@@ -1,7 +1,4 @@
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using server.Models.Profile;
 
 namespace server.Models;
 
@@ -34,16 +31,4 @@ public class StravaProfile
     public float Weight { get; set; }
     
     public DateTime ProfileCreatedAt { get; set; }
-    
-    [JsonIgnore]
-    public StravaProfileStats? AthleteStats { get; set; }
-    
-    [JsonIgnore]
-    [DefaultValue(true)]
-    public bool NeedUpdate { get; set; }
-    
-    //foreign key
-    [JsonIgnore]
-    [ForeignKey("StravaProfileStats")]
-    public virtual long AthleteStatsId { get; set; }
 }
