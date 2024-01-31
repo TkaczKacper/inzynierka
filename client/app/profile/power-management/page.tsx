@@ -57,49 +57,50 @@ const page = () => {
       >
         Add new measurement
       </a>
-      {data.length > 0 ? (
-        <>
-          <table className={styles.managementTable}>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Ftp</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                className={styles.newMeasurment}
-                style={{ display: addNewDisplay }}
+      <table className={styles.managementTable}>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Ftp</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            className={styles.newMeasurment}
+            style={{ display: addNewDisplay }}
+          >
+            <td>{new Date().toISOString().split("T")[0]}</td>
+            <td>
+              <input
+                className={styles.managementInput}
+                value={newFTP}
+                onChange={(e) => setNewFTP(Number(e.target.value))}
+              />{" "}
+              W
+            </td>
+            <td>
+              <button
+                className={styles.buttonAdd}
+                disabled={isSubmiting}
+                onClick={() => {
+                  setIsSubmiting(true);
+                  submitHandler();
+                }}
               >
-                <td>{new Date().toISOString().split("T")[0]}</td>
-                <td>
-                  <input
-                    className={styles.managementInput}
-                    value={newFTP}
-                    onChange={(e) => setNewFTP(Number(e.target.value))}
-                  />{" "}
-                  W
-                </td>
-                <td>
-                  <button
-                    className={styles.buttonAdd}
-                    disabled={isSubmiting}
-                    onClick={() => {
-                      setIsSubmiting(true);
-                      submitHandler();
-                    }}
-                  >
-                    Save
-                  </button>
-                  <button
-                    id={styles.buttonCancel}
-                    onClick={() => setAddNewDisplay("none")}
-                  >
-                    Cancel
-                  </button>
-                </td>
-              </tr>
+                Save
+              </button>
+              <button
+                id={styles.buttonCancel}
+                onClick={() => setAddNewDisplay("none")}
+              >
+                Cancel
+              </button>
+            </td>
+          </tr>
+
+          {data.length > 0 ? (
+            <>
               {data.map((value: powerZonesType, index: number) => {
                 return (
                   <tr key={value.id}>
@@ -113,12 +114,18 @@ const page = () => {
                   </tr>
                 );
               })}
-            </tbody>
-          </table>
+            </>
+          ) : null}
+        </tbody>
+      </table>
+      {data.length > 0 ? (
+        <>
           <h1>Power zones</h1>
           <PowerZones data={data} setData={setData} />
         </>
-      ) : null}
+      ) : (
+        <h1>No entries yet!</h1>
+      )}
     </div>
   );
 };

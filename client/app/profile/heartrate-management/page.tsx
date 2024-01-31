@@ -56,55 +56,55 @@ const page = () => {
       >
         Add new measurement
       </a>
-      {data.length > 0 ? (
-        <>
-          <table className={styles.managementTable}>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Resting Hr</th>
-                <th>Max Hr</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                className={styles.newMeasurment}
-                style={{ display: addNewDisplay }}
+      <table className={styles.managementTable}>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Resting Hr</th>
+            <th>Max Hr</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            className={styles.newMeasurment}
+            style={{ display: addNewDisplay }}
+          >
+            <td>{new Date().toISOString().split("T")[0]}</td>
+            <td>
+              <input
+                className={styles.managementInput}
+                value={newHrRest}
+                onChange={(e) => setNewHrRest(Number(e.target.value))}
+              />
+            </td>
+            <td>
+              <input
+                className={styles.managementInput}
+                value={newHrMax}
+                onChange={(e) => setNewHrMax(Number(e.target.value))}
+              />
+            </td>
+            <td>
+              <button
+                disabled={isSubmiting}
+                onClick={() => {
+                  setIsSubmiting(true);
+                  submitHandler();
+                }}
               >
-                <td>{new Date().toISOString().split("T")[0]}</td>
-                <td>
-                  <input
-                    className={styles.managementInput}
-                    value={newHrRest}
-                    onChange={(e) => setNewHrRest(Number(e.target.value))}
-                  />
-                </td>
-                <td>
-                  <input
-                    className={styles.managementInput}
-                    value={newHrMax}
-                    onChange={(e) => setNewHrMax(Number(e.target.value))}
-                  />
-                </td>
-                <td>
-                  <button
-                    disabled={isSubmiting}
-                    onClick={() => {
-                      setIsSubmiting(true);
-                      submitHandler();
-                    }}
-                  >
-                    Save
-                  </button>
-                  <button
-                    id={styles.buttonCancel}
-                    onClick={() => setAddNewDisplay("none")}
-                  >
-                    Cancel
-                  </button>
-                </td>
-              </tr>
+                Save
+              </button>
+              <button
+                id={styles.buttonCancel}
+                onClick={() => setAddNewDisplay("none")}
+              >
+                Cancel
+              </button>
+            </td>
+          </tr>
+          {data.length > 0 ? (
+            <>
               {data.map((value: hrZonesType, index: number) => {
                 return (
                   <tr key={value.id}>
@@ -119,12 +119,14 @@ const page = () => {
                   </tr>
                 );
               })}
-            </tbody>
-          </table>
-          <HeartRateZones data={data} setData={setData} />
-        </>
+            </>
+          ) : null}
+        </tbody>
+      </table>
+      {data.length > 0 ? (
+        <HeartRateZones data={data} setData={setData} />
       ) : (
-        <h1>No entries</h1>
+        <h1>No entries yet!</h1>
       )}
     </div>
   );
