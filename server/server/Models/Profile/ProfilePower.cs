@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace server.Models.Profile
@@ -15,6 +16,8 @@ namespace server.Models.Profile
         public int? Zone5 { get; set; }
         public int? Zone6 { get; set; }
         public int? Zone7 { get; set; }
+
+        public bool SetAutoZones { get; set; } = true; 
 
         //foreign key property
         [JsonIgnore]

@@ -12,6 +12,7 @@ const powerZones = ({ data, setData }: any) => {
   const [zone6, setZone6] = useState(curr.zone6);
   const [zone7, setZone7] = useState(curr.zone7);
 
+  //TODO dodac wysylanie na backend
   const saveChanges = () => {
     curr.zone1 = zone1;
     curr.zone2 = zone2;

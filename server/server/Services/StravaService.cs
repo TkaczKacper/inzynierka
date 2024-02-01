@@ -97,23 +97,69 @@ namespace server.Services
         //TODO zmienic na async + dodac obsluge LTHR
         public ProfileHeartRate ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId)
         {
-            int hrMax = (int)profileHeartRate.HrMax;
+            int? hrMax = profileHeartRate.HrMax;
+            int? hrRest = profileHeartRate.HrRest;
+            int? ltHr= profileHeartRate.LTHr;
+            bool autoZones = profileHeartRate.SetAutoZones;
 
             ProfileHeartRate userHr = new ProfileHeartRate
             {
-                DateAdded = DateOnly.FromDateTime(DateTime.UtcNow),
-                HrRest = profileHeartRate.HrRest,
-                HrMax = hrMax,
-                
-                Zone1 = (int)Math.Round(0.5 * hrMax),
-                Zone2 = (int)Math.Round(0.6 * hrMax),
-                Zone3 = (int)Math.Round(0.7 * hrMax),
-                Zone4 = (int)Math.Round(0.8 * hrMax),
-                Zone5 = (int)Math.Round(0.9 * hrMax),
-                
                 UserID = userId
             };
-            _context.ProfileHeartRate.Add(userHr);
+            
+            if (autoZones && hrMax != null && hrRest != null)
+            {
+                userHr.DateAdded = DateOnly.FromDateTime(DateTime.UtcNow);
+                userHr.HrRest = profileHeartRate.HrRest;
+                userHr.HrMax = hrMax;
+                userHr.LTHr = ltHr;
+                userHr.Zone1 = (int)hrRest;
+                if (ltHr != null)
+                {
+                    userHr.Zone2 = (int)(0.81 * ltHr);
+                    userHr.Zone3 = (int)(0.90 * ltHr);
+                    userHr.Zone4 = (int)(0.94 * ltHr);
+                    userHr.Zone5a = ltHr;
+                    userHr.Zone5b = (int)(1.03 * ltHr);
+                    userHr.Zone5c = (int)(1.06 * ltHr);
+                }
+                else
+                {
+                    userHr.Zone2 = (int)(0.65 * hrMax);
+                    userHr.Zone3 = (int)(0.77 * hrMax);
+                    userHr.Zone4 = (int)(0.86 * hrMax);
+                    userHr.Zone5 = (int)(0.935 * hrMax);
+                }
+                _context.ProfileHeartRate.Add(userHr);
+            }
+            else
+            {
+                userHr.DateAdded = profileHeartRate.DateAdded;
+                userHr.LTHr = profileHeartRate.LTHr;
+                userHr.Zone1 = profileHeartRate.Zone1;
+                userHr.Zone2 = profileHeartRate.Zone2;
+                userHr.Zone3 = profileHeartRate.Zone3;
+                userHr.Zone4 = profileHeartRate.Zone4;
+                userHr.Zone5 = profileHeartRate.Zone5;
+                userHr.Zone5a = profileHeartRate.Zone5a;
+                userHr.Zone5b = profileHeartRate.Zone5b;
+                userHr.Zone5c = profileHeartRate.Zone5c;
+                
+                _context.ProfileHeartRate
+                    .Where(e => e.DateAdded == profileHeartRate.DateAdded)
+                    .ExecuteUpdate(hr => hr
+                        .SetProperty(x => x.Zone1, profileHeartRate.Zone1)
+                        .SetProperty(x => x.Zone2, profileHeartRate.Zone2)
+                        .SetProperty(x => x.Zone3, profileHeartRate.Zone3)
+                        .SetProperty(x => x.Zone4, profileHeartRate.Zone4)
+                        .SetProperty(x => x.Zone5, profileHeartRate.Zone5)
+                        .SetProperty(x => x.Zone5a, profileHeartRate.Zone5a)
+                        .SetProperty(x => x.Zone5b, profileHeartRate.Zone5b)
+                        .SetProperty(x => x.Zone5c, profileHeartRate.Zone5c)
+                        .SetProperty(x => x.LTHr, ltHr)
+                    );
+            }
+            
             _context.SaveChanges();
 
             return userHr;

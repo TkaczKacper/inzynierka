@@ -1,6 +1,7 @@
 import { Activity } from "@/app/profile/connections/page";
 import axios from "axios";
 import { getCookie } from "cookies-next";
+import { hrZonesType } from "@/app/profile/heartrate-management/page";
 
 const backend_url = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
@@ -126,13 +127,19 @@ export const updateFtp = async (ftp: number) => {
   }
 };
 
-export const updateHr = async (hrRest: number, hrMax: number) => {
+export const updateHr = async (
+  hrRest: number,
+  hrMax: number,
+  ltHr: number | undefined,
+) => {
   try {
     const response = await axios.post(
       `${backend_url}/profile/hr-update`,
       {
         HrRest: hrRest,
         HrMax: hrMax,
+        ltHr: ltHr,
+        SetAutoZones: true,
       },
       {
         headers: {
@@ -142,6 +149,18 @@ export const updateHr = async (hrRest: number, hrMax: number) => {
     );
     console.log(response);
     return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updateHrZones = async (hrZones: hrZonesType) => {
+  try {
+    const res = await axios.post(`${backend_url}/profile/hr-update`, hrZones, {
+      headers: { Authorization: getCookie("jwtToken") },
+    });
+    console.log(res);
+    return res;
   } catch (error) {
     console.log(error);
   }

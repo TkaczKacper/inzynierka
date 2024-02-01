@@ -10,17 +10,23 @@ export type hrZonesType = {
   dateAdded: string;
   hrRest: number;
   hrMax: number;
+  ltHr: number | null;
+  setAutoZones: boolean;
   zone1: number;
   zone2: number;
   zone3: number;
   zone4: number;
-  zone5: number;
+  zone5: number | null;
+  zone5a: number | null;
+  zone5b: number | null;
+  zone5c: number | null;
 };
 
 const page = () => {
   const [data, setData] = useState<hrZonesType[]>([]);
   const [newHrRest, setNewHrRest] = useState(0);
   const [newHrMax, setNewHrMax] = useState(0);
+  const [newLtHr, setNewLtHr] = useState<number | undefined>(undefined);
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [addNewDisplay, setAddNewDisplay] = useState("none");
 
@@ -38,7 +44,7 @@ const page = () => {
     }
   };
   const submitHandler = async () => {
-    const response = await updateHr(newHrRest, newHrMax);
+    const response = await updateHr(newHrRest, newHrMax, newLtHr);
     console.log(response);
     if (response?.data) {
       setData([...data, response.data]);
@@ -62,6 +68,7 @@ const page = () => {
             <th>Date</th>
             <th>Resting Hr</th>
             <th>Max Hr</th>
+            <th>LT Hr</th>
             <th></th>
           </tr>
         </thead>
@@ -83,6 +90,13 @@ const page = () => {
                 className={styles.managementInput}
                 value={newHrMax}
                 onChange={(e) => setNewHrMax(Number(e.target.value))}
+              />
+            </td>
+            <td>
+              <input
+                className={styles.managementInput}
+                value={newLtHr}
+                onChange={(e) => setNewLtHr(Number(e.target.value))}
               />
             </td>
             <td>
@@ -111,6 +125,7 @@ const page = () => {
                     <td>{value.dateAdded}</td>
                     <td>{value.hrRest} BPM</td>
                     <td>{value.hrMax} BPM</td>
+                    {value.ltHr ? <td>{value.ltHr} BPM</td> : <td>--</td>}
                     <td>
                       <button onClick={() => deleteEntry(value.id, index)}>
                         Delete
