@@ -94,7 +94,7 @@ namespace server.Services
             return $"Remaining activities to be fetch: {activitiesToSync.Count}";
         }
 
-        //TODO zmienic na async + dodac obsluge LTHR
+        //TODO zmienic na async
         public ProfileHeartRate ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId)
         {
             int? hrMax = profileHeartRate.HrMax;

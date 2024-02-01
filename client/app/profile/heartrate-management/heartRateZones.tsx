@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import styles from "../zones.module.css";
 import { updateHrZones } from "@/utils/serverUtils";
 
-//TODO dodac obsluge LTHR
 const heartRateZones = ({ data, setData }: any) => {
   const curr: hrZonesType = data[data.length - 1];
   const [zone1, setZone1] = useState(curr.zone1);
@@ -15,7 +14,6 @@ const heartRateZones = ({ data, setData }: any) => {
   const [zone5b, setZone5b] = useState(curr.zone5b);
   const [zone5c, setZone5c] = useState(curr.zone5c);
 
-  //TODO dodac wysylanie na backend
   const saveChanges = async () => {
     curr.zone1 = zone1;
     curr.zone2 = zone2;

@@ -38,7 +38,6 @@ public class ProfileController : ControllerBase
     }
     
     
-    //TODO dodac obsluge ustawiania stref 
     [HttpPost("hr-update")]
     public IActionResult HrUpdate([FromBody] ProfileHeartRate heartRate)
     {

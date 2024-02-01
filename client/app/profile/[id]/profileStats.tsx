@@ -31,7 +31,6 @@ interface props {
   setYearOffset: any;
   yearOffset: number;
 }
-//TODO dodac obsluge zmiany lat
 export const ProfileStats = ({
   setMonth,
   yearOffset,
