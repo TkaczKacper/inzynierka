@@ -1,6 +1,7 @@
 ﻿import { powerZonesType } from "@/app/profile/power-management/page";
 import { useState } from "react";
 import styles from "../zones.module.css";
+import { updatePowerZones } from "@/utils/serverUtils";
 
 const powerZones = ({ data, setData }: any) => {
   const curr: powerZonesType = data[data.length - 1];
@@ -13,7 +14,7 @@ const powerZones = ({ data, setData }: any) => {
   const [zone7, setZone7] = useState(curr.zone7);
 
   //TODO dodac wysylanie na backend
-  const saveChanges = () => {
+  const saveChanges = async () => {
     curr.zone1 = zone1;
     curr.zone2 = zone2;
     curr.zone3 = zone3;
@@ -21,9 +22,11 @@ const powerZones = ({ data, setData }: any) => {
     curr.zone5 = zone5;
     curr.zone6 = zone6;
     curr.zone7 = zone7;
+    curr.setAutoZones = false;
 
     data[data.length - 1] = curr;
-    console.log("updated", data);
+    console.log("updated", curr);
+    await updatePowerZones(curr);
   };
   return (
     <div>

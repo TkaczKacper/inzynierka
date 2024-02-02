@@ -9,6 +9,7 @@ export type powerZonesType = {
   id: number;
   dateAdded: string;
   ftp: number;
+  setAutoZones: boolean;
   zone1: number;
   zone2: number;
   zone3: number;

@@ -95,6 +95,7 @@ namespace server.Services
         }
 
         //TODO zmienic na async
+        //TODO dodac zabezpieczenie - max 1 odczyt danego dnia
         public ProfileHeartRate ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId)
         {
             int? hrMax = profileHeartRate.HrMax;
@@ -183,24 +184,53 @@ namespace server.Services
         } 
         
         //TODO zmienic na async
+        //TODO dodac zabezpieczenie - max 1 odczyt danego dnia
         public ProfilePower ProfilePowerUpdate(ProfilePower profilePower, Guid userId)
         {
-            int ftp = (int)profilePower.FTP;
+            int ftp = profilePower.FTP;
             ProfilePower power = new ProfilePower
             {
-                DateAdded = DateOnly.FromDateTime(DateTime.UtcNow),
                 FTP = ftp,
                 UserID = userId,
-                Zone1 = 0,
-                Zone2 = (int)Math.Floor(0.55 * ftp),
-                Zone3 = (int)Math.Floor(0.75 * ftp),
-                Zone4 = (int)Math.Floor(0.90 * ftp),
-                Zone5 = (int)Math.Floor(1.05 * ftp),
-                Zone6 = (int)Math.Floor(1.20 * ftp),
-                Zone7 = (int)Math.Floor(1.75 * ftp)
             };
 
-            _context.ProfilePower.Add(power);
+            if (profilePower.SetAutoZones)
+            {
+                power.DateAdded = DateOnly.FromDateTime(DateTime.UtcNow);
+                power.Zone1 = 0;
+                power.Zone2 = (int)Math.Floor(0.55 * ftp);
+                power.Zone3 = (int)Math.Floor(0.75 * ftp);
+                power.Zone4 = (int)Math.Floor(0.90 * ftp);
+                power.Zone5 = (int)Math.Floor(1.05 * ftp);
+                power.Zone6 = (int)Math.Floor(1.20 * ftp);
+                power.Zone7 = (int)Math.Floor(1.75 * ftp);
+                
+                _context.ProfilePower.Add(power);
+            }
+            else
+            {
+                power.DateAdded = profilePower.DateAdded;
+                power.Zone1 = profilePower.Zone1;
+                power.Zone2 = profilePower.Zone2;
+                power.Zone3 = profilePower.Zone3;
+                power.Zone4 = profilePower.Zone4;
+                power.Zone5 = profilePower.Zone5;
+                power.Zone6 = profilePower.Zone6;
+                power.Zone7 = profilePower.Zone7;
+
+                _context.ProfilePower
+                    .Where(e => e.DateAdded == profilePower.DateAdded)
+                    .ExecuteUpdate(up => up
+                        .SetProperty(x => x.Zone1, profilePower.Zone1)
+                        .SetProperty(x => x.Zone2, profilePower.Zone2)
+                        .SetProperty(x => x.Zone3, profilePower.Zone3)
+                        .SetProperty(x => x.Zone4, profilePower.Zone4)
+                        .SetProperty(x => x.Zone5, profilePower.Zone5)
+                        .SetProperty(x => x.Zone6, profilePower.Zone6)
+                        .SetProperty(x => x.Zone7, profilePower.Zone7)
+                    );
+            }
+
             _context.SaveChanges();
 
             return power;

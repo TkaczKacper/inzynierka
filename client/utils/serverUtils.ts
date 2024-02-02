@@ -2,6 +2,7 @@ import { Activity } from "@/app/profile/connections/page";
 import axios from "axios";
 import { getCookie } from "cookies-next";
 import { hrZonesType } from "@/app/profile/heartrate-management/page";
+import { powerZonesType } from "@/app/profile/power-management/page";
 
 const backend_url = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
@@ -122,6 +123,22 @@ export const updateFtp = async (ftp: number) => {
     );
     console.log(response);
     return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updatePowerZones = async (powerZones: powerZonesType) => {
+  try {
+    const res = await axios.post(
+      `${backend_url}/profile/power-update`,
+      powerZones,
+      {
+        headers: { Authorization: getCookie("jwtToken") },
+      },
+    );
+    console.log(res);
+    return res;
   } catch (error) {
     console.log(error);
   }
