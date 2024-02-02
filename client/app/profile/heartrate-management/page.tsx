@@ -121,7 +121,7 @@ const page = () => {
             <>
               {data.map((value: hrZonesType, index: number) => {
                 return (
-                  <tr key={value.id}>
+                  <tr key={index}>
                     <td>{value.dateAdded}</td>
                     <td>{value.hrRest} BPM</td>
                     <td>{value.hrMax} BPM</td>

@@ -104,7 +104,7 @@ const page = () => {
             <>
               {data.map((value: powerZonesType, index: number) => {
                 return (
-                  <tr key={value.id}>
+                  <tr key={index}>
                     <td>{value.dateAdded}</td>
                     <td>{value.ftp} W</td>
                     <td>

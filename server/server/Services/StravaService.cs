@@ -95,7 +95,6 @@ namespace server.Services
         }
 
         //TODO zmienic na async
-        //TODO dodac zabezpieczenie - max 1 odczyt danego dnia
         public ProfileHeartRate ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId)
         {
             int? hrMax = profileHeartRate.HrMax;
@@ -103,6 +102,9 @@ namespace server.Services
             int? ltHr= profileHeartRate.LTHr;
             bool autoZones = profileHeartRate.SetAutoZones;
 
+            ProfileHeartRate? existing =
+                _context.ProfileHeartRate.FirstOrDefault(x => x.DateAdded == DateOnly.FromDateTime(DateTime.UtcNow));
+            
             ProfileHeartRate userHr = new ProfileHeartRate
             {
                 UserID = userId
@@ -110,28 +112,60 @@ namespace server.Services
             
             if (autoZones && hrMax != null && hrRest != null)
             {
-                userHr.DateAdded = DateOnly.FromDateTime(DateTime.UtcNow);
-                userHr.HrRest = profileHeartRate.HrRest;
-                userHr.HrMax = hrMax;
-                userHr.LTHr = ltHr;
-                userHr.Zone1 = (int)hrRest;
-                if (ltHr != null)
+                if (existing is not null)
                 {
-                    userHr.Zone2 = (int)(0.81 * ltHr);
-                    userHr.Zone3 = (int)(0.90 * ltHr);
-                    userHr.Zone4 = (int)(0.94 * ltHr);
-                    userHr.Zone5a = ltHr;
-                    userHr.Zone5b = (int)(1.03 * ltHr);
-                    userHr.Zone5c = (int)(1.06 * ltHr);
+                    userHr.DateAdded = existing.DateAdded;
+                    existing.HrRest = userHr.HrRest = profileHeartRate.HrRest;
+                    existing.HrMax = userHr.HrMax = profileHeartRate.HrMax;
+                    existing.LTHr = userHr.LTHr = profileHeartRate.LTHr;
+                    existing.Zone1 = userHr.Zone1 = (int)hrRest;
+                    if (ltHr != null)
+                    {
+                        existing.Zone2 = userHr.Zone2 = (int)(0.81 * ltHr);
+                        existing.Zone3 = userHr.Zone3 = (int)(0.90 * ltHr);
+                        existing.Zone4 = userHr.Zone4 = (int)(0.94 * ltHr);
+                        existing.Zone5 = userHr.Zone5 = null;
+                        existing.Zone5a = userHr.Zone5a = ltHr;
+                        existing.Zone5b = userHr.Zone5b = (int)(1.03 * ltHr);
+                        existing.Zone5c = userHr.Zone5c = (int)(1.06 * ltHr);
+                    }
+                    else
+                    {
+                        existing.LTHr = userHr.LTHr = null;
+                        existing.Zone2 = userHr.Zone2 = (int)(0.65 * hrMax);
+                        existing.Zone3 = userHr.Zone3 = (int)(0.77 * hrMax);
+                        existing.Zone4 = userHr.Zone4 = (int)(0.86 * hrMax);
+                        existing.Zone5 = userHr.Zone5 = (int)(0.935 * hrMax);
+                    }
+
+                    _context.ProfileHeartRate.Update(existing);
                 }
                 else
                 {
-                    userHr.Zone2 = (int)(0.65 * hrMax);
-                    userHr.Zone3 = (int)(0.77 * hrMax);
-                    userHr.Zone4 = (int)(0.86 * hrMax);
-                    userHr.Zone5 = (int)(0.935 * hrMax);
+                    userHr.DateAdded = DateOnly.FromDateTime(DateTime.UtcNow);
+                    userHr.HrRest = profileHeartRate.HrRest;
+                    userHr.HrMax = hrMax;
+                    userHr.LTHr = ltHr;
+                    userHr.Zone1 = (int)hrRest;
+                    if (ltHr != null)
+                    {
+                        userHr.Zone2 = (int)(0.81 * ltHr);
+                        userHr.Zone3 = (int)(0.90 * ltHr);
+                        userHr.Zone4 = (int)(0.94 * ltHr);
+                        userHr.Zone5a = ltHr;
+                        userHr.Zone5b = (int)(1.03 * ltHr);
+                        userHr.Zone5c = (int)(1.06 * ltHr);
+                    }
+                    else
+                    {
+                        userHr.Zone2 = (int)(0.65 * hrMax);
+                        userHr.Zone3 = (int)(0.77 * hrMax);
+                        userHr.Zone4 = (int)(0.86 * hrMax);
+                        userHr.Zone5 = (int)(0.935 * hrMax);
+                    }
+                    
+                    _context.ProfileHeartRate.Add(userHr);
                 }
-                _context.ProfileHeartRate.Add(userHr);
             }
             else
             {
@@ -184,10 +218,13 @@ namespace server.Services
         } 
         
         //TODO zmienic na async
-        //TODO dodac zabezpieczenie - max 1 odczyt danego dnia
         public ProfilePower ProfilePowerUpdate(ProfilePower profilePower, Guid userId)
         {
             int ftp = profilePower.FTP;
+
+            ProfilePower? existing =
+                _context.ProfilePower.FirstOrDefault(x => x.DateAdded == DateOnly.FromDateTime(DateTime.UtcNow));
+            
             ProfilePower power = new ProfilePower
             {
                 FTP = ftp,
@@ -196,16 +233,33 @@ namespace server.Services
 
             if (profilePower.SetAutoZones)
             {
-                power.DateAdded = DateOnly.FromDateTime(DateTime.UtcNow);
-                power.Zone1 = 0;
-                power.Zone2 = (int)Math.Floor(0.55 * ftp);
-                power.Zone3 = (int)Math.Floor(0.75 * ftp);
-                power.Zone4 = (int)Math.Floor(0.90 * ftp);
-                power.Zone5 = (int)Math.Floor(1.05 * ftp);
-                power.Zone6 = (int)Math.Floor(1.20 * ftp);
-                power.Zone7 = (int)Math.Floor(1.75 * ftp);
+                if (existing is not null)
+                {
+                    power.DateAdded = existing.DateAdded;
+                    existing.FTP = power.FTP = profilePower.FTP;
+                    existing.Zone1 = power.Zone1 = 0;
+                    existing.Zone2 = power.Zone2 = (int)Math.Floor(0.55 * ftp);
+                    existing.Zone3 = power.Zone3 = (int)Math.Floor(0.75 * ftp);
+                    existing.Zone4 = power.Zone4 = (int)Math.Floor(0.90 * ftp);
+                    existing.Zone5 = power.Zone5 = (int)Math.Floor(1.05 * ftp);
+                    existing.Zone6 = power.Zone6 = (int)Math.Floor(1.20 * ftp);
+                    existing.Zone7 = power.Zone7 = (int)Math.Floor(1.75 * ftp);
+
+                    _context.ProfilePower.Update(existing);
+                }
+                else
+                {
+                    power.DateAdded = DateOnly.FromDateTime(DateTime.UtcNow);
+                    power.Zone1 = 0;
+                    power.Zone2 = (int)Math.Floor(0.55 * ftp);
+                    power.Zone3 = (int)Math.Floor(0.75 * ftp);
+                    power.Zone4 = (int)Math.Floor(0.90 * ftp);
+                    power.Zone5 = (int)Math.Floor(1.05 * ftp);
+                    power.Zone6 = (int)Math.Floor(1.20 * ftp);
+                    power.Zone7 = (int)Math.Floor(1.75 * ftp);
                 
-                _context.ProfilePower.Add(power);
+                    _context.ProfilePower.Add(power);
+                }
             }
             else
             {
