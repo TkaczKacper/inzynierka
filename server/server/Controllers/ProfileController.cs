@@ -39,20 +39,20 @@ public class ProfileController : ControllerBase
     
     
     [HttpPost("hr-update")]
-    public IActionResult HrUpdate([FromBody] ProfileHeartRate heartRate)
+    public async Task<IActionResult> HrUpdate([FromBody] ProfileHeartRate heartRate)
     {
         var userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
-        var response = _stravaService.ProfileHeartRateUpdate(heartRate, (Guid)userId);
+        var response = await _stravaService.ProfileHeartRateUpdate(heartRate, (Guid)userId);
 
         return Ok(response);
     }
 
     [HttpDelete("hr-delete-entry/{id:int}")]
-    public IActionResult HrDeleteEntry(int id)
+    public async Task<IActionResult> HrDeleteEntry(int id)
     {
         var userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
 
-        var response = _stravaService.ProfileHeartRateDelete(id, userId);
+        var response = await _stravaService.ProfileHeartRateDelete(id, userId);
 
         return Ok(response);
     }
@@ -60,20 +60,20 @@ public class ProfileController : ControllerBase
     
     //TODO dodac obsluge ustawiania stref
     [HttpPost("power-update")]
-    public IActionResult PowerUpdate([FromBody] ProfilePower power)
+    public async Task<IActionResult> PowerUpdate([FromBody] ProfilePower power)
     {
         var userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
-        var response = _stravaService.ProfilePowerUpdate(power, (Guid)userId);
+        var response = await _stravaService.ProfilePowerUpdate(power, (Guid)userId);
     
         return Ok(response);
     }
     
     [HttpDelete("power-delete-entry/{id:int}")]
-    public IActionResult PowerDeleteEntry(int id)
+    public async  Task<IActionResult> PowerDeleteEntry(int id)
     {
         var userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
 
-        var response = _stravaService.ProfilePowerDelete(id, userId);
+        var response = await _stravaService.ProfilePowerDelete(id, userId);
 
         return Ok(response);
     }

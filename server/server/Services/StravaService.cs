@@ -15,10 +15,10 @@ namespace server.Services
     {
         //TODO przeniesc do innego pliku 5 kolejnych
         Task<StravaProfile> ProfileUpdate(StravaProfile profileInfo, Guid? userId, string? refreshToken);
-        ProfileHeartRate ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId);
-        string ProfileHeartRateDelete(long entryId, Guid? userId);
-        ProfilePower ProfilePowerUpdate(ProfilePower profilePower, Guid userId);
-        string ProfilePowerDelete(long entryId, Guid? userId);
+        Task<ProfileHeartRate> ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId);
+        Task<string> ProfileHeartRateDelete(long entryId, Guid? userId);
+        Task<ProfilePower> ProfilePowerUpdate(ProfilePower profilePower, Guid userId);
+        Task<string> ProfilePowerDelete(long entryId, Guid? userId);
         AthleteData GetProfileData(Guid? userId);
         
         //TODO dodac serwis do obslugi danych uzytkownika
@@ -87,23 +87,22 @@ namespace server.Services
 
             user.ActivitiesToFetch = activitiesToSync;
             _context.Update(user);
-            _context.SaveChanges();
-            Console.WriteLine($"profile: {user.StravaProfile.LastName}");
+            await _context.SaveChangesAsync();
+            Console.WriteLine($"profile: {user.StravaProfile?.LastName}");
            
 
             return $"Remaining activities to be fetch: {activitiesToSync.Count}";
         }
 
-        //TODO zmienic na async
-        public ProfileHeartRate ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId)
+        public async Task<ProfileHeartRate> ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId)
         {
             int? hrMax = profileHeartRate.HrMax;
             int? hrRest = profileHeartRate.HrRest;
             int? ltHr= profileHeartRate.LTHr;
             bool autoZones = profileHeartRate.SetAutoZones;
 
-            ProfileHeartRate? existing =
-                _context.ProfileHeartRate.FirstOrDefault(x => x.DateAdded == DateOnly.FromDateTime(DateTime.UtcNow));
+            ProfileHeartRate? existing = await _context.ProfileHeartRate
+                .FirstOrDefaultAsync(x => x.DateAdded == DateOnly.FromDateTime(DateTime.UtcNow));
             
             ProfileHeartRate userHr = new ProfileHeartRate
             {
@@ -164,7 +163,7 @@ namespace server.Services
                         userHr.Zone5 = (int)(0.935 * hrMax);
                     }
                     
-                    _context.ProfileHeartRate.Add(userHr);
+                    await _context.ProfileHeartRate.AddAsync(userHr);
                 }
             }
             else
@@ -180,9 +179,9 @@ namespace server.Services
                 userHr.Zone5b = profileHeartRate.Zone5b;
                 userHr.Zone5c = profileHeartRate.Zone5c;
                 
-                _context.ProfileHeartRate
+                await _context.ProfileHeartRate
                     .Where(e => e.DateAdded == profileHeartRate.DateAdded)
-                    .ExecuteUpdate(hr => hr
+                    .ExecuteUpdateAsync(hr => hr
                         .SetProperty(x => x.Zone1, profileHeartRate.Zone1)
                         .SetProperty(x => x.Zone2, profileHeartRate.Zone2)
                         .SetProperty(x => x.Zone3, profileHeartRate.Zone3)
@@ -195,16 +194,15 @@ namespace server.Services
                     );
             }
             
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return userHr;
         }
 
-        //TODO zmienic na async
-        public string ProfileHeartRateDelete(long entryId, Guid? userId)
+        public async Task<string> ProfileHeartRateDelete(long entryId, Guid? userId)
         {
-            ProfileHeartRate? hrEntry = _context.ProfileHeartRate
-                .FirstOrDefault(hr => hr.ID == entryId && hr.UserID == userId);
+            ProfileHeartRate? hrEntry = await _context.ProfileHeartRate
+                .FirstOrDefaultAsync(hr => hr.ID == entryId && hr.UserID == userId);
 
             if (hrEntry is null)
             {
@@ -212,18 +210,17 @@ namespace server.Services
             }
             
             _context.ProfileHeartRate.Remove(hrEntry);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return "Deleted";
         } 
         
-        //TODO zmienic na async
-        public ProfilePower ProfilePowerUpdate(ProfilePower profilePower, Guid userId)
+        public async Task<ProfilePower> ProfilePowerUpdate(ProfilePower profilePower, Guid userId)
         {
             int ftp = profilePower.FTP;
 
-            ProfilePower? existing =
-                _context.ProfilePower.FirstOrDefault(x => x.DateAdded == DateOnly.FromDateTime(DateTime.UtcNow));
+            ProfilePower? existing = await _context.ProfilePower
+                    .FirstOrDefaultAsync(x => x.DateAdded == DateOnly.FromDateTime(DateTime.UtcNow));
             
             ProfilePower power = new ProfilePower
             {
@@ -258,7 +255,7 @@ namespace server.Services
                     power.Zone6 = (int)Math.Floor(1.20 * ftp);
                     power.Zone7 = (int)Math.Floor(1.75 * ftp);
                 
-                    _context.ProfilePower.Add(power);
+                    await _context.ProfilePower.AddAsync(power);
                 }
             }
             else
@@ -272,9 +269,9 @@ namespace server.Services
                 power.Zone6 = profilePower.Zone6;
                 power.Zone7 = profilePower.Zone7;
 
-                _context.ProfilePower
+                await _context.ProfilePower
                     .Where(e => e.DateAdded == profilePower.DateAdded)
-                    .ExecuteUpdate(up => up
+                    .ExecuteUpdateAsync(up => up
                         .SetProperty(x => x.Zone1, profilePower.Zone1)
                         .SetProperty(x => x.Zone2, profilePower.Zone2)
                         .SetProperty(x => x.Zone3, profilePower.Zone3)
@@ -285,16 +282,15 @@ namespace server.Services
                     );
             }
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return power;
         }
         
-        //TODO zmienic na async
-        public string ProfilePowerDelete(long entryId, Guid? userId)
+        public async Task<string> ProfilePowerDelete(long entryId, Guid? userId)
         {
-            ProfilePower? powerEntry = _context.ProfilePower
-                .FirstOrDefault(pwr => pwr.Id == entryId && pwr.UserID == userId);
+            ProfilePower? powerEntry = await _context.ProfilePower
+                .FirstOrDefaultAsync(pwr => pwr.Id == entryId && pwr.UserID == userId);
 
             if (powerEntry is null)
             {
@@ -302,7 +298,7 @@ namespace server.Services
             }
             
             _context.ProfilePower.Remove(powerEntry);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return "Deleted";
         } 
@@ -397,7 +393,6 @@ namespace server.Services
 
         public List<long> GetSyncedActivitiesId(Guid? id)
         {
-
             List<long>? userActivitiesId = _context.Activity
                 .Where(sa => sa.UserId == id)
                 .Select(sa => sa.StravaActivityID)
