@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using server.Helpers;
 using server.Models;
@@ -22,28 +21,23 @@ namespace server.Services
         AthleteData GetProfileData(Guid? userId);
         
         //TODO dodac serwis do obslugi danych uzytkownika
-        Task<string> SaveActivitiesToFetch(List<long> activityIds, Guid? userId);
         List<ProfileMonthlySummary> GetMonthlyStats(Guid? userId, int yearOffset);
         IEnumerable<Activity> GetAthleteActivities(Guid? userId, DateTime? lastActivityDate, int? perPage);
         IEnumerable<Activity> GetAthletePeriodActivities(Guid? userId, int? month, int? yearOffset);
         List<long> GetSyncedActivitiesId(Guid? userId);
         DateTime GetLatestActivity(Guid? userId);
+        
+        //helpers
+        User GetUserById(Guid? userId);
     }
 
     public class StravaService : IStravaService
     {
-        private readonly StravaSettings _stravaSettings;
         private readonly DataContext _context;
-        private IStravaApiService _stravaApi;
 
-        public StravaService(
-            IOptions<StravaSettings> stravaSettings,
-            DataContext context,
-            IStravaApiService stravaApi)
+        public StravaService(DataContext context)
         {
-            _stravaSettings = stravaSettings.Value;
             _context = context;
-            _stravaApi = stravaApi;
         }
 
         public async Task<StravaProfile> ProfileUpdate(StravaProfile profile, Guid? id, string? refreshToken)
@@ -73,25 +67,6 @@ namespace server.Services
             await _context.SaveChangesAsync();
 
             return profile;
-        }
-
-        //TODO poprawic funkcje
-        public async Task<string> SaveActivitiesToFetch(List<long> activities, Guid? userId)
-        {
-            Console.WriteLine("Saving...");
-            
-            User user = GetUserById(userId);
-            List<long> syncedActivities = GetSyncedActivitiesId(userId);
-
-            List<long> activitiesToSync = activities.Where(id => !syncedActivities.Contains(id)).ToList();
-
-            user.ActivitiesToFetch = activitiesToSync;
-            _context.Update(user);
-            await _context.SaveChangesAsync();
-            Console.WriteLine($"profile: {user.StravaProfile?.LastName}");
-           
-
-            return $"Remaining activities to be fetch: {activitiesToSync.Count}";
         }
 
         public async Task<ProfileHeartRate> ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId)

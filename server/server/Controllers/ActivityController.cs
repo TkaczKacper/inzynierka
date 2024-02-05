@@ -21,19 +21,19 @@ public class ActivityController : ControllerBase
     }
     
     [HttpGet("get-activity-by-id/{activityId:long}")]
-    public IActionResult GetActivityById(long activityId)
+    public async Task<IActionResult> GetActivityById(long activityId)
     {
-        var response = _activityService.GetActivityById(activityId);
+        var response = await _activityService.GetActivityById(activityId);
     
         return Ok(response);
     }
 
     [HttpDelete("delete-activity-by-id/{activityId:long}")]
-    public IActionResult DeleteActivityById(long activityId)
+    public async Task<IActionResult> DeleteActivityById(long activityId)
     {
         var userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
 
-        var response = _activityService.DeleteActivityById(activityId, userId);
+        var response = await _activityService.DeleteActivityById(activityId, userId);
 
         return Ok(response);
     }

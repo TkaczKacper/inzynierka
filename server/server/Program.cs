@@ -35,6 +35,7 @@ var builder = WebApplication.CreateBuilder(args);
     services.AddScoped<IStravaService, StravaService>();
     services.AddScoped<IActivityService, ActivityService>();
     services.AddScoped<IStravaApiService, StravaApiService>();
+    services.AddScoped<IProcessActivityService, ProcessActivityService>();
 
 }
 

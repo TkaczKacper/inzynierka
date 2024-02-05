@@ -6,20 +6,17 @@ namespace server.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("strava/")]
-    public class StravaController : ControllerBase
+    [Route("process-activity/")]
+    public class ProcessActivityController : ControllerBase
     {
-        private IActivityService _activityService;
-        private IStravaService _stravaService;
+        private IProcessActivityService _processService;
         private IJwtUtils _jwtUtils;
         
-        public StravaController(
-            IStravaService stravaService, 
-            IActivityService activityService,
+        public ProcessActivityController(
+            IProcessActivityService processService,
             IJwtUtils jwtUtils)
         {
-            _stravaService = stravaService;
-            _activityService = activityService;
+            _processService = processService;
             _jwtUtils = jwtUtils;
         }
         
@@ -27,22 +24,21 @@ namespace server.Controllers
         [HttpPost("get-activity-details")]
         public async Task<IActionResult> GetActivityDetailsAsync([FromBody] List<long> activityIds)
         {
-            Guid? userID = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
+            Guid? userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
             string? stravaAccessToken = Request.Cookies["strava_access_token"];
-            if (stravaAccessToken != null)
-            {
-                var response = await _stravaService.SaveActivitiesToFetch(activityIds, userID);
+            
+            if (stravaAccessToken == null) return Unauthorized("Strava access token missing.");
+            
+            var response = await _processService.SaveActivitiesToFetch(activityIds, userId);
 
-                return Ok(response);
-            }
-            return Unauthorized("Strava access token missing.");
+            return Ok(response);
         }
         
 
         [HttpGet("process-data")]
         public async Task<IActionResult> ProcessData()
         {
-            Guid? userID = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
+            Guid? userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
             string? stravaAccessToken = Request.Cookies["strava_access_token"];
 
             if (stravaAccessToken is null)
@@ -50,7 +46,7 @@ namespace server.Controllers
                 return BadRequest("Strava access token does not provided. Reload page or connect strava account and try again.");
             }
 
-            var process = await _activityService.GetActivityDetails(stravaAccessToken, userID);
+            var process = await _processService.GetActivityDetails(stravaAccessToken, userId);
             
             return Ok($"Done. {process}");
         }

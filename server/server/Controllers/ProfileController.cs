@@ -15,15 +15,18 @@ public class ProfileController : ControllerBase
     private IJwtUtils _jwtUtils;
     private IActivityService _activityService;
     private IStravaService _stravaService;
+    private IProcessActivityService _processService;
 
     public ProfileController(
         IJwtUtils jwtUtils,
         IActivityService activityService,
-        IStravaService stravaService)
+        IStravaService stravaService,
+        IProcessActivityService processService)
     {
         _jwtUtils = jwtUtils;
         _activityService = activityService;
         _stravaService = stravaService;
+        _processService = processService;
     }
 
     [HttpPost("update")]
@@ -105,10 +108,10 @@ public class ProfileController : ControllerBase
     
     
     [HttpGet("get-user-training-load")]
-    public IActionResult GetUserTrainingLoadData()
+    public async Task<IActionResult> GetUserTrainingLoadData()
     {
         Guid? userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
-        var trainingLoadData = _activityService.GetUserTrainingLoad(userId);
+        var trainingLoadData = await _processService.GetUserTrainingLoad(userId);
     
         return Ok(trainingLoadData);
     }

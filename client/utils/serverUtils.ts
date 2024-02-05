@@ -85,7 +85,7 @@ export const getAthleteActivitiesPeriod = async (
 export const getActivitiesDetails = async (activitiesId: number[]) => {
   try {
     const response = await axios.post(
-      `${backend_url}/strava/get-activity-details`,
+      `${backend_url}/process-activity/get-activity-details`,
       activitiesId,
       {
         withCredentials: true,
@@ -95,7 +95,7 @@ export const getActivitiesDetails = async (activitiesId: number[]) => {
       },
     );
     console.log(response);
-    const xd = await axios.get(`${backend_url}/strava/process-data`, {
+    const xd = await axios.get(`${backend_url}/process-activity/process-data`, {
       withCredentials: true,
       headers: {
         Authorization: getCookie("jwtToken"),
