@@ -31,9 +31,11 @@ public class ActivityController : ControllerBase
     [HttpDelete("delete-activity-by-id/{activityId:long}")]
     public async Task<IActionResult> DeleteActivityById(long activityId)
     {
-        var userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
+        Guid? userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
 
-        var response = await _activityService.DeleteActivityById(activityId, userId);
+        if (userId is null) return Unauthorized();
+        
+        var response = await _activityService.DeleteActivityById(activityId, (Guid)userId);
 
         return Ok(response);
     }

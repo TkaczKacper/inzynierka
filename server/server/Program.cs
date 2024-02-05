@@ -32,10 +32,11 @@ var builder = WebApplication.CreateBuilder(args);
     services.AddScoped<IJwtUtils, JwtUtils>();
     services.AddScoped<IUserService, UserService>();
     services.AddScoped<IPasswordHasher, PasswordHasher>();
-    services.AddScoped<IStravaService, StravaService>();
+    services.AddScoped<IStravaService, ProfileService>();
     services.AddScoped<IActivityService, ActivityService>();
     services.AddScoped<IStravaApiService, StravaApiService>();
     services.AddScoped<IProcessActivityService, ProcessActivityService>();
+    services.AddScoped<IHelperService, HelperService>();
 
 }
 

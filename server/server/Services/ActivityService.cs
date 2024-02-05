@@ -8,7 +8,7 @@ namespace server.Services
     public interface IActivityService
     {
         Task<Activity> GetActivityById(long activityId);
-        Task<string>  DeleteActivityById(long activityId, Guid? userId);
+        Task<string>  DeleteActivityById(long activityId, Guid userId);
     }
 
     public class ActivityService : IActivityService
@@ -32,7 +32,7 @@ namespace server.Services
             return activity == null ? throw new KeyNotFoundException("Activity not found.") : activity;
         }
 
-        public async Task<string> DeleteActivityById(long activityId, Guid? userId)
+        public async Task<string> DeleteActivityById(long activityId, Guid userId)
         {
             var activity = GetActivityById(activityId);
             

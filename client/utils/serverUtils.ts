@@ -183,10 +183,10 @@ export const updateHrZones = async (hrZones: hrZonesType) => {
   }
 };
 
-export const getAthleteStats = async (yearOffset: number) => {
+export const getAthleteMonthlyStats = async (yearOffset: number) => {
   try {
     const res = await axios.get(
-      `${backend_url}/profile/get-athlete-stats?yearOffset=${yearOffset}`,
+      `${backend_url}/profile/get-athlete-monthly-stats?yearOffset=${yearOffset}`,
       {
         withCredentials: true,
         headers: {
@@ -203,12 +203,15 @@ export const getAthleteStats = async (yearOffset: number) => {
 
 export const getSyncedActivities = async () => {
   try {
-    const res = await axios.get(`${backend_url}/profile/get-synced-activites`, {
-      withCredentials: true,
-      headers: {
-        Authorization: getCookie("jwtToken"),
+    const res = await axios.get(
+      `${backend_url}/profile/get-synced-activities`,
+      {
+        withCredentials: true,
+        headers: {
+          Authorization: getCookie("jwtToken"),
+        },
       },
-    });
+    );
     console.log(res);
     return res;
   } catch (error) {

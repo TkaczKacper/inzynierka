@@ -1,5 +1,5 @@
 ﻿import React, { useEffect, useState } from "react";
-import { getAthleteStats } from "@/utils/serverUtils";
+import { getAthleteMonthlyStats } from "@/utils/serverUtils";
 import {
   AthleteInfo,
   AthleteStats,
@@ -49,7 +49,7 @@ export const ProfileStats = ({
 
   useEffect(() => {
     const stats = async () => {
-      const res = await getAthleteStats(yearOffset);
+      const res = await getAthleteMonthlyStats(yearOffset);
       const sum: MonthlySummary[] = res?.data.monthlySummaries;
 
       const summaries: MonthlySummary[] = [];

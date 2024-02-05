@@ -25,11 +25,13 @@ namespace server.Controllers
         public async Task<IActionResult> GetActivityDetailsAsync([FromBody] List<long> activityIds)
         {
             Guid? userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
+            if (userId is null) return Unauthorized();
+            
             string? stravaAccessToken = Request.Cookies["strava_access_token"];
             
             if (stravaAccessToken == null) return Unauthorized("Strava access token missing.");
             
-            var response = await _processService.SaveActivitiesToFetch(activityIds, userId);
+            var response = await _processService.SaveActivitiesToFetch(activityIds, (Guid)userId);
 
             return Ok(response);
         }
@@ -39,6 +41,8 @@ namespace server.Controllers
         public async Task<IActionResult> ProcessData()
         {
             Guid? userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
+            if (userId is null) return Unauthorized();
+            
             string? stravaAccessToken = Request.Cookies["strava_access_token"];
 
             if (stravaAccessToken is null)
@@ -46,7 +50,7 @@ namespace server.Controllers
                 return BadRequest("Strava access token does not provided. Reload page or connect strava account and try again.");
             }
 
-            var process = await _processService.GetActivityDetails(stravaAccessToken, userId);
+            var process = await _processService.GetActivityDetails(stravaAccessToken, (Guid)userId);
             
             return Ok($"Done. {process}");
         }

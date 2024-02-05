@@ -10,21 +10,23 @@ namespace server.Services;
 
 public interface IProcessActivityService
 {
-        Task<string> SaveActivitiesToFetch(List<long> activityIds, Guid? userId);
-        Task<string> GetActivityDetails(string accessToken, Guid? userId);
-        Task<List<TrainingLoads>> GetUserTrainingLoad(Guid? userId);
-        Task<string> UpdateTrainingLoad(Guid? userId);
+        Task<string> SaveActivitiesToFetch(List<long> activityIds, Guid userId);
+        Task<string> GetActivityDetails(string accessToken, Guid userId);
+        Task<List<TrainingLoads>> GetUserTrainingLoad(Guid userId);
+        Task<string> UpdateTrainingLoad(Guid userId);
 }
 
 public class ProcessActivityService : IProcessActivityService
 {
     private readonly DataContext _context;
+    private readonly IHelperService _helperService;
     private readonly IStravaService _stravaService;
     private readonly IStravaApiService _stravaApi;
 
-    public ProcessActivityService(DataContext context, IStravaService stravaService, IStravaApiService stravaApi)
+    public ProcessActivityService(DataContext context, IHelperService helperService, IStravaService stravaService, IStravaApiService stravaApi)
     {
         _context = context;
+        _helperService = helperService;
         _stravaService = stravaService;
         _stravaApi = stravaApi;
     }
@@ -34,30 +36,33 @@ public class ProcessActivityService : IProcessActivityService
         BaseAddress = new Uri("https://www.strava.com/api/v3/"),
     };
     
-        public async Task<string> SaveActivitiesToFetch(List<long> activities, Guid? userId)
+        public async Task<string> SaveActivitiesToFetch(List<long> activities, Guid userId)
         {
             Console.WriteLine("Saving...");
 
-            User user = _stravaService.GetUserById(userId);
+            User? user = await _helperService.GetUserById(userId);
+
+            if (user is null) return "User not found.";
                 
-            List<long> syncedActivities = _stravaService.GetSyncedActivitiesId(userId);
+            List<long> syncedActivities = await _helperService.GetSyncedActivitiesId(userId);
 
             List<long> activitiesToSync = activities.Where(id => !syncedActivities.Contains(id)).ToList();
 
             user.ActivitiesToFetch = activitiesToSync;
+            
             _context.Update(user);
             await _context.SaveChangesAsync();
-            Console.WriteLine($"profile: {user.StravaProfile?.LastName}");
-           
 
             return $"Remaining activities to be fetch: {activitiesToSync.Count}";
         }
         
-        public async Task<string> GetActivityDetails(string accesstoken, Guid? userId)
+        public async Task<string> GetActivityDetails(string accessToken, Guid userId)
         {
             //TODO usprawnic dzialanie + rozdzielic funkcje
-            User user = _stravaService.GetUserById(userId);
+            User? user = await _helperService.GetUserById(userId);
 
+            if (user is null) return "User not found";
+            
             ProfilePower? powerZones = _context.ProfilePower
                 .FirstOrDefault(pp => pp.UserID == userId);
 
@@ -114,7 +119,7 @@ public class ProcessActivityService : IProcessActivityService
             Console.WriteLine(stravaClient.DefaultRequestHeaders);
             if (!stravaClient.DefaultRequestHeaders.Contains("Authorization"))
             {
-                stravaClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accesstoken}");
+                stravaClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
             }
 
             Console.WriteLine(stravaClient.DefaultRequestHeaders);
@@ -493,7 +498,7 @@ public class ProcessActivityService : IProcessActivityService
         }
         
         //TODO zmienic 
-        public async Task<List<TrainingLoads>> GetUserTrainingLoad(Guid? userId)
+        public async Task<List<TrainingLoads>> GetUserTrainingLoad(Guid userId)
         {
             List<TrainingLoads> trainingLoads = await _context.TrainingLoads
                 .Where(tl => tl.UserId == userId)
@@ -508,7 +513,7 @@ public class ProcessActivityService : IProcessActivityService
             return trainingLoads;
         }
         
-        private TimeInHrZone CalculateTimeInHrZones(List<int> hr, Guid? userId, ProfileHeartRate? hrZones)
+        private TimeInHrZone CalculateTimeInHrZones(List<int> hr, Guid userId, ProfileHeartRate? hrZones)
         {
             int Zone1 = 0;
             int Zone2 = 0;
@@ -571,7 +576,7 @@ public class ProcessActivityService : IProcessActivityService
             return timeInPowerZone;
         }
         
-        public async Task<string> UpdateTrainingLoad(Guid? userId)
+        public async Task<string> UpdateTrainingLoad(Guid userId)
         {
             List<TrainingLoads>? trainingLoads = await _context.TrainingLoads
                 .Where(tl => tl.UserId == userId)

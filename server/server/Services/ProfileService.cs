@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using server.Helpers;
 using server.Models;
 using server.Models.Profile;
@@ -12,38 +11,33 @@ namespace server.Services
         //TODO zmiana nazwy pliku bo nie obsluguje tego co wynika z nazwy
     public interface IStravaService
     {
-        //TODO przeniesc do innego pliku 5 kolejnych
-        Task<StravaProfile> ProfileUpdate(StravaProfile profileInfo, Guid? userId, string? refreshToken);
+        Task<StravaProfile> ProfileUpdate(StravaProfile profileInfo, Guid userId, string refreshToken);
         Task<ProfileHeartRate> ProfileHeartRateUpdate(ProfileHeartRate profileHeartRate, Guid userId);
-        Task<string> ProfileHeartRateDelete(long entryId, Guid? userId);
+        Task<string> ProfileHeartRateDelete(long entryId, Guid userId);
         Task<ProfilePower> ProfilePowerUpdate(ProfilePower profilePower, Guid userId);
-        Task<string> ProfilePowerDelete(long entryId, Guid? userId);
-        AthleteData GetProfileData(Guid? userId);
+        Task<string> ProfilePowerDelete(long entryId, Guid userId);
+        Task<AthleteData> GetProfileData(Guid userId);
+        
         
         //TODO dodac serwis do obslugi danych uzytkownika
-        List<ProfileMonthlySummary> GetMonthlyStats(Guid? userId, int yearOffset);
-        IEnumerable<Activity> GetAthleteActivities(Guid? userId, DateTime? lastActivityDate, int? perPage);
-        IEnumerable<Activity> GetAthletePeriodActivities(Guid? userId, int? month, int? yearOffset);
-        List<long> GetSyncedActivitiesId(Guid? userId);
-        DateTime GetLatestActivity(Guid? userId);
-        
-        //helpers
-        User GetUserById(Guid? userId);
+        Task<List<Activity>> GetAthletePeriodActivities(Guid userId, int? month, int? yearOffset);
     }
 
-    public class StravaService : IStravaService
+    public class ProfileService : IStravaService
     {
         private readonly DataContext _context;
+        private readonly IHelperService _helperService;
 
-        public StravaService(DataContext context)
+        public ProfileService(DataContext context, IHelperService helperService)
         {
             _context = context;
+            _helperService = helperService;
         }
 
-        public async Task<StravaProfile> ProfileUpdate(StravaProfile profile, Guid? id, string? refreshToken)
+        public async Task<StravaProfile> ProfileUpdate(StravaProfile profile, Guid id, string? refreshToken)
         {
             Console.WriteLine("profile update");
-            User? user = GetUserById(id);
+            User? user = await _helperService.GetDetailedUserById(id);
             
             StravaProfile profileDetails = new StravaProfile
             {
@@ -174,7 +168,7 @@ namespace server.Services
             return userHr;
         }
 
-        public async Task<string> ProfileHeartRateDelete(long entryId, Guid? userId)
+        public async Task<string> ProfileHeartRateDelete(long entryId, Guid userId)
         {
             ProfileHeartRate? hrEntry = await _context.ProfileHeartRate
                 .FirstOrDefaultAsync(hr => hr.ID == entryId && hr.UserID == userId);
@@ -262,7 +256,7 @@ namespace server.Services
             return power;
         }
         
-        public async Task<string> ProfilePowerDelete(long entryId, Guid? userId)
+        public async Task<string> ProfilePowerDelete(long entryId, Guid userId)
         {
             ProfilePower? powerEntry = await _context.ProfilePower
                 .FirstOrDefaultAsync(pwr => pwr.Id == entryId && pwr.UserID == userId);
@@ -278,24 +272,18 @@ namespace server.Services
             return "Deleted";
         } 
 
-        //TODO poprawic
-        public AthleteData GetProfileData(Guid? userId)
+        public async Task<AthleteData> GetProfileData(Guid userId)
         {
-            StravaProfile? profile = GetUserById(userId).StravaProfile;
+            User? user = await _helperService.GetDetailedUserById(userId);
+            StravaProfile? profile = user?.StravaProfile;
             if (profile is null) return null;
 
-            List<ProfileHeartRate>? heartRate = _context.ProfileHeartRate
-                .Where(phr => phr.UserID == userId)
-                .ToList();
+            List<ProfileHeartRate>? heartRate = await _helperService.GetAthleteHeartRate(userId);
 
-            List<ProfilePower>? power = _context.ProfilePower
-                .Where(pp => pp.UserID == userId)
-                .ToList();
+            List<ProfilePower>? power = await _helperService.GetAthletePower(userId);
 
-            List<int>? years = _context.ProfileYearlySummary
-                .OrderByDescending(y => y.Year)
-                .Select(y => y.Year)
-                .ToList();
+            List<ProfileYearlySummary> yearlySummaries = await  _helperService.GetAthleteYearlySummary(userId);
+            List<int>? years = yearlySummaries.Select(x => x.Year).ToList();
             
             AthleteData response = new AthleteData
             {
@@ -308,27 +296,7 @@ namespace server.Services
             return response;
         }
 
-        //TODO zmienic na async
-        public List<ProfileMonthlySummary> GetMonthlyStats(Guid? userId, int yearOffset)
-        {
-            List<ProfileMonthlySummary> monthlySummaries = _context.ProfileMonthlySummary
-                .Where(summ => summ.UserId == userId && summ.Year == DateTime.Today.AddYears(-yearOffset).Year)
-                .OrderBy(summ => summ.Month)
-                .ToList();
-            
-            return monthlySummaries;
-        }
-        
-        //TODO zmienic na async
-        public IEnumerable<Activity> GetAthleteActivities(Guid? userId, DateTime? lastActivityDate, int? perPage)
-        {
-            perPage ??= 10;
-            var activities = GetSyncedActivities((Guid)userId, (DateTime)lastActivityDate, (int)perPage);
-
-            return activities;
-        }
-
-        public IEnumerable<Activity> GetAthletePeriodActivities(Guid? userId, int? month, int? yearOffset)
+        public async Task<List<Activity>> GetAthletePeriodActivities(Guid userId, int? month, int? yearOffset)
         {
             month ??= DateTime.UtcNow.Month;
             yearOffset ??= 0;
@@ -336,55 +304,9 @@ namespace server.Services
             DateTime first = new DateTime(DateTime.UtcNow.Year, (int)month, 1).AddYears(-(int)yearOffset).ToUniversalTime();
             DateTime last = first.AddMonths(1).AddSeconds(-1).ToUniversalTime();
             Console.WriteLine(first);
+
+            var activities = await _helperService.GetAthleteActivitiesInDateRange(userId, first, last);
             
-            var activities = _context.Activity
-                .Where(a => a.UserId == userId && a.StartDate > first && a.StartDate < last) 
-                .Include(a=> a.Laps)
-                .OrderByDescending(a=> a.StartDate)
-                .ToList();
-
-            return activities;
-        }
-        
-        public DateTime GetLatestActivity(Guid? userId)
-        {
-            var date = _context.Activity
-                .Where(sa => sa.UserId == userId)
-                .OrderByDescending(sa => sa.StartDate)
-                .Select(sa => sa.StartDate)
-                .FirstOrDefault();
-            return date;
-        }
-        
-        // helpers 
-        //TODO poprawic to bo kilka razy jest ta sama funkcja w roznych plikach
-        public User GetUserById(Guid? id)
-        {
-            User? user = _context.Users
-                .Include(u => u.StravaProfile)
-                .FirstOrDefault(u => u.ID == id);
-            return user == null ? throw new KeyNotFoundException("User not found.") : user;
-        }
-
-        public List<long> GetSyncedActivitiesId(Guid? id)
-        {
-            List<long>? userActivitiesId = _context.Activity
-                .Where(sa => sa.UserId == id)
-                .Select(sa => sa.StravaActivityID)
-                .ToList();
-
-            return userActivitiesId;
-        }
-
-        public List<Activity> GetSyncedActivities(Guid userId, DateTime date, int perPage)
-        {
-            var activities = _context.Activity
-                .Where(a => a.UserId == userId && a.StartDate < date) 
-                .Include(a=> a.Laps)
-                .OrderByDescending(a=> a.StartDate)
-                .Take(perPage)
-                .ToList();
-
             return activities;
         }
     }
