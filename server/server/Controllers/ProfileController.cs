@@ -13,20 +13,17 @@ namespace server.Controllers;
 public class ProfileController : ControllerBase
 {
     private IJwtUtils _jwtUtils;
-    private IActivityService _activityService;
     private IStravaService _stravaService;
     private readonly IHelperService _helperService;
     private IProcessActivityService _processService;
 
     public ProfileController(
         IJwtUtils jwtUtils,
-        IActivityService activityService,
         IStravaService stravaService,
         IHelperService helperService,
         IProcessActivityService processService)
     {
         _jwtUtils = jwtUtils;
-        _activityService = activityService;
         _stravaService = stravaService;
         _helperService = helperService;
         _processService = processService;
@@ -176,6 +173,4 @@ public class ProfileController : ControllerBase
                 
         return Ok(response);
     }
-    
-
 }

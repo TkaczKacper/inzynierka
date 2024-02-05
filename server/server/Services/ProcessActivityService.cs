@@ -63,15 +63,13 @@ public class ProcessActivityService : IProcessActivityService
 
             if (user is null) return "User not found";
             
-            ProfilePower? powerZones = _context.ProfilePower
-                .FirstOrDefault(pp => pp.UserID == userId);
+            ProfilePower? powerZones = await _context.ProfilePower
+                .FirstOrDefaultAsync(pp => pp.UserID == userId);
 
-            ProfileHeartRate? hrZones = _context.ProfileHeartRate
-                .FirstOrDefault(hr => hr.UserID == userId);
+            ProfileHeartRate? hrZones = await _context.ProfileHeartRate
+                .FirstOrDefaultAsync(hr => hr.UserID == userId);
 
-            List<ProfileWeeklySummary>? weeklySummary = await _context.ProfileWeeklySummary
-                .Where(sum => sum.UserId == userId)
-                .ToListAsync();
+            List<ProfileWeeklySummary> weeklySummary = await _helperService.GetAthleteWeeklySummaries(userId);
             
             List<int[]> existingWeeklySummary = new List<int[]>();
             foreach (var obj in weeklySummary)
@@ -82,9 +80,8 @@ public class ProcessActivityService : IProcessActivityService
             List<ProfileWeeklySummary> weeklySummariesToAdd = new List<ProfileWeeklySummary>();
             List<int[]> existingWeeklySummaryToAdd = new List<int[]>();
 
-            List<ProfileMonthlySummary>? monthlySummary = await _context.ProfileMonthlySummary
-                .Where(sum => sum.UserId == userId)
-                .ToListAsync();
+            List<ProfileMonthlySummary> monthlySummary = await _helperService.GetAthleteMonthlySummaries(userId);
+                
             List<int[]> existingMonthlySummary = new List<int[]>();
             foreach (var obj in monthlySummary)
             {
@@ -93,10 +90,8 @@ public class ProcessActivityService : IProcessActivityService
 
             List<ProfileMonthlySummary> monthlySummariesToAdd = new List<ProfileMonthlySummary>();
             List<int[]> existingMonthlySummaryToAdd = new List<int[]>();
-            
-            List<ProfileYearlySummary>? yearlySummary = await _context.ProfileYearlySummary
-                .Where(sum => sum.UserId == userId)
-                .ToListAsync();
+
+            List<ProfileYearlySummary> yearlySummary = await _helperService.GetAthleteYearlySummaries(userId);
             List<int[]> existingYearlySummary = new List<int[]>();
             foreach (var obj in yearlySummary)
             {
@@ -106,10 +101,10 @@ public class ProcessActivityService : IProcessActivityService
             List<ProfileYearlySummary> yearlySummariesToAdd = new List<ProfileYearlySummary>();
             List<int[]> existingYearlySummaryToAdd = new List<int[]>();
 
-            List<TrainingLoads>? trainingLoads = await GetUserTrainingLoad(userId); 
+            List<TrainingLoads> trainingLoads = await GetUserTrainingLoad(userId); 
             
 
-            List<TrainingLoads>? trainingLoadsToAdd = new List<TrainingLoads>();
+            List<TrainingLoads> trainingLoadsToAdd = new List<TrainingLoads>();
 
 
             List<long> ids = user.ActivitiesToFetch;
@@ -127,8 +122,8 @@ public class ProcessActivityService : IProcessActivityService
             int? HrMax = user.UserHeartRate?.LastOrDefault()?.HrMax;
             int? userFtp = user.UserPower?.LastOrDefault()?.FTP;
 
-            CultureInfo myCI = new CultureInfo("pl-PL");
-            Calendar myCal = myCI.Calendar;
+            CultureInfo myCi = new CultureInfo("pl-PL");
+            Calendar myCal = myCi.Calendar;
 
             foreach (long id in ids)
             {
@@ -507,7 +502,7 @@ public class ProcessActivityService : IProcessActivityService
 
             if (trainingLoads.Last().Date < DateOnly.FromDateTime(DateTime.Today))
             {
-                CalculateTrainingLoadToday(userId, trainingLoads);
+                await CalculateTrainingLoadToday(userId, trainingLoads);
             }
             
             return trainingLoads;
@@ -709,7 +704,7 @@ public class ProcessActivityService : IProcessActivityService
             return "updated";
         }
         
-        private List<TrainingLoads> CalculateTrainingLoadToday(Guid? userId, List<TrainingLoads> trainingLoads)
+        private async Task<List<TrainingLoads>> CalculateTrainingLoadToday(Guid? userId, List<TrainingLoads> trainingLoads)
         {
             List<TrainingLoads>? trainingLoadsToAdd = new List<TrainingLoads>();
 
@@ -769,13 +764,13 @@ public class ProcessActivityService : IProcessActivityService
                 date = date.AddDays(1);
             }
             
-            _context.TrainingLoads.AddRange(trainingLoadsToAdd);
-            _context.SaveChanges();
+            await _context.TrainingLoads.AddRangeAsync(trainingLoadsToAdd);
+            await _context.SaveChangesAsync();
             
-            List<TrainingLoads>? res = _context.TrainingLoads
+            List<TrainingLoads>? res = await _context.TrainingLoads
                 .Where(tl => tl.UserId == userId)
                 .OrderBy(tl => tl.Date)
-                .ToList();
+                .ToListAsync();
             
             return res;
         }

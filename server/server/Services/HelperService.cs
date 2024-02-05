@@ -17,10 +17,12 @@ public interface IHelperService
     Task<DateTime> GetLatestActivity(Guid userId);
     Task<List<ProfilePower>> GetAthletePower(Guid userId);
     Task<List<ProfileHeartRate>> GetAthleteHeartRate(Guid userId);
-    Task<List<ProfileYearlySummary>> GetAthleteYearlySummary(Guid userId);
+    Task<List<ProfileYearlySummary>> GetAthleteYearlySummary(Guid userId, int yearOffest);
+    Task<List<ProfileYearlySummary>> GetAthleteYearlySummaries(Guid userId);
     Task<List<ProfileMonthlySummary>> GetAthleteMonthlySummary(Guid userId, int yearOffset);
+    Task<List<ProfileMonthlySummary>> GetAthleteMonthlySummaries(Guid userId);
     Task<List<ProfileWeeklySummary>> GetAthleteWeeklySummary(Guid userId, int yearOffset);
-    
+    Task<List<ProfileWeeklySummary>> GetAthleteWeeklySummaries(Guid userId);
 }
 
 public class HelperService : IHelperService
@@ -108,11 +110,21 @@ public class HelperService : IHelperService
         return profileHr;
     }
 
-    public async Task<List<ProfileYearlySummary>> GetAthleteYearlySummary(Guid userId)
+    public async Task<List<ProfileYearlySummary>> GetAthleteYearlySummary(Guid userId, int yearOffset)
+    {
+        var summary = await _context.ProfileYearlySummary
+            .Where(x => x.UserId == userId && x.Year == DateTime.UtcNow.AddYears(-yearOffset).Year)
+            .OrderBy(x => x.Year)
+            .ToListAsync();
+
+        return summary;
+    }
+    
+    public async Task<List<ProfileYearlySummary>> GetAthleteYearlySummaries(Guid userId)
     {
         var summary = await _context.ProfileYearlySummary
             .Where(x => x.UserId == userId)
-            .OrderByDescending(x => x.Year)
+            .OrderBy(x => x.Year)
             .ToListAsync();
 
         return summary;
@@ -121,8 +133,19 @@ public class HelperService : IHelperService
     public async Task<List<ProfileMonthlySummary>> GetAthleteMonthlySummary(Guid userId, int yearOffset)
     {
         var summary = await _context.ProfileMonthlySummary
-            .Where(x => x.UserId == userId && x.Year == DateTime.Today.AddYears(-yearOffset).Year)
+            .Where(x => x.UserId == userId && x.Year == DateTime.UtcNow.AddYears(-yearOffset).Year)
             .OrderBy(x => x.Month)
+            .ToListAsync();
+
+        return summary;
+    }
+    
+    public async Task<List<ProfileMonthlySummary>> GetAthleteMonthlySummaries(Guid userId)
+    {
+        var summary = await _context.ProfileMonthlySummary
+            .Where(x => x.UserId == userId)
+            .OrderBy(x => x.Year)
+            .ThenBy(x => x.Month)
             .ToListAsync();
 
         return summary;
@@ -131,8 +154,18 @@ public class HelperService : IHelperService
     public async Task<List<ProfileWeeklySummary>> GetAthleteWeeklySummary(Guid userId, int yearOffset)
     {
         var summary = await _context.ProfileWeeklySummary
-            .Where(x => x.UserId == userId && x.Year == DateTime.Today.AddYears(-yearOffset).Year)
+            .Where(x => x.UserId == userId && x.Year == DateTime.UtcNow.AddYears(-yearOffset).Year)
             .OrderBy(x => x.Week)
+            .ToListAsync();
+
+        return summary;
+    }
+    public async Task<List<ProfileWeeklySummary>> GetAthleteWeeklySummaries(Guid userId)
+    {
+        var summary = await _context.ProfileWeeklySummary
+            .Where(x => x.UserId == userId)
+            .OrderBy(x => x.Year)
+            .ThenBy(x => x.Week)
             .ToListAsync();
 
         return summary;

@@ -10,8 +10,8 @@ namespace server.Controllers
     [Route("api/auth/")]
     public class AuthController : ControllerBase
     {
-        private IUserService _userService;
-        private IJwtUtils _jwtUtils;
+        private readonly IUserService _userService;
+        private readonly IJwtUtils _jwtUtils;
 
         public AuthController(IUserService userService, IJwtUtils jwtUtils)
         {
@@ -22,11 +22,11 @@ namespace server.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public IActionResult Login(
+        public async Task<IActionResult> Login(
             [FromBody] LoginRequest userLogin, CancellationToken cancellationToken)
         {
-            var response = _userService.Authenticate(userLogin, ipAddress());
-            setTokenCookie(response.RefreshToken);
+            var response = await _userService.Authenticate(userLogin, IpAddress());
+            SetTokenCookie(response.RefreshToken);
             try
             {
                 Response.Cookies.Append("strava_refresh_token", response.StravaRefreshToken);
@@ -40,21 +40,23 @@ namespace server.Controllers
         }
 
         [HttpPut("change-password")]
-        public IActionResult ChangePassword([FromBody] ChangePassword changePassword)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePassword changePassword)
         {
             var userId = _jwtUtils.ValidateJwtToken(Request.Headers.Authorization);
+
+            if (userId is null) return Unauthorized();
             
-            var response = _userService.ChangePassword(userId, changePassword);
+            var response = await _userService.ChangePassword((Guid)userId, changePassword);
 
             return Ok(response);
         }
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public IActionResult Register([FromBody] RegisterRequest userRegister, CancellationToken cancellation) 
+        public async Task<IActionResult> Register([FromBody] RegisterRequest userRegister, CancellationToken cancellation) 
         {
-            var response = _userService.Register(userRegister, ipAddress());
-            setTokenCookie(response.RefreshToken);
+            var response = await _userService.Register(userRegister, IpAddress());
+            SetTokenCookie(response.RefreshToken);
 
             return Ok(response);
         }
@@ -69,24 +71,26 @@ namespace server.Controllers
             if (string.IsNullOrEmpty(token))
                 return BadRequest(new { message = "Token is required." });
 
-            _userService.RevokeToken(token, ipAddress());
+            _userService.RevokeToken(token, IpAddress());
             Response.Cookies.Delete("refreshToken");
             Response.Cookies.Delete("jwtToken");
             Response.Cookies.Delete("strava_access_token");
             Response.Cookies.Delete("strava_refresh_token");
+            
             return Ok(new { message = "Logged out."});
         }
         
         
         [AllowAnonymous]
         [HttpGet("renew-token")]
-        public IActionResult RenewAccessToken(){
+        public async Task<IActionResult> RenewAccessToken(){
             string? token = Request.Cookies["refreshToken"];
             if (string.IsNullOrEmpty(token)) {
                 return BadRequest(new { message = "Token is required." });
             }
-            var response = _userService.RenewAccessToken(token);
-            setTokenCookie(response.RefreshToken);
+            var response = await _userService.RenewAccessToken(token);
+            SetTokenCookie(response.RefreshToken);
+            
             return Ok(response);
             
         }
@@ -95,7 +99,7 @@ namespace server.Controllers
         
 
         // helper methods
-        private void setTokenCookie(string token)
+        private void SetTokenCookie(string token)
         {
             // append cookie with refresh token to the http response
             var cookieOptions = new CookieOptions
@@ -108,7 +112,7 @@ namespace server.Controllers
             Response.Cookies.Append("refreshToken", token, cookieOptions);
         }
 
-        private string ipAddress()
+        private string IpAddress()
         {
             // get source ip address for request
             if (Request.Headers.ContainsKey("X-Forwarded-For"))
