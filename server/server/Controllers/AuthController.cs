@@ -64,14 +64,14 @@ namespace server.Controllers
         
         [AllowAnonymous]
         [HttpPost("logout")]
-        public IActionResult Logout() 
+        public async Task<IActionResult> Logout() 
         {
             var token = Request.Cookies["refreshToken"];
 
             if (string.IsNullOrEmpty(token))
                 return BadRequest(new { message = "Token is required." });
 
-            _userService.RevokeToken(token, IpAddress());
+            await _userService.RevokeToken(token, IpAddress());
             Response.Cookies.Delete("refreshToken");
             Response.Cookies.Delete("jwtToken");
             Response.Cookies.Delete("strava_access_token");

@@ -15,7 +15,7 @@ namespace server.Services
         Task<AuthResponse> RefreshToken(string token, string ipAddress);
         Task<AuthResponse> RenewAccessToken(string token);
         Task<string> ChangePassword(Guid? userId, ChangePassword password);
-        void RevokeToken(string token, string ipAddress);
+        Task<string> RevokeToken(string token, string ipAddress);
         //TODO usuwanie konta
         User GetById(Guid id);
     }
@@ -142,7 +142,7 @@ namespace server.Services
             return new AuthResponse(user, jwtToken, newRefreshToken.Token, "");
         }
 
-        public async void RevokeToken(string token, string ipAddress)
+        public async Task<string> RevokeToken(string token, string ipAddress)
         {
             var user = await GetUserByRefreshToken(token);
             var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
@@ -155,6 +155,8 @@ namespace server.Services
             
             _context.Update(user);
             await _context.SaveChangesAsync();
+
+            return "Token revoked.";
         }
 
         public async Task<AuthResponse> RenewAccessToken(string token) 
