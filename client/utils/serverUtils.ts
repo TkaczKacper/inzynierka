@@ -4,6 +4,8 @@ import { getCookie } from "cookies-next";
 import { hrZonesType } from "@/app/profile/heartrate-management/page";
 import { powerZonesType } from "@/app/profile/power-management/page";
 
+//TODO podzielic na osobne pliki
+
 const backend_url = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 export const updateProfileInfo = async (
@@ -223,6 +225,22 @@ export const getActivityDataById = async (activityId: number) => {
   try {
     return await axios.get(
       `${backend_url}/activity/get-activity-by-id/${activityId}`,
+      {
+        withCredentials: true,
+        headers: {
+          Authorization: getCookie("jwtToken"),
+        },
+      },
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const deleteActivityDataById = async (activityId: number) => {
+  try {
+    return await axios.delete(
+      `${backend_url}/activity/delete-activity-by-id/${activityId}`,
       {
         withCredentials: true,
         headers: {

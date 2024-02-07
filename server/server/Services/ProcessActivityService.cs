@@ -59,7 +59,7 @@ public class ProcessActivityService : IProcessActivityService
         public async Task<string> GetActivityDetails(string accessToken, Guid userId)
         {
             //TODO usprawnic dzialanie + rozdzielic funkcje
-            User? user = await _helperService.GetUserById(userId);
+            User? user = await _helperService.GetDetailedUserById(userId);
 
             if (user is null) return "User not found";
             
@@ -481,13 +481,12 @@ public class ProcessActivityService : IProcessActivityService
             _context.ProfileWeeklySummary.AddRange(weeklySummariesToAdd);
             _context.ProfileMonthlySummary.AddRange(monthlySummariesToAdd);
             _context.ProfileYearlySummary.AddRange(yearlySummariesToAdd);
-            _context.SaveChanges();
 
             List<long> remainingActivities = ids.Where(id => !activitiesAdded.Contains(id)).ToList();
             user.ActivitiesToFetch = remainingActivities;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
-            UpdateTrainingLoad(userId);
+            await UpdateTrainingLoad(userId);
 
             return $"{activities.Count} synced.";
         }

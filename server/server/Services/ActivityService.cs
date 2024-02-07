@@ -34,9 +34,9 @@ namespace server.Services
 
         public async Task<string> DeleteActivityById(long activityId, Guid userId)
         {
-            var activity = GetActivityById(activityId);
+            var activity = await GetActivityById(activityId);
             
-            _context.Remove(_context.ActivityLap.Where(lap => lap.ActivityId == activityId));
+            _context.RemoveRange(_context.ActivityLap.Where(lap => lap.ActivityId == activityId));
             _context.Remove(activity);
             
             await _context.SaveChangesAsync();

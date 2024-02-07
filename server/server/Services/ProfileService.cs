@@ -283,7 +283,9 @@ namespace server.Services
             List<ProfilePower>? power = await _helperService.GetAthletePower(userId);
 
             List<ProfileYearlySummary> yearlySummaries = await  _helperService.GetAthleteYearlySummaries(userId);
-            List<int> years = yearlySummaries.Select(x => x.Year).ToList();
+            List<int> years = yearlySummaries
+                .OrderByDescending(x => x.Year)
+                .Select(x => x.Year).ToList();
             
             AthleteData response = new AthleteData
             {

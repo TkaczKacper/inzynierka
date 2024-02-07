@@ -1,10 +1,14 @@
 ﻿"use client";
 
 import React, { useEffect, useState } from "react";
-import { getActivityDataById } from "@/utils/serverUtils";
+import {
+  deleteActivityDataById,
+  getActivityDataById,
+} from "@/utils/serverUtils";
 import { Activity } from "@/app/profile/[id]/types";
 import Loading from "@/app/loading";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useUserContext } from "@/contexts/UserContextProvider";
 import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -19,10 +23,12 @@ import PrevActivities from "@/app/activities/[id]/prevActivities";
 const page = () => {
   const [activity, setActivity] = useState<Activity>();
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
   const { userId } = useUserContext();
 
+  const activityId = Number(window.location.pathname.split("/")[2]);
+
   useEffect(() => {
-    const activityId = Number(window.location.pathname.split("/")[2]);
     const getActivityData = async (activityId: number) => {
       const res = await getActivityDataById(activityId);
       setLoading(false);
@@ -30,6 +36,11 @@ const page = () => {
     };
     getActivityData(activityId);
   }, []);
+
+  const deleteHandler = async () => {
+    const res = await deleteActivityDataById(activityId);
+    if (res?.status == 200) return router.push(`/profile/${userId}`);
+  };
 
   console.log(activity);
   return (
@@ -56,6 +67,7 @@ const page = () => {
                   >
                     Check activity on Strava.
                   </a>
+                  <button onClick={deleteHandler}>Delete activity</button>
                 </div>
                 <div className={styles.activityPrimary}>
                   <div>
