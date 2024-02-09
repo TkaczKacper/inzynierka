@@ -6,14 +6,14 @@ namespace server.Services
 {
     public interface IStravaApiService
     {
-        Task<ActivityDetailsResponse> GetDetailsById(long id, HttpClient httpClient);
+        Task<ActivityDetailsResponse?> GetDetailsById(long id, HttpClient httpClient);
         Task<ActivityStreams> GetStreamsById(long id, HttpClient httpClient);
     }
 
     public class StravaApiService : IStravaApiService
     {
 
-        public async Task<ActivityDetailsResponse> GetDetailsById(long id, HttpClient stravaClient)
+        public async Task<ActivityDetailsResponse?> GetDetailsById(long id, HttpClient stravaClient)
         {
             try
             {

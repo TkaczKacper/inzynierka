@@ -53,6 +53,7 @@ namespace server.Models.Activity
         public List<int>? PowerCurve { get; set; }
         
         public TimeInHrZone? HrTimeInZone { get; set; }
+        
         public TimeInPowerZone? PowerTimeInZone { get; set; }
 
         //foreign key property

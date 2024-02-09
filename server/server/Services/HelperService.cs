@@ -17,7 +17,7 @@ public interface IHelperService
     Task<DateTime> GetLatestActivity(Guid userId);
     Task<List<ProfilePower>> GetAthletePower(Guid userId);
     Task<List<ProfileHeartRate>> GetAthleteHeartRate(Guid userId);
-    Task<List<ProfileYearlySummary>> GetAthleteYearlySummary(Guid userId, int yearOffest);
+    Task<List<ProfileYearlySummary>> GetAthleteYearlySummary(Guid userId, int yearOffset);
     Task<List<ProfileYearlySummary>> GetAthleteYearlySummaries(Guid userId);
     Task<List<ProfileMonthlySummary>> GetAthleteMonthlySummary(Guid userId, int yearOffset);
     Task<List<ProfileMonthlySummary>> GetAthleteMonthlySummaries(Guid userId);
@@ -51,7 +51,7 @@ public class HelperService : IHelperService
     
     public async Task<List<long>> GetSyncedActivitiesId(Guid id)
     {
-        List<long>? userActivitiesId = await _context.Activity
+        List<long> userActivitiesId = await _context.Activity
             .Where(sa => sa.UserId == id)
             .Select(sa => sa.StravaActivityID)
             .ToListAsync();

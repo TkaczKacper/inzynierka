@@ -20,18 +20,19 @@ public class ProcessActivityService : IProcessActivityService
 {
     private readonly DataContext _context;
     private readonly IHelperService _helperService;
-    private readonly IStravaService _stravaService;
     private readonly IStravaApiService _stravaApi;
 
-    public ProcessActivityService(DataContext context, IHelperService helperService, IStravaService stravaService, IStravaApiService stravaApi)
+    public ProcessActivityService(
+        DataContext context, 
+        IHelperService helperService, 
+        IStravaApiService stravaApi)
     {
         _context = context;
         _helperService = helperService;
-        _stravaService = stravaService;
         _stravaApi = stravaApi;
     }
         
-    private static HttpClient stravaClient = new()
+    private static HttpClient _stravaClient = new()
     {
         BaseAddress = new Uri("https://www.strava.com/api/v3/"),
     };
@@ -70,56 +71,46 @@ public class ProcessActivityService : IProcessActivityService
                 .FirstOrDefaultAsync(hr => hr.UserID == userId);
 
             List<ProfileWeeklySummary> weeklySummary = await _helperService.GetAthleteWeeklySummaries(userId);
-            
-            List<int[]> existingWeeklySummary = new List<int[]>();
-            foreach (var obj in weeklySummary)
-            {
-                existingWeeklySummary.Add(new[] { obj.Year, obj.Week });
-            }
+
+            List<int[]> existingWeeklySummary = weeklySummary
+                .Select(obj => new[] { obj.Year, obj.Week })
+                .ToList();
 
             List<ProfileWeeklySummary> weeklySummariesToAdd = new List<ProfileWeeklySummary>();
             List<int[]> existingWeeklySummaryToAdd = new List<int[]>();
 
             List<ProfileMonthlySummary> monthlySummary = await _helperService.GetAthleteMonthlySummaries(userId);
-                
-            List<int[]> existingMonthlySummary = new List<int[]>();
-            foreach (var obj in monthlySummary)
-            {
-                existingMonthlySummary.Add(new[] { obj.Year, obj.Month });
-            }
+            
+            List<int[]> existingMonthlySummary = monthlySummary
+                .Select(obj => new[] { obj.Year, obj.Month })
+                .ToList(); 
 
             List<ProfileMonthlySummary> monthlySummariesToAdd = new List<ProfileMonthlySummary>();
             List<int[]> existingMonthlySummaryToAdd = new List<int[]>();
 
             List<ProfileYearlySummary> yearlySummary = await _helperService.GetAthleteYearlySummaries(userId);
-            List<int[]> existingYearlySummary = new List<int[]>();
-            foreach (var obj in yearlySummary)
-            {
-                existingYearlySummary.Add(new[] { obj.Year });
-            }
+            List<int[]> existingYearlySummary = yearlySummary
+                .Select(obj => new[] { obj.Year })
+                .ToList(); 
 
             List<ProfileYearlySummary> yearlySummariesToAdd = new List<ProfileYearlySummary>();
             List<int[]> existingYearlySummaryToAdd = new List<int[]>();
 
             List<TrainingLoads> trainingLoads = await GetUserTrainingLoad(userId); 
-            
 
             List<TrainingLoads> trainingLoadsToAdd = new List<TrainingLoads>();
-
 
             List<long> ids = user.ActivitiesToFetch;
             List<long> activitiesAdded = new List<long>();
 
             List<Activity> activities = new List<Activity>();
-            Console.WriteLine(stravaClient.DefaultRequestHeaders);
-            if (!stravaClient.DefaultRequestHeaders.Contains("Authorization"))
+            if (!_stravaClient.DefaultRequestHeaders.Contains("Authorization"))
             {
-                stravaClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+                _stravaClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
             }
 
-            Console.WriteLine(stravaClient.DefaultRequestHeaders);
-            int? HrRest = user.UserHeartRate?.LastOrDefault()?.HrRest;
-            int? HrMax = user.UserHeartRate?.LastOrDefault()?.HrMax;
+            int? hrRest = user.UserHeartRate?.LastOrDefault()?.HrRest;
+            int? hrMax = user.UserHeartRate?.LastOrDefault()?.HrMax;
             int? userFtp = user.UserPower?.LastOrDefault()?.FTP;
 
             CultureInfo myCi = new CultureInfo("pl-PL");
@@ -127,16 +118,14 @@ public class ProcessActivityService : IProcessActivityService
 
             foreach (long id in ids)
             {
-                var details = await _stravaApi.GetDetailsById(id, stravaClient);
+                var details = await _stravaApi.GetDetailsById(id, _stravaClient);
                 if (details.Manual)
                 {
                     activitiesAdded.Add(id);
                     continue;
                 }
 
-                ;
-
-                ActivityStreams streams = await _stravaApi.GetStreamsById(id, stravaClient);
+                ActivityStreams streams = await _stravaApi.GetStreamsById(id, _stravaClient);
 
                 if (details is null || streams is null) break;
 
@@ -224,43 +213,46 @@ public class ProcessActivityService : IProcessActivityService
                     }
                     
                     double activityTrainingLoad = 0;
-                    if (details.Average_heartrate > 0 && HrMax is not null && HrRest is not null &&
+                    
+                    //TODO przeniesc do osobnej
+                    if (details.Average_heartrate > 0 && hrMax is not null && hrRest is not null && hrZones is not null &&
                         streams.HeartRate?.Count > 0)
                     {
-                        TimeInHrZone timeInHrZones = CalculateTimeInHrZones(streams.HeartRate, userId, hrZones);
+                        TimeInHrZone timeInHrZones = CalculateTimeInHrZones(streams.HeartRate, hrZones);
                         activity.HrTimeInZone = timeInHrZones;
 
                         double multiplier = user.StravaProfile.Sex == "M" ? 1.92 : 1.67;
                         double trimp =
                             details.Moving_time / 60
-                            * (details.Average_heartrate - (int)HrRest) / ((int)HrMax - (int)HrRest)
+                            * (details.Average_heartrate - (int)hrRest) / ((int)hrMax - (int)hrRest)
                             * 0.64
-                            * Math.Exp(multiplier * (details.Average_heartrate - (int)HrRest) /
-                                       ((int)HrMax - (int)HrRest));
+                            * Math.Exp(multiplier * (details.Average_heartrate - (int)hrRest) /
+                                       ((int)hrMax - (int)hrRest));
                         activity.Trimp = trimp;
                         activityTrainingLoad = trimp;
                     }
 
+                    //TODO przeniesc do osobnej
                     if (details.Device_watts && streams.Watts?.Count > 0)
                     {
-                        TimeInPowerZone timeInPowerZone = CalculateTimeInPowerZones(streams.Watts, userId, powerZones);
+                        TimeInPowerZone timeInPowerZone = CalculateTimeInPowerZones(streams.Watts, powerZones);
                         activity.PowerTimeInZone = timeInPowerZone;
 
-                        int FTP = userFtp is null ? 250 : (int)userFtp;
+                        int ftp = userFtp is null ? 250 : (int)userFtp;
                         List<double> avg = Enumerable.Range(0, streams.Watts
                             .Count - 29).Select(i => Math.Pow(streams.Watts.Skip(i).Take(30).Average(), 4)).ToList();
 
-                        double EffectivePower = Math.Pow(avg.Average(), 0.25);
-                        double Intensity = EffectivePower / FTP;
-                        double VariabilityIndex = EffectivePower / details.Average_watts;
-                        double TrainingLoad = (details.Moving_time * EffectivePower * Intensity) / (FTP * 36);
+                        double effectivePower = Math.Pow(avg.Average(), 0.25);
+                        double intensity = effectivePower / ftp;
+                        double variabilityIndex = effectivePower / details.Average_watts;
+                        double trainingLoad = (details.Moving_time * effectivePower * intensity) / (ftp * 36);
 
 
-                        activity.EffectivePower = EffectivePower;
-                        activity.Intensity = Intensity;
-                        activity.VariabilityIndex = VariabilityIndex;
-                        activity.TrainingLoad = TrainingLoad;
-                        activityTrainingLoad = TrainingLoad;
+                        activity.EffectivePower = effectivePower;
+                        activity.Intensity = intensity;
+                        activity.VariabilityIndex = variabilityIndex;
+                        activity.TrainingLoad = trainingLoad;
+                        activityTrainingLoad = trainingLoad;
                     }
 
                     //weekly summary
@@ -499,7 +491,7 @@ public class ProcessActivityService : IProcessActivityService
                 .OrderBy(tl => tl.Date)
                 .ToListAsync();
 
-            if (trainingLoads.Last().Date < DateOnly.FromDateTime(DateTime.Today))
+            if (trainingLoads.Count > 0 && trainingLoads.Last().Date < DateOnly.FromDateTime(DateTime.Today))
             {
                 await CalculateTrainingLoadToday(userId, trainingLoads);
             }
@@ -507,35 +499,59 @@ public class ProcessActivityService : IProcessActivityService
             return trainingLoads;
         }
         
-        private TimeInHrZone CalculateTimeInHrZones(List<int> hr, Guid userId, ProfileHeartRate? hrZones)
+        private TimeInHrZone CalculateTimeInHrZones(List<int> hr, ProfileHeartRate hrZones)
         {
-            int Zone1 = 0;
-            int Zone2 = 0;
-            int Zone3 = 0;
-            int Zone4 = 0;
-            int Zone5 = 0;
+            int zone1 = 0;
+            int zone2 = 0;
+            int zone3 = 0;
+            int zone4 = 0;
+            int? zone5 = null;
+            int? zone5A = null;
+            int? zone5B = null;
+            int? zone5C = null;
 
-            for (int i = 0; i < hr.Count; i++)
+            if (hrZones.Zone5 != null)
             {
-                if (hr[i] >= hrZones.Zone5) Zone5++;
-                if (hr[i] >= hrZones.Zone4 && hr[i] < hrZones.Zone5) Zone4++;
-                if (hr[i] >= hrZones.Zone3 && hr[i] < hrZones.Zone4) Zone3++;
-                if (hr[i] >= hrZones.Zone2 && hr[i] < hrZones.Zone3) Zone2++;
-                if (hr[i] >= hrZones.Zone1 && hr[i] < hrZones.Zone2) Zone1++;
+                zone5 = 0;
+                foreach (var i in hr)
+                {
+                    if (i >= hrZones.Zone5) zone5++;
+                    if (i >= hrZones.Zone4 && i < hrZones.Zone5) zone4++;
+                    if (i >= hrZones.Zone3 && i < hrZones.Zone4) zone3++;
+                    if (i >= hrZones.Zone2 && i < hrZones.Zone3) zone2++;
+                    if (i >= hrZones.Zone1 && i < hrZones.Zone2) zone1++;
+                }
+            }
+            else
+            {
+                zone5A = zone5B = zone5C = 0;
+                foreach (var i in hr)
+                {
+                    if (i >= hrZones.Zone5c) zone5C++;
+                    if (i >= hrZones.Zone5b && i < hrZones.Zone5c) zone5B++;
+                    if (i >= hrZones.Zone5a && i < hrZones.Zone5b) zone5A++;
+                    if (i >= hrZones.Zone4 && i < hrZones.Zone5a) zone4++;
+                    if (i >= hrZones.Zone3 && i < hrZones.Zone4) zone3++;
+                    if (i >= hrZones.Zone2 && i < hrZones.Zone3) zone2++;
+                    if (i >= hrZones.Zone1 && i < hrZones.Zone2) zone1++;
+                }
             }
 
             TimeInHrZone timeInHrZone = new TimeInHrZone
             {
-                TimeInZ1 = Zone1,
-                TimeInZ2 = Zone2,
-                TimeInZ3 = Zone3,
-                TimeInZ4 = Zone4,
-                TimeInZ5 = Zone5
+                TimeInZ1 = zone1,
+                TimeInZ2 = zone2,
+                TimeInZ3 = zone3,
+                TimeInZ4 = zone4,
+                TimeInZ5 = zone5,
+                TimeInZ5A = zone5A,
+                TimeInZ5B = zone5B,
+                TimeInZ5C = zone5C
             };
 
             return timeInHrZone;
         }
-        private TimeInPowerZone CalculateTimeInPowerZones(List<int> watts, Guid? userId, ProfilePower? powerZones)
+        private TimeInPowerZone CalculateTimeInPowerZones(List<int> watts, ProfilePower? powerZones)
         {
             int Zone1 = 0;
             int Zone2 = 0;
@@ -703,9 +719,9 @@ public class ProcessActivityService : IProcessActivityService
             return "updated";
         }
         
-        private async Task<List<TrainingLoads>> CalculateTrainingLoadToday(Guid? userId, List<TrainingLoads> trainingLoads)
+        private async Task<List<TrainingLoads>> CalculateTrainingLoadToday(Guid userId, List<TrainingLoads> trainingLoads)
         {
-            List<TrainingLoads>? trainingLoadsToAdd = new List<TrainingLoads>();
+            List<TrainingLoads> trainingLoadsToAdd = new List<TrainingLoads>();
 
             float alfa_lts = (float)2 / 43;
             float alfa_sts = (float)2 / 8;
@@ -766,7 +782,7 @@ public class ProcessActivityService : IProcessActivityService
             await _context.TrainingLoads.AddRangeAsync(trainingLoadsToAdd);
             await _context.SaveChangesAsync();
             
-            List<TrainingLoads>? res = await _context.TrainingLoads
+            List<TrainingLoads> res = await _context.TrainingLoads
                 .Where(tl => tl.UserId == userId)
                 .OrderBy(tl => tl.Date)
                 .ToListAsync();
