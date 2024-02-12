@@ -75,7 +75,7 @@ namespace server.Services
 
                             if (stream.type == "temp")
                             {
-                                temp.Add(int.Parse(stream.data[j].ToString()));
+                                temp.Add(stream.data[j] is not null ? int.Parse(stream.data[j].ToString()) : 0);;
                             }
 
                             if (stream.type == "time")
@@ -85,17 +85,17 @@ namespace server.Services
 
                             if (stream.type == "watts")
                             {
-                                watts.Add(int.Parse(stream.data[j].ToString()));
-                            }
+                                watts.Add(stream.data[j] is not null ? int.Parse(stream.data[j].ToString()) : 0);
+                            } 
                             
                             if (stream.type == "cadence")
                             {
-                                cadence.Add(int.Parse(stream.data[j].ToString()));
+                                cadence.Add(stream.data[j] is not null ? int.Parse(stream.data[j].ToString()) : 0);
                             }
                             
                             if (stream.type == "heartrate")
                             {
-                                hr.Add(int.Parse(stream.data[j].ToString()));
+                                hr.Add(stream.data[j] is not null ? int.Parse(stream.data[j].ToString()) : 0);
                             }
 
                             if (stream.type == "distance")
