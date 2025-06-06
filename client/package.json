@@ -11,7 +11,7 @@
   "dependencies": {
     "@canvasjs/react-charts": "^1.0.0",
     "@types/node": "20.4.5",
-    "@types/react": "18.2.18",
+    "@types/react": "18.3.21",
     "@types/react-dom": "18.2.7",
     "axios": "^1.5.0",
     "cookies-next": "^2.1.2",
