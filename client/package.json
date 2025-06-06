@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@canvasjs/react-charts": "^1.0.0",
-    "@types/node": "20.4.5",
+    "@types/node": "20.17.47",
     "@types/react": "18.2.18",
     "@types/react-dom": "18.2.7",
     "axios": "^1.5.0",
